@@ -1,6 +1,6 @@
 # Bluetooth BlinkUp #
 
-This example comprises Squirrel code to run on a imp004m-based test device – this requires impOS™ 37 or above - and an Xcode project which you can use to build an iOS app capable of finding and configuring test devices running the Squirrel code.
+This example comprises Squirrel code to run on a imp004m-based test device – this requires impOS™ 37 or above - and an Xcode project which you can use to build an iOS app (written in Swift) that is capable of finding and configuring test devices running the Squirrel code.
 
 The Squirrel code provides a basic framework for supporting BlinkUp™ via Bluetooth. The iOS app is used to scan for nearby imp004m-based devices running the Squirrel code, to select one of them, and then to choose a local wireless network, enter its password and transmit that information to the test device to perform BlinkUp™.
 
