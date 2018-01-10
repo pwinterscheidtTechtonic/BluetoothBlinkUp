@@ -94,7 +94,7 @@
 				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
-			path = /Users/smitty/Dropbox/Programming/iOS/BluetoothBlinkUp/Frameworks;
+			path = /Users/smitty/Documents/GitHub/BluetoothBlinkUp/iOS/Frameworks;
 			sourceTree = "<absolute>";
 		};
 		3B919A011FEC3F2200997BC8 /* BlinkUp.embeddedframework */ = {
