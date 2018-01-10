@@ -19,3 +19,5 @@ Because the iOS app makes use of the Electric Imp BlinkUp SDK, it performs produ
 ## License ##
 
 This sample code is made available under the MIT License.
+
+Copyright © 2018, Electric Imp, Inc.
