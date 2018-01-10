@@ -126,7 +126,7 @@ function doBluetooth() {
     incoming <- null;
     incomingAdr <- null;
 
-	// Set up the incoming data structure which includes a function to trigger
+    // Set up the incoming data structure which includes a function to trigger
     // that handles the application of the received data
     blinkupData <- {};
     blinkupData.ssid <- "";
