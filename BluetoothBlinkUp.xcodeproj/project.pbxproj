@@ -1,0 +1,394 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B8F1FE2980F0004D87E /* AppDelegate.swift */; };
+		3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */; };
+		3B232B951FE2980F0004D87E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3B232B931FE2980F0004D87E /* Main.storyboard */; };
+		3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3B232B961FE2980F0004D87E /* Assets.xcassets */; };
+		3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */; };
+		3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */; };
+		3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAA1FE2A1910004D87E /* BUConfigId.swift */; };
+		3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */; };
+		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
+		3B919A051FEC3F2800997BC8 /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B919A021FEC3F2200997BC8 /* BlinkUp.framework */; };
+		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
+		3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothBlinkUp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3B232B8F1FE2980F0004D87E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailViewController.swift; sourceTree = "<group>"; };
+		3B232B941FE2980F0004D87E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		3B232B961FE2980F0004D87E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3B232B991FE2980F0004D87E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		3B232B9B1FE2980F0004D87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		3B232BAA1FE2A1910004D87E /* BUConfigId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUConfigId.swift; path = BlinkUpSwiftExtensions/BUConfigId.swift; sourceTree = "<group>"; };
+		3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUDevicePoller.swift; path = BlinkUpSwiftExtensions/BUDevicePoller.swift; sourceTree = "<group>"; };
+		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		3B919A021FEC3F2200997BC8 /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BlinkUp.framework; sourceTree = "<group>"; };
+		3B919A041FEC3F2200997BC8 /* BlinkUp.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BlinkUp.bundle; sourceTree = "<group>"; };
+		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItem.swift; sourceTree = "<group>"; };
+		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3B232B891FE2980F0004D87E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */,
+				3B919A051FEC3F2800997BC8 /* BlinkUp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3B232B831FE2980F0004D87E = {
+			isa = PBXGroup;
+			children = (
+				3B232B8E1FE2980F0004D87E /* BluetoothBlinkUp */,
+				3B232BA71FE298980004D87E /* Frameworks */,
+				3B232B8D1FE2980F0004D87E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3B232B8D1FE2980F0004D87E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3B232B8E1FE2980F0004D87E /* BluetoothBlinkUp */ = {
+			isa = PBXGroup;
+			children = (
+				3B232B8F1FE2980F0004D87E /* AppDelegate.swift */,
+				3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */,
+				3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */,
+				3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */,
+				3B232BAA1FE2A1910004D87E /* BUConfigId.swift */,
+				3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */,
+				3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */,
+				3B232B931FE2980F0004D87E /* Main.storyboard */,
+				3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */,
+				3B232B961FE2980F0004D87E /* Assets.xcassets */,
+				3B232B9B1FE2980F0004D87E /* Info.plist */,
+			);
+			path = BluetoothBlinkUp;
+			sourceTree = "<group>";
+		};
+		3B232BA71FE298980004D87E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3B919A011FEC3F2200997BC8 /* BlinkUp.embeddedframework */,
+				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
+			);
+			name = Frameworks;
+			path = /Users/smitty/Dropbox/Programming/iOS/BluetoothBlinkUp/Frameworks;
+			sourceTree = "<absolute>";
+		};
+		3B919A011FEC3F2200997BC8 /* BlinkUp.embeddedframework */ = {
+			isa = PBXGroup;
+			children = (
+				3B919A021FEC3F2200997BC8 /* BlinkUp.framework */,
+				3B919A031FEC3F2200997BC8 /* Resources */,
+			);
+			path = BlinkUp.embeddedframework;
+			sourceTree = "<group>";
+		};
+		3B919A031FEC3F2200997BC8 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3B919A041FEC3F2200997BC8 /* BlinkUp.bundle */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3B232B8B1FE2980F0004D87E /* BluetoothBlinkUp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3B232B9E1FE2980F0004D87E /* Build configuration list for PBXNativeTarget "BluetoothBlinkUp" */;
+			buildPhases = (
+				3B232B881FE2980F0004D87E /* Sources */,
+				3B232B891FE2980F0004D87E /* Frameworks */,
+				3B232B8A1FE2980F0004D87E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BluetoothBlinkUp;
+			productName = BluetoothBlinkUp;
+			productReference = 3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3B232B841FE2980F0004D87E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0920;
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Electric Imp";
+				TargetAttributes = {
+					3B232B8B1FE2980F0004D87E = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 3B232B871FE2980F0004D87E /* Build configuration list for PBXProject "BluetoothBlinkUp" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3B232B831FE2980F0004D87E;
+			productRefGroup = 3B232B8D1FE2980F0004D87E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3B232B8B1FE2980F0004D87E /* BluetoothBlinkUp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3B232B8A1FE2980F0004D87E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */,
+				3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */,
+				3B232B951FE2980F0004D87E /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3B232B881FE2980F0004D87E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */,
+				3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */,
+				3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */,
+				3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */,
+				3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */,
+				3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */,
+				3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		3B232B931FE2980F0004D87E /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3B232B941FE2980F0004D87E /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3B232B991FE2980F0004D87E /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3B232B9C1FE2980F0004D87E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3B232B9D1FE2980F0004D87E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3B232B9F1FE2980F0004D87E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y5J3K52DNA;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/BlinkUp.embeddedframework",
+				);
+				INFOPLIST_FILE = BluetoothBlinkUp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bps.BluetoothBlinkUp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		3B232BA01FE2980F0004D87E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Y5J3K52DNA;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/BlinkUp.embeddedframework",
+				);
+				INFOPLIST_FILE = BluetoothBlinkUp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bps.BluetoothBlinkUp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3B232B871FE2980F0004D87E /* Build configuration list for PBXProject "BluetoothBlinkUp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B232B9C1FE2980F0004D87E /* Debug */,
+				3B232B9D1FE2980F0004D87E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3B232B9E1FE2980F0004D87E /* Build configuration list for PBXNativeTarget "BluetoothBlinkUp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3B232B9F1FE2980F0004D87E /* Debug */,
+				3B232BA01FE2980F0004D87E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3B232B841FE2980F0004D87E /* Project object */;
+}

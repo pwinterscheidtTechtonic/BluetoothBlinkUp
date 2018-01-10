@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "BluetoothBlinkUp/DeviceDetailViewController.swift"
+            timestampString = "536678690.931047"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "188"
+            endingLineNumber = "188"
+            landmarkName = "blinkupStageTwo()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "BluetoothBlinkUp.DeviceDetailViewController.blinkupStageTwo() -&gt; ()"
+                  moduleName = "BluetoothBlinkUp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/smitty/Dropbox/Programming/iOS/BluetoothBlinkUp/BluetoothBlinkUp/DeviceDetailViewController.swift"
+                  timestampString = "535638056.737372"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "188"
+                  endingLineNumber = "188"
+                  offsetFromSymbolStart = "312">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 ((extension in BluetoothBlinkUp):__ObjC.BUConfigId.ConfigIdResponse) -&gt; () in BluetoothBlinkUp.DeviceDetailViewController.blinkupStageTwo() -&gt; ()"
+                  moduleName = "BluetoothBlinkUp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/smitty/Dropbox/Programming/iOS/BluetoothBlinkUp/BluetoothBlinkUp/DeviceDetailViewController.swift"
+                  timestampString = "535638056.739803"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "193"
+                  endingLineNumber = "193"
+                  offsetFromSymbolStart = "32">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
