@@ -166,7 +166,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.bluetoothManager.stopScan()
 
             if devices.count == 0 && showAnAlert {
-                showAlert("No imp004m Devices Found", "")
+                showAlert("No Bluetooth-enabled imp Devices Found", "")
             }
 
             self.refreshControl!.endRefreshing()
@@ -256,7 +256,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // Open the EI shop in Safari
         let uiapp = UIApplication.shared
-        let url: URL = URL.init(string: "https://store.electricimp.com/collections/featured-products/products/imp004m-breakout-board")!
+        let url: URL = URL.init(string: "https://store.electricimp.com/")!
         uiapp.open(url, options: [:], completionHandler: nil)
     }
 
