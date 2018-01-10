@@ -10,7 +10,7 @@ The Squirrel code provides a basic framework for supporting BlinkUp™ via Bluet
 
 The iOS makes use of the Electric Imp BlinkUp SDK. As such, it requires the entry of a BlinkUp API key to authorize its access to the Electric Imp impCloud™. The app prompts the user for this key when it is first run; if you do not enter your key then, you can do so at a later time, by tapping ‘Actions’ in the navigation bar and selecting ‘Enter your BlinkUp API key’ from the menu.
 
-Please note that Electric Imp makes BlinkUp API keys available to customers only. This sample code cannot be used by holders of free Electric Imp accounts.
+Please note that Electric Imp makes BlinkUp API keys available **to customers only**. This sample code cannot be used by holders of free Electric Imp accounts.
 
 ## Hardware Preparation ##
 
