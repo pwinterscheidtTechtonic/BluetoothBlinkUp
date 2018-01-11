@@ -150,10 +150,17 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         let index = self.wifiPicker.selectedRow(inComponent: 0)
         let network = self.availableNetworks[index]
 
-        if (network[1] == "locked" && self.passwordField.text!.isEmpty) {
+        if network[1] == "locked" && self.passwordField.text!.isEmpty {
             self.showAlert("This network requires a password", "You need to enter a password for a locked network.")
             return
         }
+
+        if network[0] == "None" {
+            self.showAlert("There are no networks to connect to", "")
+            return
+        }
+
+
 
         self.blinkUpProgressBar.startAnimating()
 
