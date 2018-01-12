@@ -16,6 +16,12 @@ Please note that Electric Imp makes BlinkUp API keys available **to customers on
 
 Because the iOS app makes use of the Electric Imp BlinkUp SDK, it performs production BlinkUp. As such, the test device must already have been assigned to your Electric Imp account as a development device and assigned to a Device Group. This Device Group can be the one you have deployed the sample Squirrel code to.
 
+## iOS Bluetooth Attribute Caching ##
+
+By default, iOS caches the attribute information it discovers from devices. This ensures that future scans need not use the radio, conserving power. However, it also means if you change your Squirrel app’s served attributes during development, they will not be detected by the app.
+
+The easiest approach to dealing with this is to disable then re-enable Bluetooth on your Apple device. You may also need to power-cycle the device.
+
 ## License ##
 
 This sample code is made available under the MIT License.
