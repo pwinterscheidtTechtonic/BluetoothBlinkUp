@@ -389,6 +389,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         if (error != nil) {
             NSLog("\(error!.localizedDescription)")
         }
+        
+        // Device failed to connect for some reason, so report it to the user
+        // and suggest a remedy
+        if let aDevice: Device = self.device {
+            showAlert("Cannot connect to device \(aDevice.name)", "Go back to the device list and re-scan or select another device")
+        }
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnect: CBPeripheral, error: Error?) {
