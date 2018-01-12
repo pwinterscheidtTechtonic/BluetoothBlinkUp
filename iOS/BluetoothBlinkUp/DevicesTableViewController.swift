@@ -50,7 +50,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     var scanning: Bool = false
 
     // Constants
-    let SCAN_TIME = 15.0
+    let DEVICE_SCAN_TIMEOUT = 15.0
 
     // MARK: - View lifecycle functions
 
@@ -89,16 +89,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Add a long-press gesture to the UITableView to pop up the Info panel
         infoGesture.addTarget(self, action: #selector(showInfo))
         devicesTable.addGestureRecognizer(infoGesture)
-
-        // Add an instruction line to the table.
-        // This used deviceID = NO to indicte its type to the app, eg. to prevent
-        // the row being selected. This line will be clear when the user scans
-        // for devices
-        let text: Device = Device()
-        text.name = "Pull down to search for Bluetooth-enabled imps"
-        text.devID = "NO"
-        devices.append(text)
-        devicesTable.reloadData()
+        
+        // Initialize the device list
+        initTable()
 
         // Set up the refresh control - the serarching indicator
         self.refreshControl = UIRefreshControl.init()
@@ -138,8 +131,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.bluetoothManager.scanForPeripherals(withServices:[s], options:nil)
             self.scanning = true
 
-            // Set up a timer to cancel the scan automatically after SCAN_TIME seconds
-            self.scanTimer = Timer.scheduledTimer(timeInterval: SCAN_TIME, target: self, selector: #selector(self.andScanWithAlert), userInfo: nil, repeats: false)
+            // Set up a timer to cancel the scan automatically after DEVICE_SCAN_TIMEOUT seconds
+            self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.andScanWithAlert), userInfo: nil, repeats: false)
 
         } else {
             // We're already scanning so just cancel the scan
@@ -167,10 +160,24 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
             if devices.count == 0 && showAnAlert {
                 showAlert("No Bluetooth-enabled imp Devices Found", "")
+                initTable()
             }
 
             self.refreshControl!.endRefreshing()
         }
+    }
+    
+    func initTable() {
+        
+        // Add an instruction line to the table.
+        // This used deviceID = NO to indicte its type to the app, eg. to prevent
+        // the row being selected. This line will be clear when the user scans
+        // for devices
+        let text: Device = Device()
+        text.name = "Pull down to search for Bluetooth-enabled imps"
+        text.devID = "NO"
+        devices.append(text)
+        devicesTable.reloadData()
     }
 
     @objc func closeUp() {
@@ -531,7 +538,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
     }
 
-    // MARK: Keychain
+    // MARK: - Keychain
 
     func getHarvey() -> String? {
 
