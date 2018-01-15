@@ -20,7 +20,7 @@ Because the iOS app makes use of the Electric Imp BlinkUp SDK, it performs produ
 
 When the app has launched and you have entered your BlinkUp API Key — or it has been read from your phone’s keychain — pull down the list view to start a scan (or tap ‘Actions’ and select ‘Start Scan’. Any devices running the demo’s Squirrel code will now appear in the list — tap one to view the list of compatible WiFi networks the device can see. Select your network from the list and enter its password. You can click on the eye icon to view the password characters.
 
-<p align="center"><img src="/images/01.png" width="375">&nbsp;&nbsp;<img src="images/02.png" width="375"></p>
+<p align="center"><img src="images/01.png" width="375" style="border: 1px solid #DDDDDD" >&nbsp;&nbsp;<img src="images/02.png" width="375" style="border: 1px solid #DDDDDD"></p>
 
 Finally, tap ‘Send BlinkUp’ to transmit the WiFi credentials to the device. It will then reconnect to the new network. The device logs details of the process, so you can observe it connect if you are viewing the log stream in impCentral™ or an impCentral API-based tool.
 
