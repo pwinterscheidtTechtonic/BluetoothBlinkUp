@@ -132,7 +132,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.scanning = true
 
             // Set up a timer to cancel the scan automatically after DEVICE_SCAN_TIMEOUT seconds
-            self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.andScanWithAlert), userInfo: nil, repeats: false)
+            self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.endScanWithAlert), userInfo: nil, repeats: false)
 
         } else {
             // We're already scanning so just cancel the scan
@@ -140,7 +140,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
     }
 
-    @objc func andScanWithAlert() {
+    @objc func endScanWithAlert() {
 
         endScan(true)
     }
