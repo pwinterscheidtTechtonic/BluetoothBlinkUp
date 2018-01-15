@@ -52,7 +52,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     var connected: Bool = false
     var blinking: Bool = false
     var harvey: String!
-
+    var scanTimer: Timer!
+    
+    // Constants
+    let DEVICE_SCAN_TIMEOUT = 5.0
+    
+    
     override func viewDidLoad() {
 
         super.viewDidLoad()
@@ -89,9 +94,20 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             aDevice.peripheral.delegate = self
             self.bluetoothManager.delegate = self
             self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+            self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.endConnectWithAlert), userInfo: nil, repeats: false)
         }
     }
-
+    
+    @objc func endConnectWithAlert() {
+        
+        // Device failed to connect for some reason, so report it to the user
+        // and suggest a remedy
+        if let aDevice: Device = device {
+            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+            showAlert("Cannot connect to \(aDevice.name)", "Go back to the device list and re-scan or select another device")
+        }
+    }
+    
     @objc func appWillEnterForeground() {
 
         // App is about to come back into view after the user previously
@@ -388,12 +404,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         if (error != nil) {
             NSLog("\(error!.localizedDescription)")
-        }
-        
-        // Device failed to connect for some reason, so report it to the user
-        // and suggest a remedy
-        if let aDevice: Device = self.device {
-            showAlert("Cannot connect to device \(aDevice.name)", "Go back to the device list and re-scan or select another device")
         }
     }
 
