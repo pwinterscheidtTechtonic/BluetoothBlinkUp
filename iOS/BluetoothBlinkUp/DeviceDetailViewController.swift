@@ -381,6 +381,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         // The app has connected to the peripheral (eg. imp004m)
         // This is the result of calling bluetoothManager.connect()
+        // Cancel timeout timer
+        scanTimer.invalidate()
 
         // Set the connected peripheral instance's delegate to this code
         peripheral.delegate = self
