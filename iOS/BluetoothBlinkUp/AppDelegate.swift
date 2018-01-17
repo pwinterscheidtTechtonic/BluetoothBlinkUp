@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         // Set window's standard control tint colour
-        self.window!.tintColor = UIColor.init(red: 0.06, green: 0.66, blue: 0.70, alpha: 1.0)
+        self.window!.tintColor = UIColor.init(red: 0.03, green: 0.66, blue: 0.66, alpha: 1.0)
         return true
     }
 

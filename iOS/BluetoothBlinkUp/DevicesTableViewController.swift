@@ -76,15 +76,15 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // Watch for app returning to foreground with ImpDetailViewController active
         NotificationCenter.default.addObserver(self,
-                                               selector:#selector(self.viewWillAppear),
-                                               name:NSNotification.Name.UIApplicationWillEnterForeground,
-                                               object:nil)
+                                               selector: #selector(self.viewWillAppear),
+                                               name: NSNotification.Name.UIApplicationWillEnterForeground,
+                                               object: nil)
 
         // Watch for app going to background with ImpDetailViewController active
         NotificationCenter.default.addObserver(self,
-                                               selector:#selector(self.closeUp),
-                                               name:NSNotification.Name.UIApplicationWillResignActive,
-                                               object:nil)
+                                               selector: #selector(self.closeUp),
+                                               name: NSNotification.Name.UIApplicationWillResignActive,
+                                               object: nil)
 
         // Add a long-press gesture to the UITableView to pop up the Info panel
         infoGesture.addTarget(self, action: #selector(showInfo))
@@ -93,7 +93,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Initialize the device list
         initTable()
 
-        // Set up the refresh control - the serarching indicator
+        // Set up the refresh control - the searching indicator
         self.refreshControl = UIRefreshControl.init()
         self.refreshControl!.backgroundColor = UIColor.init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
         self.refreshControl!.tintColor = UIColor.black
