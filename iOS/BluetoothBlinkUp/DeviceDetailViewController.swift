@@ -176,8 +176,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             return
         }
 
-
-
         self.blinkUpProgressBar.startAnimating()
 
         if !self.connected {
