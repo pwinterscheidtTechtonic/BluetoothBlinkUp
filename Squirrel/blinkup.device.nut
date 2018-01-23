@@ -75,6 +75,21 @@ function doBluetooth() {
     if (nets == null || nets.len() == 0) {
         networks = "!no_local_networks!";
     } else {
+        // Check the list of WLANs for networks which have multiple reachable access points,
+        // ie. networks of the same SSID but different BSSIDs, otherwise the same WLAN will be listed twice
+        local i = 0;
+        do {
+            local network = nets[i];
+            i++;
+            for (local j = 0 ; j < nets.len() ; j++) {
+                local aNetwork = nets[j];
+                if (network.ssid == aNetwork.ssid && network.bssid != aNetwork.bssid) {
+                    // We have two identical SSIDs but different base stations, so remove one
+                    nets.remove(j);
+                }
+            }
+        } while (nets.len() > i);
+
         // There's no http.jsonencode() on the device so stringify the key data:
         // One newline to separate fields; two newlines to separate records
         for (local i = 0 ; i < nets.len() ; i++) {
