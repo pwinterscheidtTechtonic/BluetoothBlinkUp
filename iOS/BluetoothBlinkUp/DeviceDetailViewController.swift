@@ -46,18 +46,21 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     // Properties
     var bluetoothManager: CBCentralManager!
     var device: Device? = nil
-    var characteristics: [CBCharacteristic]? = nil
     var availableNetworks: [ [String] ] = []
     var config: BUConfigId? = nil
     var connected: Bool = false
-    var blinking: Bool = false
+    var isSending: Bool = false
+    var isClearing: Bool = false
     var harvey: String!
     var scanTimer: Timer!
+    var cheatTimer: Timer!
     
     // Constants
     let DEVICE_SCAN_TIMEOUT = 5.0
     
-    
+
+    // MARK: - View Lifecycle Functions
+
     override func viewDidLoad() {
 
         super.viewDidLoad()
@@ -73,37 +76,45 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.passwordField.leftViewMode = UITextFieldViewMode.always
 
         // Start watching for the app re-activating
-        let nc = NotificationCenter.default
-        nc.addObserver(self, selector: #selector(appWillEnterForeground), name: NSNotification.Name.init("appwillenterforeground"), object: nil)
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
 
         super.viewWillAppear(animated)
+
         initUI()
         initNetworks()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-
-        super.viewDidAppear(animated)
 
         // Get the networks from the device
         if let aDevice: Device = device {
             // NOTE We need to set the objects' delegates to 'self' so that the correct delegate functions are called
             aDevice.peripheral.delegate = self
             self.bluetoothManager.delegate = self
-            self.bluetoothManager.connect(aDevice.peripheral, options: nil)
-            self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.endConnectWithAlert), userInfo: nil, repeats: false)
+            if !self.connected {
+                self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
+                                                      target: self,
+                                                      selector: #selector(self.endConnectWithAlert),
+                                                      userInfo: nil,
+                                                      repeats: false)
+            }
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+
+        super.viewDidAppear(animated)
+
     }
     
     @objc func endConnectWithAlert() {
         
-        // Device failed to connect for some reason, so report it to the user
-        // and suggest a remedy
+        // This function is called when 'scanTimer' fires. This event indicates that
+        // the device failed to connect for some reason - so report it to the user
         if let aDevice: Device = device {
             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+            self.connected = false
             showAlert("Cannot connect to \(aDevice.name)", "Go back to the device list and re-scan or select another device")
         }
     }
@@ -111,8 +122,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     @objc func appWillEnterForeground() {
 
         // App is about to come back into view after the user previously
-        // switched to a different app, so reset the UI - unless we're blinking
-        if !self.blinking {
+        // switched to a different app, so reset the UI - unless we're isSending
+        if !self.isSending {
             if self.connected {
                 if let aDevice: Device = self.device {
                     self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
@@ -129,11 +140,15 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         // Initialise the UI
         self.blinkUpProgressBar.stopAnimating()
+        self.passwordField.text = ""
         self.sendLabel.text = ""
     }
 
     func initNetworks() {
 
+        // Initialize the UIPickerView which presents the network list
+        // NOTE The actual network data is gathered in the background
+        // ( see viewDidAppear() )
         // Add a placeholder network name
         self.availableNetworks.removeAll()
         self.availableNetworks.append(["None", "unlocked"])
@@ -146,9 +161,14 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
     @objc func goBack() {
 
-        // Stop listening for 'will enter foreground' notifications
-        NotificationCenter.default.removeObserver(self)
+        // Return to the device list - unless we are isSending,
+        // in which case notify the user
+        if self.isSending {
+            showAlert("BlinkUp in Progress", "Please wait until all the Blinkup information has been sent to the device")
+            return
+        }
 
+        // If a device is connected, disconnect from it
         if self.connected {
             if let aDevice: Device = self.device {
                 self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
@@ -156,21 +176,36 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             }
         }
 
+        // Stop listening for 'will enter foreground' notifications
+        NotificationCenter.default.removeObserver(self)
+
         // Jump back to the list of devices
         self.navigationController!.popViewController(animated: true)
     }
 
+
+    // MARK: - Action Functions
+
     @IBAction func doBlinkup(_ sender: Any) {
 
-        // Do we have the data we need, ie. a password for a locked network?
+        // Already isSending? Then baiul
+        if self.isSending {
+            return
+        }
+
+        if (self.cheatTimer.isValid) { self.cheatTimer.fire() }
+
+        // Do we have the data we need from the UI, ie. a password for a locked network?
         let index = self.wifiPicker.selectedRow(inComponent: 0)
         let network = self.availableNetworks[index]
 
+        // If the network is locked, the user must enter a password
         if network[1] == "locked" && self.passwordField.text!.isEmpty {
             self.showAlert("This network requires a password", "You need to enter a password for a locked network.")
             return
         }
 
+        // If there are no compatible networks around the device, we can't proceed
         if network[0] == "None" {
             self.showAlert("There are no networks to connect to", "")
             return
@@ -178,21 +213,19 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         self.blinkUpProgressBar.startAnimating()
 
+        // Are we already connected to the device?
         if !self.connected {
-            // App is not connected to the peripheral
+            // App is not connected to the device, so connect now
             if let aDevice = self.device {
-                self.blinking = true
-
+                self.isSending = true
                 self.bluetoothManager.connect(aDevice.peripheral, options: nil)
                 // Pick up the action at didConnect(), which is called when the
                 // iDevice has connected to the imp004m
             }
         } else {
-            // App is already connected to the peripheral
-            if !self.blinking {
-                // App is not performing BlinkUp, so start it now
-                blinkupStageTwo()
-            }
+            // App is already connected to the peripheral so do BlinkUp
+            self.isSending = true
+            blinkupStageTwo()
         }
     }
 
@@ -200,172 +233,296 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         // Use the BlinkUp SDK to retrieve an enrollment token and a plan ID from the user's API Key
         // You will need to be an Electric Imp customer with a BlinkUp API Key to make this work
+        // If no API key is known to the app, it will just transmit WiFi data
 
+        // NOTE The progress indicator is already active at this point
         if self.connected {
             // We're good to proceed so begin BlinkUp
             sendLabel.text = "Sending BlinkUp data"
-            
-            // Get a BUConfigID
-            let _ = BUConfigId.init(apiKey: self.harvey) { (_ config: BUConfigId.ConfigIdResponse) -> Void in
-                // 'config' is the response to the creation of the BUConfigID
-                // It has two possible values:
-                //    .activated (passes in the active BUConfigID)
-                //    .error     (passes in an NSError)
-                switch config {
-                case .activated(let activeConfig):
-                    self.sendLabel.text = "Sending BlinkUp..."
-                    self.config = activeConfig
 
-                    if let aDevice = self.device {
-                        // Get the data for the current network and prep for sending
-                        let index = self.wifiPicker.selectedRow(inComponent: 0)
-                        let network = self.availableNetworks[index]
-                        let sdata:Data? = network[0].data(using: String.Encoding.utf8)
-                        let pdata:Data? = self.passwordField.text!.data(using: String.Encoding.utf8)
-                        let tdata:Data? = activeConfig.token.data(using: String.Encoding.utf8)
-                        let idata:Data? = activeConfig.planId!.data(using: String.Encoding.utf8)
+            if self.harvey.count == 0 {
+                // The user HAS NOT input a BlinkUp API key, so just send across WiFi credentials,
+                // ie. do not perform a device enrolment too
+                if let aDevice = self.device {
+                    // Transmit the WiFi data
+                    sendWiFiData(aDevice)
 
-                        // Work through the characteristic list for the service,
-                        // to match them to known UUIDs so we send the correct data to the imp004m
-                        // First the SSID
-                        if let list = self.characteristics {
-                            for i in 0..<list.count {
-                                let ch:CBCharacteristic? = list[i]
-                                if ch != nil {
-                                    if ch!.uuid.uuidString == "5EBA1956-32D3-47C6-81A6-A7E59F18DAC0" {
-                                        if let s = sdata {
-                                            // At the first GATT write (or read) iOS will handle pairing.
-                                            // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
-                                            // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
-                                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    // Clean up the UI
+                    self.sendLabel.text = ""
+                    self.isSending = false
+                    self.blinkUpProgressBar.stopAnimating()
+
+                    // Since we can't poll the server for this instance (we have no API key), we
+                    // just warn the user via an alert to expect the device to connect
+                    showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
+
+                    // Clean up in two seconds' time
+                    self.cheatTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { (_) in
+                        if let aDevice = self.device {
+                            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                            self.connected = false
+                        }
+                    })
+                }
+            } else {
+                // The user HAS input a BlinkUp API key, so perform a full activation
+                // (enrol the deviceand transmit WiFi credentials).
+                // First, get a BUConfigID — this REQUIRES a BlinkUp API key
+                let _ = BUConfigId.init(apiKey: self.harvey) { (_ config: BUConfigId.ConfigIdResponse) -> Void in
+                    // 'config' is the response to the creation of the BUConfigID
+                    // It has two possible values:
+                    //    .activated (passes in the active BUConfigID)
+                    //    .error     (passes in an NSError)
+                    switch config {
+                    case .activated(let activeConfig):
+                        self.config = activeConfig
+
+                        if let aDevice = self.device {
+                            // Send the Enrolment Data
+                            self.sendEnrolData(aDevice, activeConfig)
+
+                            // Transmit the WiFi data
+                            self.sendWiFiData(aDevice)
+
+                            // Update the UI
+                            self.sendLabel.text = "Waiting for device to enrol"
+
+                            // Begin polling the server for an indication that the device
+                            // has connected and been enrolled
+                            let poller = BUDevicePoller.init(configId: activeConfig)
+                            poller.startPollingWithHandler({ (response) in
+                                switch(response) {
+                                case .responded(let info):
+                                    // The server indicates that the device has enrolled successfully, so we're done
+                                    let na: String = "N/A"
+                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™. It is accessible at\n\(info.agentURL?.absoluteString ?? na)", preferredStyle: UIAlertControllerStyle.actionSheet)
+                                    var action: UIAlertAction = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                            if let us = info.agentURL?.absoluteString {
+                                                let pb: UIPasteboard = UIPasteboard.general
+                                                pb.setValue(us, forPasteboardType: "public.text")
+                                            }
                                         }
-                                        break
-                                    }
+                                    actionMenu.addAction(action)
+                                    action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
+                                    actionMenu.addAction(action)
+                                    self.present(actionMenu, animated: true, completion: nil)
+                                    self.sendLabel.text = ""
+                                    self.blinkUpProgressBar.stopAnimating()
+                                case .error(let error):
+                                    // Something went wrong, so dump the error and perform the timed out flow
+                                    NSLog(error.description)
+                                    fallthrough
+                                case .timedOut:
+                                    // The server took too long to respond, so assume enrollment did not take place
+                                    self.showAlert("Device Failed to Connect", "Your device has not enrolled in the impCloud")
+                                    self.sendLabel.text = ""
+                                    self.blinkUpProgressBar.stopAnimating()
                                 }
-                            }
 
-                            // Send the network password
-                            for i in 0..<list.count {
-                                let ch:CBCharacteristic? = list[i];
-
-                                if ch != nil {
-                                    if ch!.uuid.uuidString == "ED694AB9-4756-4528-AA3A-799A4FD11117" {
-                                        if let s = pdata {
-                                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
-                                        }
-                                        break
-                                    }
+                                // Done isSending, so cancel the connection (best practice to save battery power)
+                                if let aDevice = self.device {
+                                    self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                                    self.connected = false
                                 }
-                            }
 
-                            // Now the token
-                            for i in 0..<list.count {
-                                let ch:CBCharacteristic? = list[i];
-
-                                if ch != nil {
-                                    if ch!.uuid.uuidString == "BD107D3E-4878-4F6D-AF3D-DA3B234FF584" {
-                                        if let s = tdata {
-                                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
-                                        }
-                                        break
-                                    }
-                                }
-                            }
-
-                            // Now the planid
-                            for i in 0..<list.count {
-                                let ch:CBCharacteristic? = list[i];
-
-                                if ch != nil {
-                                    if ch!.uuid.uuidString == "A90AB0DC-7B5C-439A-9AB5-2107E0BD816E" {
-                                        if let s = idata {
-                                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
-                                        }
-                                        break
-                                    }
-                                }
-                            }
-
-                            // And finally the characteristic that triggers the WiFi refresh on the imp004m
-                            for i in 0..<list.count {
-                                let ch:CBCharacteristic? = list[i];
-
-                                if ch != nil {
-                                    if ch!.uuid.uuidString == "F299C342-8A8A-4544-AC42-08C841737B1B" {
-                                        if let s = sdata {
-                                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
-                                        }
-                                        break
-                                    }
-                                }
-                            }
+                                self.isSending = false
+                            })
                         }
 
-                        // Update the UI
-                        self.sendLabel.text = "Waiting for device to enrol"
-                        self.blinking = false
+                        // We exit here, but will pick up writing in blinkupStageTwo() called from within
+                        // the above delegate function in respomse to a successful pairing and write
 
-                        // Begin polling the server for an indication that the device
-                        // has connected and been enrolled
-                        let poller = BUDevicePoller.init(configId: activeConfig)
-                        poller.startPollingWithHandler({ (response) in
-                            switch(response) {
-                            case .responded(let info):
-                                // The server indicates that the device has enrolled successfully, so we're done
-                                let na: String = "N/A"
-                                let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™. It is accessible at\n\(info.agentURL?.absoluteString ?? na)", preferredStyle: UIAlertControllerStyle.actionSheet)
-                                var action: UIAlertAction = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                        if let us = info.agentURL?.absoluteString {
-                                            let pb: UIPasteboard = UIPasteboard.general
-                                            pb.setValue(us, forPasteboardType: "public.text")
-                                        }
-                                    }
-                                actionMenu.addAction(action)
-                                action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
-                                actionMenu.addAction(action)
-                                self.present(actionMenu, animated: true, completion: nil)
-                                self.sendLabel.text = ""
-                                self.blinkUpProgressBar.stopAnimating()
-                            case .error(let error):
-                                // Something went wrong, so dump the error and perform the timed out flow
-                                NSLog(error.description)
-                                fallthrough
-                            case .timedOut:
-                                // The server took too long to respond, so assume enrollment did not take place
-                                self.showAlert("Device Failed to Connect", "Your device has not enrolled in the impCloud")
-                                self.sendLabel.text = ""
-                                self.blinkUpProgressBar.stopAnimating()
-                            }
-
-                            // Done blinking, so cancel the connection (best practice to save battery power)
-                            if let aDevice = self.device {
-                                self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
-                                self.connected = false
-                            }
-                        })
+                    case .error(let error):
+                        // Could not create the BUConfigID - maybe the API is wroing/invalid?
+                        NSLog("%@", error.description)
+                        self.showAlert("BlinkUp Failed", "Is your API Key correct? Please re-enter it via the Devices list\n(Actions > Enter API Key)")
+                        self.blinkUpProgressBar.stopAnimating()
                     }
-
-                    // We exit here, but will pick up writing in blinkupStageTwo() called from within
-                    // the above delegate function in respomse to a successful pairing and write
-
-                case .error(let error):
-                    // Could not create the BUConfigID - maybe the API is wroing/invalid?
-                    NSLog("%@", error.description)
-                    self.showAlert("BlinkUp Failed", "Is your API Key correct? Please re-enter it via the Devices list\n(Actions > Enter API Key)")
-                    self.blinkUpProgressBar.stopAnimating()
                 }
             }
         } else {
-            showAlert("Connect to a Device", "You must be connected to an imp004m device in order to perform BlinkUp")
+            showAlert("Connect to a Device", "You must be connected to an imp-enabled device with Bluetooth in order to perform BlinkUp. Return to the Device List and re-select the device")
         }
+    }
+
+    func sendEnrolData(_ device: Device, _ config: BUConfigId) {
+
+        // Package up the enrolment data and send it to the device
+        // NOTE This function only sends the data, it does not tell the device
+        // to update its setttings — use sendWiFiData() for that
+        let tdata:Data? = config.token.data(using: String.Encoding.utf8)
+        let pdata:Data? = config.planId!.data(using: String.Encoding.utf8)
+
+        // Work through the characteristic list for the service, to match them
+        // to known UUIDs so we send the correct data to the device
+
+        // First the enrolment token
+        for i in 0..<device.characteristics.count {
+            let ch:CBCharacteristic? = device.characteristics[i];
+            if ch != nil {
+                if ch!.uuid.uuidString == "BD107D3E-4878-4F6D-AF3D-DA3B234FF584" {
+                    if let s = tdata {
+                        // At the first GATT write (or read) iOS will handle pairing.
+                        // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
+                        // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
+                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    }
+                    break
+                }
+            }
+        }
+
+        // Now the plan ID
+        for i in 0..<device.characteristics.count {
+            let ch:CBCharacteristic? = device.characteristics[i];
+            if ch != nil {
+                if ch!.uuid.uuidString == "A90AB0DC-7B5C-439A-9AB5-2107E0BD816E" {
+                    if let s = pdata {
+                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    }
+                    break
+                }
+            }
+        }
+    }
+
+    func sendWiFiData(_ device: Device) {
+
+        // Package up the WiFi configuration information and send it to the device
+        // Get the data for the current network and prep for sending
+        // NOTE This function also tells the device to update its setttings
+        let index = self.wifiPicker.selectedRow(inComponent: 0)
+        let network = self.availableNetworks[index]
+        let sdata:Data? = network[0].data(using: String.Encoding.utf8)
+        let pdata:Data? = self.passwordField.text!.data(using: String.Encoding.utf8)
+
+        // Work through the characteristic list for the service, to match them
+        //  to known UUIDs so we send the correct data to the device
+        for i in 0..<device.characteristics.count {
+            // First the SSID
+            let ch:CBCharacteristic? = device.characteristics[i]
+            if ch != nil {
+                if ch!.uuid.uuidString == "5EBA1956-32D3-47C6-81A6-A7E59F18DAC0" {
+                    if let s = sdata {
+                        // At the first GATT write (or read) iOS will handle pairing.
+                        // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
+                        // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
+                        device.peripheral.delegate = self
+                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    }
+                }
+            }
+        }
+
+        // Now send the network password
+        for i in 0..<device.characteristics.count {
+            let ch:CBCharacteristic? = device.characteristics[i];
+            if ch != nil {
+                if ch!.uuid.uuidString == "ED694AB9-4756-4528-AA3A-799A4FD11117" {
+                    if let s = pdata {
+                        device.peripheral.delegate = self
+                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    }
+                }
+            }
+        }
+
+        // And finally the characteristic that triggers the WiFi refresh on the device
+        for i in 0..<device.characteristics.count {
+            let ch:CBCharacteristic? = device.characteristics[i];
+            if ch != nil {
+                if ch!.uuid.uuidString == "F299C342-8A8A-4544-AC42-08C841737B1B" {
+                    if let s = sdata {
+                        device.peripheral.delegate = self
+                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    }
+                }
+            }
+        }
+    }
+
+    @IBAction func clearWiFi(_ sender: Any) {
+
+        // Already isSending? Then bail
+            if self.isSending || self.isClearing {
+            return
+        }
+
+        if (self.cheatTimer.isValid) { self.cheatTimer.fire() }
+
+        self.blinkUpProgressBar.startAnimating()
+
+        // Are we already connected to the device?
+        if !self.connected {
+            // App is not connected to the device, so connect now
+            if let aDevice = self.device {
+                self.isClearing = true
+
+                self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                // Pick up the action at didConnect(), which is called when the
+                // iDevice has connected to the imp
+            }
+        } else {
+            // App is already connected to the peripheral so do BlinkUp
+            clearWiFiStageTwo()
+        }
+    }
+
+    func clearWiFiStageTwo() {
+
+        self.isClearing = false
+        self.isSending = true
+
+        if let aDevice = self.device {
+            // Work through the characteristic list for the service, to match them
+            //  to known UUIDs so we send the correct data to the device
+            for i in 0..<aDevice.characteristics.count {
+                let ch:CBCharacteristic? = aDevice.characteristics[i]
+                if ch != nil {
+                    if ch!.uuid.uuidString == "2BE5DDBA-3286-4D09-A652-F24FAA514AF5" {
+                        if let s = "clear".data(using: String.Encoding.utf8) {
+                            // At the first GATT write (or read) iOS will handle pairing.
+                            // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
+                            // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
+                            NSLog("Writing 'clear WiFi' trigger")
+                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        }
+                    }
+                }
+            }
+        } else {
+            // Clean up the UI
+            self.isSending = false
+            self.blinkUpProgressBar.stopAnimating()
+            self.sendLabel.text = ""
+        }
+
+        // Clean up the UI
+        self.isSending = false
+        self.blinkUpProgressBar.stopAnimating()
+        self.sendLabel.text = ""
+
+        // Since we can't poll the server for this instance (we have no API key), we
+        // just warn the user via an alert to expect the device to connect
+        showAlert("imp WiFi Cleared", "Your imp’s WiFi credentials have been cleared")
+
+        // Clean up in two seconds' time
+        self.cheatTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { (_) in
+            if let aDevice = self.device {
+                self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                self.connected = false
+            }
+        })
     }
 
     @objc @IBAction func showPassword(_ sender: Any) {
 
+        // Show or hide the password characters by flipping this flag
         passwordField.isSecureTextEntry = !passwordField.isSecureTextEntry
     }
 
-    // MARK: Utility Functions
+
+    // MARK: - Utility Functions
 
     func showAlert(_ title: String, _ message: String) {
         let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
@@ -373,26 +530,30 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.present(alert, animated: true, completion: nil)
     }
 
-    // MARK: CBManagerDelegate Functions
+
+    // MARK: - CBManagerDelegate Functions
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
 
         // The app has connected to the peripheral (eg. imp004m)
         // This is the result of calling bluetoothManager.connect()
         // Cancel timeout timer
-        scanTimer.invalidate()
-
-        // Set the connected peripheral instance's delegate to this code
-        peripheral.delegate = self
+        if scanTimer.isValid { scanTimer.invalidate() }
 
         // Update app state
         self.connected = true
 
         // Ask the peripheral for a list of all (hence 'nil') its services
-        if self.blinking {
-            // Re-connecting after starting BlinkUp
+        if self.isSending {
+            // We are are-connecting after calling doBlinkUp()
+            // so proceed to the next step
             blinkupStageTwo()
+        } else if self.isClearing {
+            // We are are-connecting after calling clearWiFi()
+            // so proceed to the next step
+            clearWiFiStageTwo()
         } else {
+            // Making an initial connection to get the WLAN list
             peripheral.discoverServices(nil)
             // Pick up the action at 'peripheral.didDiscoverServices()'
         }
@@ -420,11 +581,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // NOP
     }
 
-    // MARK: CBPeripheral Delegate functions
+
+    // MARK: - CBPeripheral Delegate functions
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
 
-        // The app has discovered services offered by the peripheral (ie. the imp004m).
+        // The app has discovered services offered by the peripheral (ie. the imp)
         // This is the result of calling 'peripheral.discoverServices()'
         if error == nil {
             var got: Bool = false
@@ -443,16 +605,22 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 if !got {
                     // Device is not serving corrrectly, so cancel the connection and warn the user
                     self.bluetoothManager.cancelPeripheralConnection(peripheral)
+                    self.connected = false
+
+                    // Update the UI to inform the user
+                    self.blinkUpProgressBar.stopAnimating()
                     showAlert("Cannot Configure This Device", "This devices is not offering a BlinkUp service")
                 }
             }
         } else {
+            self.bluetoothManager.cancelPeripheralConnection(peripheral)
+            self.connected = false
+
             // Log the error
             NSLog("\(error!.localizedDescription)")
 
             // Update the UI to inform the user
             self.blinkUpProgressBar.stopAnimating()
-            self.connected = false
         }
     }
 
@@ -462,38 +630,41 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // specific service. This is the result of calling 'peripheral.discoverCharacteristics()'
         if error == nil {
             // Save the list of characteristics
-            self.characteristics = service.characteristics
-
-            // Run through the list of peripheral characteristics to see if it contains
-            // the imp004m application's networks list characteristic by looking for the
-            // characteristics's known UUID
-            if let list = self.characteristics {
-                for i in 0..<list.count {
-                    let ch:CBCharacteristic? = list[i]
-                    if ch != nil {
-                        if ch!.uuid.uuidString == "57A9ED95-ADD5-4913-8494-57759B79A46C" {
-                            // The peripheral DOES contain the expected characteristic,
-                            // so read the characteristics value. When it has been read,
-                            // 'peripheral.didUpdateValueFor()' will be called
-                            if let aDevice = self.device { aDevice.peripheral.readValue(for: ch!) }
-                            break
+            if let list = service.characteristics {
+                if let aDevice: Device = self.device {
+                    aDevice.characteristics = list
+                    // Run through the list of peripheral characteristics to see if it contains
+                    // the imp004m application's networks list characteristic by looking for the
+                    // characteristics's known UUID
+                    for i in 0..<aDevice.characteristics.count {
+                        let ch:CBCharacteristic? = aDevice.characteristics[i]
+                        if ch != nil {
+                            if ch!.uuid.uuidString == "57A9ED95-ADD5-4913-8494-57759B79A46C" {
+                                // The peripheral DOES contain the expected characteristic,
+                                // so read the characteristics value. When it has been read,
+                                // 'peripheral.didUpdateValueFor()' will be called
+                                aDevice.peripheral.readValue(for: ch!)
+                                break
+                            }
                         }
                     }
                 }
             }
         } else {
+            self.bluetoothManager.cancelPeripheralConnection(peripheral)
+            self.connected = false
+
             // Log the error
             NSLog("\(error!.localizedDescription)")
 
             // Update the UI to inform the user
             self.blinkUpProgressBar.stopAnimating()
-            self.connected = false
         }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
-        // We have successfully read the imp004m application's networks list characteristic, so use
+        // We have successfully read the imp application's networks list characteristic, so use
         // the value of the characteristic (a comma-separated string of network names) to populate
         // the 'availableNetworks' array and thus the UI's UIPickerView
         if let data = characteristic.value {
@@ -512,15 +683,16 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                         initNetworks()
 
                         // Hide the progress indicator
-                        self.sendLabel.text = "No nearby networks to connect to"
                         self.bluetoothManager.cancelPeripheralConnection(peripheral)
+                        self.connected = false
+                        self.sendLabel.text = "No nearby networks to connect to"
                         self.blinkUpProgressBar.stopAnimating()
                         return
                     }
                 }
 
                 // We have at least one valid network name, so populate the picker
-                availableNetworks.removeAll()
+                self.availableNetworks.removeAll()
 
                 for i in 0..<networks.count {
                     nl = networks[i] as NSString
@@ -544,20 +716,21 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.blinkUpProgressBar.stopAnimating()
     }
 
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
 
         // This will be called when a value is written to the peripheral via GATT
         // The first time a write is made, iOS will manage the pairing. Only if the pairing
         // succeeds will this delegate method be called (because if pairing fails, no value
         // will be written the delegate will not be called).
-
         if error != nil {
             NSLog("Whoops")
-            return;
+        } else {
+            NSLog("Written")
         }
     }
 
-    // MARK: UIPickerView Delegate and Data Source Functions
+
+    // MARK: - UIPickerView Delegate and Data Source Functions
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
 
@@ -596,7 +769,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         return rowView
     }
 
-// MARK: UITextField Delegate Functions
+
+    // MARK: - UITextField Delegate Functions
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
 

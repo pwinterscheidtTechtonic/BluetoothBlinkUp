@@ -44,14 +44,17 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     var devices: [Device] = []
     var ddvc: DeviceDetailViewController!
     var keyEntryController: UIAlertController!
+    var alert: UIAlertController? = nil
     var harvey: String = ""
     var keyWindowUp: Bool = false
     var scanTimer: Timer!
     var scanning: Bool = false
+    var gotBluetooth: Bool = false
 
     // Constants
     let DEVICE_SCAN_TIMEOUT = 15.0
 
+    
     // MARK: - View lifecycle functions
 
     override func viewDidLoad() {
@@ -74,7 +77,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Set up the Navigation Bar with a pro
         self.navigationItem.title = "Devices"
 
-        // Watch for app returning to foreground with ImpDetailViewController active
+        // Watch for app returning to foreground from the ImpDetailViewController
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.viewWillAppear),
                                                name: NSNotification.Name.UIApplicationWillEnterForeground,
@@ -111,32 +114,43 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         } else {
             // There is no saved API key so get one by presenting
             // the key request panel
-            getRawkey()
+            // UPDATE 1/24/18 Make it optional, ie. not run at startup
+            // getRawkey()
         }
+
+        if self.ddvc != nil { self.ddvc = nil }
     }
+
 
     // MARK: - Device scanning functions
 
     @objc func startScan() {
 
-        // Begin scanning if we are not scanning already
-        if !self.scanning {
-            // Clear the current list of discovered devices and redraw the table
-            devices.removeAll()
-            devicesTable.reloadData()
+        if self.gotBluetooth {
+            // Begin scanning if we are not scanning already
+            if !self.scanning {
+                // Clear the current list of discovered devices and redraw the table
+                devices.removeAll()
+                devicesTable.reloadData()
 
-            // Start scanning for the imp004m GATT server by using its key GATT service UUID
-            let s:CBUUID = CBUUID(string: "FADA47BE-C455-48C9-A5F2-AF7CF368D719")
-            self.bluetoothManager.delegate = self
-            self.bluetoothManager.scanForPeripherals(withServices:[s], options:nil)
-            self.scanning = true
+                // Start scanning for the imp004m GATT server by using its key GATT service UUID
+                let s:CBUUID = CBUUID(string: "FADA47BE-C455-48C9-A5F2-AF7CF368D719")
+                self.bluetoothManager.delegate = self
+                self.bluetoothManager.scanForPeripherals(withServices:[s], options:nil)
+                self.scanning = true
 
-            // Set up a timer to cancel the scan automatically after DEVICE_SCAN_TIMEOUT seconds
-            self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.endScanWithAlert), userInfo: nil, repeats: false)
-
+                // Set up a timer to cancel the scan automatically after DEVICE_SCAN_TIMEOUT seconds
+                self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.endScanWithAlert), userInfo: nil, repeats: false)
+            } else {
+                // We're already scanning so just cancel the scan
+                endScan(false)
+            }
         } else {
-            // We're already scanning so just cancel the scan
-            endScan(false)
+            if self.refreshControl!.isRefreshing {
+                self.refreshControl!.endRefreshing()
+                self.devicesTable.reloadData()
+            }
+            showAlert("Bluetooth LE Disabled", "Please ensure the Bluetooth is powered up on your iPhone")
         }
     }
 
@@ -158,11 +172,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.scanning = false
             self.bluetoothManager.stopScan()
 
+            // Warn the user
             if devices.count == 0 && showAnAlert {
                 showAlert("No Bluetooth-enabled imp Devices Found", "")
                 initTable()
             }
 
+            // Hide the refresh control
             self.refreshControl!.endRefreshing()
         }
     }
@@ -170,9 +186,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func initTable() {
         
         // Add an instruction line to the table.
-        // This used deviceID = NO to indicte its type to the app, eg. to prevent
-        // the row being selected. This line will be clear when the user scans
-        // for devices
+        // This used deviceID = NO to indicte its type to the app, eg. to prevent the
+        // row being selected. This line will be clear when the user scans for devices
         let text: Device = Device()
         text.name = "Pull down to search for Bluetooth-enabled imps"
         text.devID = "NO"
@@ -185,11 +200,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // The app is going into the background so cancel any scan taking place
         endScan(false)
 
+        // Remove the API key input window if it's visible
         if keyWindowUp {
             keyEntryController.removeFromParentViewController()
         }
 
-        // And cancel any open connections to devices that we may have
+        // Cancel any open connections to devices that we may have
         if devices.count > 0 {
             for i in 0..<devices.count {
                 let aDevice: Device = devices[i]
@@ -199,6 +215,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         }
     }
+
 
     // MARK: - Utility functions
 
@@ -268,9 +285,11 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     }
 
     func showAlert(_ title: String, _ message: String) {
-        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .`default`, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        self.alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+        self.alert!.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .`default`, handler: nil))
+        self.present(self.alert!, animated: true) {
+            self.alert = nil
+        }
     }
 
     func getDevice(_ peripheral: CBPeripheral) -> Device? {
@@ -286,6 +305,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         return nil
     }
+
 
     // MARK: - Table view data source
 
@@ -333,36 +353,42 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
 
         // Check for an API key - we can't proceed without one
+        // UPDATE 24/1/18 - Don't check for an API key
         if self.harvey.count == 0 {
             // Ask the user to enter a key
-            getRawkey()
-            return
+            // getRawkey()
+            // return
         }
 
-       // Now that a device has been selected, stop any scan currently taking place.
+        // Now that a device has been selected, stop any scan currently taking place.
         // We do this in case the user taps on a device mid-scan
         endScan(false)
 
         // Instantiate the device detail view controller
         if ddvc == nil {
             let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
-            ddvc = storyboard.instantiateViewController(withIdentifier:"devicedetailview") as! DeviceDetailViewController
-            ddvc.bluetoothManager = self.bluetoothManager
-            ddvc.navigationItem.title = aDevice.devID
-            ddvc.harvey = self.harvey
-            ddvc.navigationItem.leftBarButtonItem = UIBarButtonItem.init(title:"Devices",
-                                                                         style:UIBarButtonItemStyle.plain,
-                                                                         target:ddvc,
-                                                                         action:#selector(ddvc.goBack))
-            ddvc.navigationItem.leftBarButtonItem?.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            self.ddvc = storyboard.instantiateViewController(withIdentifier:"devicedetailview") as! DeviceDetailViewController
+            self.ddvc.bluetoothManager = self.bluetoothManager
+            self.ddvc.navigationItem.title = aDevice.devID
+            self.ddvc.harvey = self.harvey
+
+            // Set up the left-hand nav bar button with an icon and text
+            let button = UIButton(type: UIButtonType.system)
+            button.setImage(UIImage(named: "icon_back"), for: UIControlState.normal)
+            button.setTitle("Devices", for: UIControlState.normal)
+            button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            button.sizeToFit()
+            button.addTarget(self.ddvc, action: #selector(self.ddvc.goBack), for: UIControlEvents.touchUpInside)
+            self.ddvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         }
 
         // Set DeviceDetailViewController's current device
-        ddvc.device = aDevice
+        self.ddvc.device = aDevice
 
         // Present the device detail view controller
-        self.navigationController?.pushViewController(ddvc, animated: true)
+        self.navigationController!.pushViewController(self.ddvc, animated: true)
     }
+
 
     // MARK: - CBManagerDelegate Functions
 
@@ -370,7 +396,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // This delegate method is called when the app discovers other Bluetooth devices. Since we are only
         // scanning for devices offering a service with UUID FADA47BE-C455-48C9-A5F2-AF7CF368D719, this should
-        // only be called by the imp004m application
+        // only be called by the device's Squirrel application
 
         let device: Device = Device()
 
@@ -407,20 +433,29 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
 
         // The app has disconnected from a peripheral
-
         if let aDevice: Device = getDevice(peripheral) {
             aDevice.isConnected = false
         }
 
         if (error != nil) {
-            NSLog("\(error!.localizedDescription)")
+            print("\(error!.localizedDescription)")
         }
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
 
-        // We don't need to do anything here, but the function is required
+        // This is called to inform us whether Bluetooth LE is available on the device
+        // If won't available if powered down, or not authorized
+
+        let cbm = central as CBManager
+        if cbm.state != CBManagerState.poweredOn {
+            self.showAlert("Bluetooth LE Disabled", "Please ensure that Bluetooth is powered up on your iPhone")
+            self.gotBluetooth = false
+        } else {
+            self.gotBluetooth = true
+        }
     }
+
 
     // MARK: - CBPeripheral Delegate functions
 
@@ -453,7 +488,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         } else {
             // Log the error
-            NSLog("\(error!.localizedDescription)")
+            print("\(error!.localizedDescription)")
         }
     }
 
@@ -496,7 +531,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         } else {
             // Log the error
-            NSLog("\(error!.localizedDescription)")
+            print("\(error!.localizedDescription)")
         }
     }
 
@@ -538,7 +573,24 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
     }
 
-    // MARK: - Keychain
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
+
+        // This will be called when a value is written to the peripheral via GATT
+        // The first time a write is made, iOS will manage the pairing. Only if the pairing
+        // succeeds will this delegate method be called (because if pairing fails, no value
+        // will be written the delegate will not be called).
+        if error != nil {
+            NSLog("Whoops")
+            return;
+        } else {
+            NSLog("Written")
+
+
+        }
+    }
+
+
+    // MARK: - Keychain Functions
 
     func getHarvey() -> String? {
 
@@ -562,14 +614,14 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             let pw = KeychainItem(service: "com.ei.BluetoothBlinkUp", account: "com.ei.sample.ble", accessGroup: nil)
             try pw.savePassword(key)
         } catch {
-            NSLog("Key save failure")
+            print("Key save failure")
         }
     }
 
     func getRawkey() {
 
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
-        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key", message: "Available to Electric Imp\ncustomers only", preferredStyle: UIAlertControllerStyle.alert)
+        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key", message: "BlinkUp API Keys are available to\nElectric Imp customers only\nLeave the field blank to clear your key", preferredStyle: UIAlertControllerStyle.alert)
         keyEntryController.addTextField(configurationHandler: { (textField) in
             textField.isSecureTextEntry = true
         })
@@ -583,7 +635,18 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     if key.count > 0 {
                         self.harvey = key
                         self.setHarvey(self.harvey)
-                        NSLog("Key saved")
+                        print("Key saved")
+                    } else {
+                        if self.harvey.count > 0 {
+                            let pw = KeychainItem(service: "com.ei.BluetoothBlinkUp", account: "com.ei.sample.ble", accessGroup: nil)
+                            do {
+                                try pw.deleteItem()
+                                self.harvey = ""
+                                print("Key Deleted")
+                            } catch {
+                                print("Key Not Deleted")
+                            }
+                        }
                     }
                 }
             }
