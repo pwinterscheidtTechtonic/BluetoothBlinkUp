@@ -130,8 +130,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             // Begin scanning if we are not scanning already
             if !self.scanning {
                 // Clear the current list of discovered devices and redraw the table
-                devices.removeAll()
-                devicesTable.reloadData()
+                self.devices.removeAll()
+                self.devicesTable.reloadData()
 
                 // Start scanning for the imp004m GATT server by using its key GATT service UUID
                 let s:CBUUID = CBUUID(string: "FADA47BE-C455-48C9-A5F2-AF7CF368D719")
@@ -191,8 +191,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         let text: Device = Device()
         text.name = "Pull down to search for Bluetooth-enabled imps"
         text.devID = "NO"
-        devices.append(text)
-        devicesTable.reloadData()
+        self.devices.append(text)
+        self.devicesTable.reloadData()
     }
 
     @objc func closeUp() {
@@ -412,8 +412,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // Add the discovered device to the table
         device.peripheral = peripheral
-        devices.append(device)
-        devicesTable.reloadData()
+        self.devices.append(device)
+        self.devicesTable.reloadData()
         //self.refreshControl!.endRefreshing()
     }
 
@@ -481,7 +481,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     // Device is not serving the device info
                     if let aDevice: Device = getDevice(peripheral) {
                         aDevice.devID = "Unknown"
-                        devicesTable.reloadData()
+                        self.devicesTable.reloadData()
                         self.bluetoothManager.cancelPeripheralConnection(peripheral)
                     }
                 }
@@ -524,7 +524,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     // Device is not serving the device info ID characteristic
                     if let aDevice: Device = getDevice(peripheral) {
                         aDevice.devID = "Unknown"
-                        devicesTable.reloadData()
+                        self.devicesTable.reloadData()
                         self.bluetoothManager.cancelPeripheralConnection(peripheral)
                     }
                 }
@@ -543,7 +543,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 if let aDevice = getDevice(peripheral) {
                     // Add the device ID to the device record
                     aDevice.devID = String.init(data: data, encoding: String.Encoding.utf8)!
-                    devicesTable.reloadData()
+                    self.devicesTable.reloadData()
 
                     for i in 0..<aDevice.characteristics.count {
                         let ch:CBCharacteristic? = aDevice.characteristics[i]
@@ -564,28 +564,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 if let aDevice = getDevice(peripheral) {
                     // Add the device ID to the device record
                     aDevice.type = String.init(data: data, encoding: String.Encoding.utf8)!
-                    devicesTable.reloadData()
+                    self.devicesTable.reloadData()
 
                     // Disconnect now we have the data
                     self.bluetoothManager.cancelPeripheralConnection(peripheral)
                 }
             }
-        }
-    }
-
-    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor descriptor: CBDescriptor, error: Error?) {
-
-        // This will be called when a value is written to the peripheral via GATT
-        // The first time a write is made, iOS will manage the pairing. Only if the pairing
-        // succeeds will this delegate method be called (because if pairing fails, no value
-        // will be written the delegate will not be called).
-        if error != nil {
-            NSLog("Whoops")
-            return;
-        } else {
-            NSLog("Written")
-
-
         }
     }
 
