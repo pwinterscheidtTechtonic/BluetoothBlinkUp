@@ -37,7 +37,7 @@ import CoreBluetooth
 class Device: NSObject {
 
     // This is a simple class that's use to record the details of a discovered
-    // imp004m-based device. We use a class rather than an enum so that we
+    // imp-based device. We use a class rather than an enum so that we
     // can access it by reference rather than the item itself
 
     var name: String = ""
