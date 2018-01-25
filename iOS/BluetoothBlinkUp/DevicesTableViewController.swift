@@ -414,7 +414,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         device.peripheral = peripheral
         self.devices.append(device)
         self.devicesTable.reloadData()
-        //self.refreshControl!.endRefreshing()
+        self.refreshControl!.endRefreshing()
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -438,7 +438,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
 
         if (error != nil) {
-            print("\(error!.localizedDescription)")
+            NSLog("\(error!.localizedDescription)")
         }
     }
 
@@ -488,7 +488,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         } else {
             // Log the error
-            print("\(error!.localizedDescription)")
+            NSLog("\(error!.localizedDescription)")
         }
     }
 
@@ -531,7 +531,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         } else {
             // Log the error
-            print("\(error!.localizedDescription)")
+            NSLog("\(error!.localizedDescription)")
         }
     }
 
@@ -598,7 +598,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             let pw = KeychainItem(service: "com.ei.BluetoothBlinkUp", account: "com.ei.sample.ble", accessGroup: nil)
             try pw.savePassword(key)
         } catch {
-            print("Key save failure")
+            NSLog("Key save failure")
         }
     }
 
@@ -619,16 +619,16 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     if key.count > 0 {
                         self.harvey = key
                         self.setHarvey(self.harvey)
-                        print("Key saved")
+                        NSLog("Key saved")
                     } else {
                         if self.harvey.count > 0 {
                             let pw = KeychainItem(service: "com.ei.BluetoothBlinkUp", account: "com.ei.sample.ble", accessGroup: nil)
                             do {
                                 try pw.deleteItem()
                                 self.harvey = ""
-                                print("Key Deleted")
+                                NSLog("Key Deleted")
                             } catch {
-                                print("Key Not Deleted")
+                                NSLog("Key Deleted")
                             }
                         }
                     }
