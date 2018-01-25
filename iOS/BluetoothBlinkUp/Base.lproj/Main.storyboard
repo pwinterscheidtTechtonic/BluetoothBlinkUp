@@ -21,20 +21,11 @@
                             <userLayoutGuide location="44" affinity="minY"/>
                         </userGuides>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No enrollment data sent" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cpk-ou-Dx2">
-                                <rect key="frame" x="16" y="626" width="343" height="21"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="21" id="2cC-C9-NSS"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zpZ-nq-YsQ">
-                                <rect key="frame" x="16" y="544" width="343" height="33"/>
+                                <rect key="frame" x="16" y="573" width="343" height="33"/>
                                 <color key="backgroundColor" red="0.049625284970000003" green="0.66577929260000002" blue="0.70767682789999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="33" id="TgU-wn-EIH"/>
+                                    <constraint firstAttribute="height" constant="33" id="yla-od-mMz"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <state key="normal" title="Send BlinkUp">
@@ -45,13 +36,13 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qUc-hn-1G2">
-                                <rect key="frame" x="16" y="585" width="343" height="33"/>
+                                <rect key="frame" x="16" y="614" width="343" height="33"/>
                                 <color key="backgroundColor" red="0.049625284970000003" green="0.66577929260000002" blue="0.70767682789999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="33" id="p7g-2r-xaS"/>
+                                    <constraint firstAttribute="height" constant="33" id="rzE-CM-AFB"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
-                                <state key="normal" title="Clear WiFi">
+                                <state key="normal" title="Clear WiFi Settings">
                                     <color key="titleColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
                                 <connections>
@@ -90,7 +81,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose a wireless network:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GXg-oD-etg">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select a wireless network:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GXg-oD-etg">
                                 <rect key="frame" x="16" y="60" width="343" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="dWZ-iP-Owd"/>
@@ -102,35 +93,44 @@
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="0ca-9M-qnG">
                                 <rect key="frame" x="169" y="499" width="37" height="37"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="37" id="Y85-XE-XiA"/>
-                                    <constraint firstAttribute="width" constant="37" id="hlr-Oi-cI0"/>
+                                    <constraint firstAttribute="height" constant="37" id="Ut5-iO-Zxh"/>
+                                    <constraint firstAttribute="width" constant="37" id="vnT-Xg-osH"/>
                                 </constraints>
                                 <color key="color" red="0.049625284970000003" green="0.66577929260000002" blue="0.70767682789999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No enrollment data sent" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cpk-ou-Dx2">
+                                <rect key="frame" x="16" y="544" width="343" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="Hmi-rQ-NJf"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="cpk-ou-Dx2" firstAttribute="top" secondItem="qUc-hn-1G2" secondAttribute="bottom" constant="8" id="2ZS-xR-lf1"/>
-                            <constraint firstItem="qUc-hn-1G2" firstAttribute="top" secondItem="zpZ-nq-YsQ" secondAttribute="bottom" constant="8" id="7X5-Wc-h9A"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="cpk-ou-Dx2" secondAttribute="trailing" constant="16" id="7UD-nP-2q4"/>
                             <constraint firstItem="osv-Tc-jAm" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="8Jt-FG-24F"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qUc-hn-1G2" secondAttribute="trailing" constant="16" id="C16-Xn-q4d"/>
+                            <constraint firstItem="0ca-9M-qnG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="9s5-l6-INo"/>
                             <constraint firstItem="gSF-BA-JSo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="FeS-E2-jrI"/>
                             <constraint firstItem="gSF-BA-JSo" firstAttribute="top" secondItem="osv-Tc-jAm" secondAttribute="bottom" constant="16" id="GFL-35-5wX"/>
-                            <constraint firstItem="zpZ-nq-YsQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="GPs-aa-MOc"/>
+                            <constraint firstItem="zpZ-nq-YsQ" firstAttribute="top" secondItem="cpk-ou-Dx2" secondAttribute="bottom" constant="8" id="GeT-lB-EBD"/>
                             <constraint firstItem="yMf-xm-NQb" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="JRD-LR-DL5"/>
                             <constraint firstItem="GXg-oD-etg" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="40" id="K20-ni-5A8"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="yMf-xm-NQb" secondAttribute="trailing" constant="16" id="KRo-n5-O4d"/>
+                            <constraint firstItem="cpk-ou-Dx2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="NFx-g6-MWc"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="GXg-oD-etg" secondAttribute="trailing" constant="16" id="OdE-ct-t3r"/>
-                            <constraint firstItem="zpZ-nq-YsQ" firstAttribute="top" secondItem="0ca-9M-qnG" secondAttribute="bottom" constant="8" id="UVt-bb-ldC"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="cpk-ou-Dx2" secondAttribute="bottom" constant="20" id="Wix-gQ-gOr"/>
+                            <constraint firstItem="qUc-hn-1G2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="QCp-Ay-rxG"/>
+                            <constraint firstItem="qUc-hn-1G2" firstAttribute="top" secondItem="zpZ-nq-YsQ" secondAttribute="bottom" constant="8" id="Qpa-BK-Xyl"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="qUc-hn-1G2" secondAttribute="bottom" constant="20" id="StT-eN-Ita"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zpZ-nq-YsQ" secondAttribute="trailing" constant="16" id="TbO-EK-GGa"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="qUc-hn-1G2" secondAttribute="trailing" constant="16" id="UJC-6C-fKr"/>
                             <constraint firstItem="osv-Tc-jAm" firstAttribute="top" secondItem="GXg-oD-etg" secondAttribute="bottom" constant="8" id="ZHn-j9-wgW"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zpZ-nq-YsQ" secondAttribute="trailing" constant="16" id="afb-Zt-uB0"/>
+                            <constraint firstItem="cpk-ou-Dx2" firstAttribute="top" secondItem="0ca-9M-qnG" secondAttribute="bottom" constant="8" id="dEK-U6-max"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="gSF-BA-JSo" secondAttribute="trailing" constant="16" id="dgU-kf-n3a"/>
-                            <constraint firstItem="0ca-9M-qnG" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="h5S-G3-AzH"/>
-                            <constraint firstItem="qUc-hn-1G2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="hXD-hT-fbJ"/>
-                            <constraint firstItem="cpk-ou-Dx2" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="k5K-yW-R6G"/>
+                            <constraint firstItem="zpZ-nq-YsQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="jSR-E6-SVW"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="osv-Tc-jAm" secondAttribute="trailing" constant="16" id="oGD-az-m8Y"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="cpk-ou-Dx2" secondAttribute="trailing" constant="16" id="ssi-Er-DZg"/>
                             <constraint firstItem="yMf-xm-NQb" firstAttribute="top" secondItem="gSF-BA-JSo" secondAttribute="bottom" constant="10" id="usE-dV-QvP"/>
                             <constraint firstItem="GXg-oD-etg" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="v9i-bR-3cU"/>
                         </constraints>
