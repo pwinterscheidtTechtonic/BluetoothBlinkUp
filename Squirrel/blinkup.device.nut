@@ -187,7 +187,7 @@ class BTLEBlinkUp {
         chrx.write <- function(conn, v) {
             _blinkup.token = v.tostring();
             _blinkup.updated = true;
-            server.log("Token set");
+            server.log("Enrolment Token set");
             return 0x0000;
         }.bindenv(this);
         service.chars.append(chrx);
@@ -197,7 +197,7 @@ class BTLEBlinkUp {
         chrx.uuid <- _uuids.blinkup_trigger_uuid;
         chrx.write <- function(conn, v) {
             if (_blinkup.updated) {
-                server.log("Activation triggered");
+                server.log("Device Activation triggered");
                 _blinkup.update();
                 return 0x0000;
             } else {
@@ -210,8 +210,8 @@ class BTLEBlinkUp {
         chrx = {};
         chrx.uuid <- _uuids.wifi_clear_trigger_uuid;
         chrx.write <- function(conn, v) {
-            server.log("WiFi clearance triggered (" + v + ") by " + conn.address());
-            imp.wakeup(1.0, _blinkup.clear);
+            server.log("Device WiFi clearance triggered");
+            _blinkup.clear();
             return 0x0000;
         }.bindenv(this);
         service.chars.append(chrx);
@@ -224,7 +224,7 @@ class BTLEBlinkUp {
             // Networks are stored as "ssid[newline]open/secure[newline][newline]"
             // NOTE set _blinking to true so we don't asynchronously update the list
             // of networks while also using it here
-            server.log("Sending WLAN list");
+            server.log("Sending WLAN list to app");
             local ns = "";
             _blinking = true;
             for (local i = 0 ; i < _networks.len() ; i++) {
@@ -368,7 +368,7 @@ class BTLEBlinkUp {
             if (_incoming != null) _incoming.close();
             _blinking = true;
 
-            // Disconnect
+            // Disconnect from the server
             server.flush(10);
             server.disconnect();
 
@@ -383,24 +383,18 @@ class BTLEBlinkUp {
 
             // Restart the connection to the server
             server.connect(function(r) {
-                if (r == SERVER_CONNECTED) server.log("Back up after WiFi change");
-            });
+                if (r == SERVER_CONNECTED) {
+                    server.log("Device reconnected after WiFi change");
+                }
+            }, 30);
         }.bindenv(this);
         _blinkup.clear <- function() {
             // Close the existing connection to the mobile app
             if (_incoming != null) _incoming.close();
 
-            // Disconnect
-            server.flush(10);
-            server.disconnect();
-
-            // Clear the WiFi settings ONLY
+            // Clear the WiFi settings ONLY - this will affect the next
+            // disconnection/connection cycle, not the current connection
             imp.clearconfiguration(CONFIG_WIFI);
-
-            // Restart the connection to the server
-            server.connect(function(r) {
-                if (r == SERVER_CONNECTED) server.log("Back up after WiFi change");
-            });
         }.bindenv(this);
 
         // We need to wait 0.01s for the BLE radio to boot, so see how
