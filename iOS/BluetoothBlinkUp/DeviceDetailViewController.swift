@@ -57,6 +57,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     
     // Constants
     let DEVICE_SCAN_TIMEOUT = 5.0
+    let CANCEL_TIME = 3.0
     
 
     // MARK: - View Lifecycle Functions
@@ -193,7 +194,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             return
         }
 
-        if (self.cheatTimer.isValid) { self.cheatTimer.fire() }
+        if (self.cheatTimer != nil && self.cheatTimer.isValid) {
+            self.cheatTimer.fire()
+        }
 
         // Do we have the data we need from the UI, ie. a password for a locked network?
         let index = self.wifiPicker.selectedRow(inComponent: 0)
@@ -247,22 +250,23 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                     // Transmit the WiFi data
                     sendWiFiData(aDevice)
 
-                    // Clean up the UI
-                    self.sendLabel.text = ""
-                    self.isSending = false
-                    self.blinkUpProgressBar.stopAnimating()
-
                     // Since we can't poll the server for this instance (we have no API key), we
                     // just warn the user via an alert to expect the device to connect
                     showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
 
-                    // Clean up in two seconds' time
-                    self.cheatTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { (_) in
+                    // Close the connection in CANCEL_TYPE seconds' time
+                    self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
                         if let aDevice = self.device {
                             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
                             self.connected = false
+                            NSLog("Cancelling connection")
                         }
                     })
+                    
+                    // Clean up the UI
+                    self.sendLabel.text = ""
+                    self.isSending = false
+                    self.blinkUpProgressBar.stopAnimating()
                 }
             } else {
                 // The user HAS input a BlinkUp API key, so perform a full activation
@@ -352,6 +356,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // to update its setttings — use sendWiFiData() for that
         let tdata:Data? = config.token.data(using: String.Encoding.utf8)
         let pdata:Data? = config.planId!.data(using: String.Encoding.utf8)
+        NSLog("Sending token (\(config.token)) and plan ID (\(config.planId!))")
 
         // Work through the characteristic list for the service, to match them
         // to known UUIDs so we send the correct data to the device
@@ -366,6 +371,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                         // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
                         // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        NSLog("Writing enrol token characteristic \(ch!.uuid.uuidString)")
                     }
                     break
                 }
@@ -379,6 +385,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 if ch!.uuid.uuidString == "A90AB0DC-7B5C-439A-9AB5-2107E0BD816E" {
                     if let s = pdata {
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        NSLog("Writing plan ID characteristic \(ch!.uuid.uuidString)")
                     }
                     break
                 }
@@ -395,7 +402,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         let network = self.availableNetworks[index]
         let sdata:Data? = network[0].data(using: String.Encoding.utf8)
         let pdata:Data? = self.passwordField.text!.data(using: String.Encoding.utf8)
-
+        NSLog("Sending SSID (\(network[0])) and password (\(self.passwordField.text!))")
+        
         // Work through the characteristic list for the service, to match them
         //  to known UUIDs so we send the correct data to the device
         for i in 0..<device.characteristics.count {
@@ -407,8 +415,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                         // At the first GATT write (or read) iOS will handle pairing.
                         // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
                         // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
-                        device.peripheral.delegate = self
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        NSLog("Writing SSID characteristic \(ch!.uuid.uuidString)")
                     }
                 }
             }
@@ -420,8 +428,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             if ch != nil {
                 if ch!.uuid.uuidString == "ED694AB9-4756-4528-AA3A-799A4FD11117" {
                     if let s = pdata {
-                        device.peripheral.delegate = self
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        NSLog("Writing password characteristic \(ch!.uuid.uuidString)")
                     }
                 }
             }
@@ -433,8 +441,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             if ch != nil {
                 if ch!.uuid.uuidString == "F299C342-8A8A-4544-AC42-08C841737B1B" {
                     if let s = sdata {
-                        device.peripheral.delegate = self
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        NSLog("Writing 'set network' trigger characteristic \(ch!.uuid.uuidString)")
                     }
                 }
             }
@@ -448,7 +456,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             return
         }
 
-        if (self.cheatTimer.isValid) { self.cheatTimer.fire() }
+        if (self.cheatTimer != nil && self.cheatTimer.isValid) {
+            self.cheatTimer.fire()
+        }
 
         self.blinkUpProgressBar.startAnimating()
 
@@ -484,35 +494,31 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             // At the first GATT write (or read) iOS will handle pairing.
                             // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
                             // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
-                            NSLog("Writing 'clear WiFi' trigger")
+                            NSLog("Writing 'Clear WiFi' trigger")
                             aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                            
+                            // Since we can't poll the server for this instance (we have no API key), we
+                            // just warn the user via an alert to expect the device to connect
+                            showAlert("imp WiFi Cleared", "Your imp’s WiFi credentials have been cleared")
+                            
+                            // Close the connection in CANCEL_TYPE seconds' time
+                            self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
+                                if let aDevice = self.device {
+                                    self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                                    self.connected = false
+                                    NSLog("Cancelling connection")
+                                }
+                            })
                         }
                     }
                 }
             }
-        } else {
-            // Clean up the UI
-            self.isSending = false
-            self.blinkUpProgressBar.stopAnimating()
-            self.sendLabel.text = ""
         }
 
         // Clean up the UI
         self.isSending = false
         self.blinkUpProgressBar.stopAnimating()
         self.sendLabel.text = ""
-
-        // Since we can't poll the server for this instance (we have no API key), we
-        // just warn the user via an alert to expect the device to connect
-        showAlert("imp WiFi Cleared", "Your imp’s WiFi credentials have been cleared")
-
-        // Clean up in two seconds' time
-        self.cheatTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false, block: { (_) in
-            if let aDevice = self.device {
-                self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
-                self.connected = false
-            }
-        })
     }
 
     @objc @IBAction func showPassword(_ sender: Any) {
@@ -574,6 +580,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         if (error != nil) {
             NSLog("\(error!.localizedDescription)")
+        } else {
+            NSLog("didDisconnect() called")
         }
     }
 
@@ -725,7 +733,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         if error != nil {
             NSLog("Whoops")
         } else {
-            NSLog("Written")
+            NSLog("didDisconnect() called")
         }
     }
 
