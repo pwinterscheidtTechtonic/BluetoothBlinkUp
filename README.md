@@ -34,6 +34,8 @@ Finally, tap ‘Send BlinkUp’ to transmit the WiFi credentials to the device. 
 
 Optionally, tap ‘Clear WiFi Settings’ to erase your device’s WiFi credentials. It is not necessary to clear WiFi settings before setting them, but this feature is included here to demonstrate the range of device configuration features you can implement using Bluetooth.
 
+<p align="center"><img src="images/04.png" width="375" style="border: 1px solid #DDDDDD" >&nbsp;&nbsp;<img src="images/05.jpg" width="375" style="border: 1px solid #DDDDDD"></p>
+
 ## iOS Bluetooth Attribute Caching ##
 
 By default, iOS caches the attribute information it discovers from devices, as does Android. This ensures that future scans need not use the radio, conserving power. However, it also means if you change your Squirrel app’s served attributes during development, they will not be detected by the app.
