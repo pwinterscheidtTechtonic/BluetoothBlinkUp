@@ -605,9 +605,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func getRawkey() {
 
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
-        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key", message: "BlinkUp API Keys are available to\nElectric Imp customers only\nLeave the field blank to clear your key", preferredStyle: UIAlertControllerStyle.alert)
+        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key", message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.", preferredStyle: UIAlertControllerStyle.alert)
         keyEntryController.addTextField(configurationHandler: { (textField) in
             textField.isSecureTextEntry = true
+            textField.placeholder = "BlinkUp API key"
         })
 
         keyEntryController.addAction(UIAlertAction.init(title: "Submit", style: UIAlertActionStyle.default, handler: { (alertAction) in

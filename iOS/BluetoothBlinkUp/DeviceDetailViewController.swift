@@ -340,7 +340,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                     case .error(let error):
                         // Could not create the BUConfigID - maybe the API is wroing/invalid?
                         NSLog("%@", error.description)
-                        self.showAlert("BlinkUp Failed", "Is your API Key correct? Please re-enter or clear it via the main Devices list\n(Actions > Enter API Key)")
+                        self.showAlert("BlinkUp Could Not Proceed", "Your BlinkUp API Key is not correct.\nPlease re-enter or clear it via the main Devices list on the previous screen (Actions > Enter API Key). An API key is only required for new device enrollment — updating WiFi details on an enrolled device does not require a BlinkUp API key.")
                         self.blinkUpProgressBar.stopAnimating()
                         self.isSending = false
                     }
