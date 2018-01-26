@@ -42,6 +42,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         // Set window's standard control tint colour
         self.window!.tintColor = UIColor.init(red: 0.03, green: 0.66, blue: 0.66, alpha: 1.0)
+        let defaults: UserDefaults = UserDefaults.standard
+        defaults.set(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String, forKey: "com.bps.bleblinkup.app.version")
+        defaults.set(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String, forKey: "com.bps.bleblinkup.app.build")
         return true
     }
 
