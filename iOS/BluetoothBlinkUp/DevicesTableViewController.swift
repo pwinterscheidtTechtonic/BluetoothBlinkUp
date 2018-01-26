@@ -140,7 +140,11 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 self.scanning = true
 
                 // Set up a timer to cancel the scan automatically after DEVICE_SCAN_TIMEOUT seconds
-                self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT, target: self, selector: #selector(self.endScanWithAlert), userInfo: nil, repeats: false)
+                self.scanTimer = Timer.scheduledTimer(timeInterval: self.DEVICE_SCAN_TIMEOUT,
+                                                      target: self,
+                                                      selector: #selector(self.endScanWithAlert),
+                                                      userInfo: nil,
+                                                      repeats: false)
             } else {
                 // We're already scanning so just cancel the scan
                 endScan(false)
@@ -414,7 +418,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         device.peripheral = peripheral
         self.devices.append(device)
         self.devicesTable.reloadData()
-        self.refreshControl!.endRefreshing()
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
