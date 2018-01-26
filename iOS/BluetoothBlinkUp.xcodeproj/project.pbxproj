@@ -83,8 +83,8 @@
 				3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */,
 				3B232B931FE2980F0004D87E /* Main.storyboard */,
 				3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */,
-				3B1DC725201B768200369C00 /* Settings.bundle */,
 				3B232B961FE2980F0004D87E /* Assets.xcassets */,
+				3B1DC725201B768200369C00 /* Settings.bundle */,
 				3B232B9B1FE2980F0004D87E /* Info.plist */,
 			);
 			path = BluetoothBlinkUp;
