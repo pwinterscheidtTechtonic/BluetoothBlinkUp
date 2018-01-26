@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B1DC726201B768200369C00 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3B1DC725201B768200369C00 /* Settings.bundle */; };
 		3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B8F1FE2980F0004D87E /* AppDelegate.swift */; };
 		3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */; };
 		3B232B951FE2980F0004D87E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3B232B931FE2980F0004D87E /* Main.storyboard */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B1DC725201B768200369C00 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothBlinkUp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B232B8F1FE2980F0004D87E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailViewController.swift; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */,
 				3B232B931FE2980F0004D87E /* Main.storyboard */,
 				3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */,
+				3B1DC725201B768200369C00 /* Settings.bundle */,
 				3B232B961FE2980F0004D87E /* Assets.xcassets */,
 				3B232B9B1FE2980F0004D87E /* Info.plist */,
 			);
@@ -173,6 +176,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B1DC726201B768200369C00 /* Settings.bundle in Resources */,
 				3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */,
 				3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */,
 				3B232B951FE2980F0004D87E /* Main.storyboard in Resources */,
