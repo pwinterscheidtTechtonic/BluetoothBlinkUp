@@ -227,7 +227,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             }
         } else {
             // App is already connected to the peripheral so do BlinkUp
-            self.isSending = true
             blinkupStageTwo()
         }
     }
@@ -238,6 +237,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // You will need to be an Electric Imp customer with a BlinkUp API Key to make this work
         // If no API key is known to the app, it will just transmit WiFi data
 
+        self.isSending = true
+        
         // NOTE The progress indicator is already active at this point
         if self.connected {
             // We're good to proceed so begin BlinkUp
@@ -339,8 +340,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                     case .error(let error):
                         // Could not create the BUConfigID - maybe the API is wroing/invalid?
                         NSLog("%@", error.description)
-                        self.showAlert("BlinkUp Failed", "Is your API Key correct? Please re-enter it via the Devices list\n(Actions > Enter API Key)")
+                        self.showAlert("BlinkUp Failed", "Is your API Key correct? Please re-enter or clear it via the Devices list\n(Actions > Enter API Key)")
                         self.blinkUpProgressBar.stopAnimating()
+                        self.isSending = true
                     }
                 }
             }
