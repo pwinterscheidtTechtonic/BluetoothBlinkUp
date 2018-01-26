@@ -123,7 +123,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     @objc func appWillEnterForeground() {
 
         // App is about to come back into view after the user previously
-        // switched to a different app, so reset the UI - unless we're isSending
+        // switched to a different app, so reset the UI - unless we're sending
         if !self.isSending {
             if self.connected {
                 if let aDevice: Device = self.device {
@@ -189,8 +189,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
     @IBAction func doBlinkup(_ sender: Any) {
 
-        // Already isSending? Then baiul
-        if self.isSending {
+        // Already sending or connecting in order to clear? Then bail
+        if self.isSending || self.isClearing {
             return
         }
 
@@ -347,6 +347,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 }
             }
         } else {
+            // Should be connected at this point, but for some reason we're not
+            // Post a warning to the user
             showAlert("Connect to a Device", "You must be connected to an imp-enabled device with Bluetooth in order to perform BlinkUp. Return to the Device List and re-select the device")
         }
     }
@@ -453,7 +455,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
     @IBAction func clearWiFi(_ sender: Any) {
 
-        // Already isSending? Then bail
+        // Already sending or connecting in order to clear? Then bail
             if self.isSending || self.isClearing {
             return
         }
@@ -546,18 +548,18 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // The app has connected to the peripheral (eg. imp004m)
         // This is the result of calling bluetoothManager.connect()
         // Cancel timeout timer
-        if scanTimer.isValid { scanTimer.invalidate() }
+        if self.scanTimer != nil && self.scanTimer.isValid { self.scanTimer.invalidate() }
 
         // Update app state
         self.connected = true
 
         // Ask the peripheral for a list of all (hence 'nil') its services
         if self.isSending {
-            // We are are-connecting after calling doBlinkUp()
+            // We are are connecting after calling doBlinkUp()
             // so proceed to the next step
             blinkupStageTwo()
         } else if self.isClearing {
-            // We are are-connecting after calling clearWiFi()
+            // We are are connecting after calling clearWiFi()
             // so proceed to the next step
             clearWiFiStageTwo()
         } else {
@@ -570,20 +572,26 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     func centralManager(_ central: CBCentralManager, didFailToConnect: CBPeripheral, error: Error?) {
 
         self.connected = false
+        var deviceName: String = "Unknown"
+        if let d = didFailToConnect.name { deviceName = d }
 
         if (error != nil) {
-            NSLog("\(error!.localizedDescription)")
+            NSLog("\(error!.localizedDescription) for device \(deviceName)")
+        } else {
+            NSLog("didFailToConnect() called for device \(deviceName)")
         }
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnect: CBPeripheral, error: Error?) {
 
         self.connected = false
+        var deviceName: String = "Unknown"
+        if let d = didDisconnect.name { deviceName = d }
 
         if (error != nil) {
-            NSLog("\(error!.localizedDescription)")
+            NSLog("\(error!.localizedDescription) for device \(deviceName)")
         } else {
-            NSLog("didDisconnect() called")
+            NSLog("didDisconnect() called for device \(deviceName)")
         }
     }
 
@@ -625,9 +633,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         } else {
             self.bluetoothManager.cancelPeripheralConnection(peripheral)
             self.connected = false
+            
+            var deviceName: String = "Unknown"
+            if let d = peripheral.name { deviceName = d }
 
             // Log the error
-            NSLog("\(error!.localizedDescription)")
+            NSLog("\(error!.localizedDescription) for device \(deviceName)")
 
             // Update the UI to inform the user
             self.blinkUpProgressBar.stopAnimating()
@@ -644,7 +655,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 if let aDevice: Device = self.device {
                     aDevice.characteristics = list
                     // Run through the list of peripheral characteristics to see if it contains
-                    // the imp004m application's networks list characteristic by looking for the
+                    // the imp application's networks list characteristic by looking for the
                     // characteristics's known UUID
                     for i in 0..<aDevice.characteristics.count {
                         let ch:CBCharacteristic? = aDevice.characteristics[i]
@@ -677,53 +688,58 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // We have successfully read the imp application's networks list characteristic, so use
         // the value of the characteristic (a comma-separated string of network names) to populate
         // the 'availableNetworks' array and thus the UI's UIPickerView
-        if let data = characteristic.value {
-            let networkList:String? = String.init(data: data, encoding: String.Encoding.utf8)
-            if networkList != nil {
-                // Convert to NSString from Swift's String so we can create an
-                // array from the comma-separated network names in the string
-                var nl: NSString = networkList! as NSString
-                let networks = nl.components(separatedBy: "\n\n")
+        if characteristic.uuid.uuidString == "57A9ED95-ADD5-4913-8494-57759B79A46C" {
+            if let data = characteristic.value {
+                let networkList:String? = String.init(data: data, encoding: String.Encoding.utf8)
+                if networkList != nil {
+                    // Convert to NSString from Swift's String so we can create an
+                    // array from the comma-separated network names in the string
+                    var nl: NSString = networkList! as NSString
+                    let networks = nl.components(separatedBy: "\n\n")
 
-                // Is there only one nearby network? Then check that it is not the
-                // imp004m application signalling NO nearby networks
-                if networks.count == 1 {
-                    if networks[0] == "!no_local_networks!" || networks[0] == "" {
-                        // Reset 'availableNetworks' and the UIPickerView
-                        initNetworks()
+                    // Is there only one nearby network? Then check that it is not the
+                    // imp004m application signalling NO nearby networks
+                    if networks.count == 1 {
+                        if networks[0] == "!no_local_networks!" || networks[0] == "" {
+                            // Reset 'availableNetworks' and the UIPickerView
+                            initNetworks()
 
-                        // Hide the progress indicator
-                        self.bluetoothManager.cancelPeripheralConnection(peripheral)
-                        self.connected = false
-                        self.sendLabel.text = "No nearby networks to connect to"
-                        self.blinkUpProgressBar.stopAnimating()
-                        return
+                            // Hide the progress indicator
+                            self.bluetoothManager.cancelPeripheralConnection(peripheral)
+                            self.connected = false
+                            self.sendLabel.text = "No nearby networks to connect to"
+                            self.blinkUpProgressBar.stopAnimating()
+                            return
+                        }
                     }
+
+                    // We have at least one valid network name, so populate the picker
+                    self.availableNetworks.removeAll()
+
+                    for i in 0..<networks.count {
+                        nl = networks[i] as NSString
+                        let parts = nl.components(separatedBy: "\n")
+                        var network: [String] = []
+                        network.append(parts[0].isEmpty ? "[Hidden]" : parts[0])
+                        network.append(parts[1])
+                        self.availableNetworks.append(network)
+                    }
+
+                    // Update the UIPickerView
+                    self.wifiPicker.reloadAllComponents()
+                    self.wifiPicker.isUserInteractionEnabled = true
+                    wifiPicker.alpha = 1
                 }
-
-                // We have at least one valid network name, so populate the picker
-                self.availableNetworks.removeAll()
-
-                for i in 0..<networks.count {
-                    nl = networks[i] as NSString
-                    let parts = nl.components(separatedBy: "\n")
-                    var network: [String] = []
-                    network.append(parts[0].isEmpty ? "[Hidden]" : parts[0])
-                    network.append(parts[1])
-                    self.availableNetworks.append(network)
-                }
-
-                // Update the UIPickerView
-                self.wifiPicker.reloadAllComponents()
-                self.wifiPicker.isUserInteractionEnabled = true
-                wifiPicker.alpha = 1
             }
+            
+            // Hide the progress indicator
+            self.bluetoothManager.cancelPeripheralConnection(peripheral)
+            self.connected = false
+            self.blinkUpProgressBar.stopAnimating()
         }
-
-        // Hide the progress indicator
-        self.bluetoothManager.cancelPeripheralConnection(peripheral)
-        self.connected = false
-        self.blinkUpProgressBar.stopAnimating()
+        else {
+            NSLog("didUpdateValueFor() called for characteristic \(characteristic.uuid.uuidString)")
+        }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
@@ -733,9 +749,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // succeeds will this delegate method be called (because if pairing fails, no value
         // will be written the delegate will not be called).
         if error != nil {
-            NSLog("Whoops")
+            NSLog("Whoops - did not write characteristic \(characteristic.uuid.uuidString)")
         } else {
-            NSLog("didDisconnect() called")
+            NSLog("didDisconnect() called for characteristic \(characteristic.uuid.uuidString)")
         }
     }
 
