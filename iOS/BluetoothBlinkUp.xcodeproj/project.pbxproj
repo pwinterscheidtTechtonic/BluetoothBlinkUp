@@ -17,7 +17,6 @@
 		3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAA1FE2A1910004D87E /* BUConfigId.swift */; };
 		3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */; };
 		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
-		3B919A051FEC3F2800997BC8 /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B919A021FEC3F2200997BC8 /* BlinkUp.framework */; };
 		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
 		3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */; };
 /* End PBXBuildFile section */
@@ -35,8 +34,6 @@
 		3B232BAA1FE2A1910004D87E /* BUConfigId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUConfigId.swift; path = BlinkUpSwiftExtensions/BUConfigId.swift; sourceTree = "<group>"; };
 		3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUDevicePoller.swift; path = BlinkUpSwiftExtensions/BUDevicePoller.swift; sourceTree = "<group>"; };
 		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
-		3B919A021FEC3F2200997BC8 /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BlinkUp.framework; sourceTree = "<group>"; };
-		3B919A041FEC3F2200997BC8 /* BlinkUp.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BlinkUp.bundle; sourceTree = "<group>"; };
 		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItem.swift; sourceTree = "<group>"; };
 		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -47,7 +44,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */,
-				3B919A051FEC3F2800997BC8 /* BlinkUp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,29 +89,11 @@
 		3B232BA71FE298980004D87E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3B919A011FEC3F2200997BC8 /* BlinkUp.embeddedframework */,
 				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
 			path = /Users/smitty/Documents/GitHub/BluetoothBlinkUp/iOS/Frameworks;
 			sourceTree = "<absolute>";
-		};
-		3B919A011FEC3F2200997BC8 /* BlinkUp.embeddedframework */ = {
-			isa = PBXGroup;
-			children = (
-				3B919A021FEC3F2200997BC8 /* BlinkUp.framework */,
-				3B919A031FEC3F2200997BC8 /* Resources */,
-			);
-			path = BlinkUp.embeddedframework;
-			sourceTree = "<group>";
-		};
-		3B919A031FEC3F2200997BC8 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				3B919A041FEC3F2200997BC8 /* BlinkUp.bundle */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
