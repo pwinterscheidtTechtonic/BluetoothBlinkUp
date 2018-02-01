@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+@class BUPinningDescription;
 
 /*!
  *  Enable extra features
@@ -55,39 +56,43 @@
  *  you must provide your feature access key.
  *
  *  Note: This feature must be enabled with a FeatureCode
+ *  Note: This feature must be be set before making any other BlinkUp Calls
  *
  *  @return Nil if not set or the override base URL string
  */
 + (NSString *_Nullable)privateCloudHost;
 
 /*!
- *  @brief  The common name of the anchoring certificate for the privateCloudHost
+ *  @brief  SSL Pinning Descriptions for server communication
  *
  *  When connecting to the server, the API will validate that the anchoring
- *  certificate (the root) has a common name that matches this string in order
- *  to provide an extra layer of security. If the value is nil, the anchor
- *  certificate will not be checked.
+ *  certificate (the root) has a proper hostname and SPKI data.
+ *  The SSL Pinning is done in order to provide an extra layer of security.
+ *  If the value is nil, pinning will be turned off.
  *
  *  Note: This feature must be enabled with a FeatureCode
+ *  Note: This feature must be be set before making any other BlinkUp Calls
  *
  *  @return Nil if any cert is allowed, or the value that must match the cert
  */
-+ (NSString *_Nullable)anchorCertCN;
++ (NSArray<BUPinningDescription *> *_Nullable) sslPinningDescriptions;
 
 /*!
  *  @brief  Set a custom cloud server and the server's anchor certificate name
  *
  *  If your device is connecting to a private cloud, you can set the host of
- *  your private cloud. Setting the CN of the anchor certificate adds an
- *  additional layer of security to the API calls. If the privateCloudHost is
- *  nil, the default server will be used. If the anchorCertCN is nil, any
- *  certificate trusted by the system will be valid.
+ *  your private cloud. If the privateCloudHost is
+ *  nil, the default server will be used.
+ *
+ *  In order to prevent MITM attacks and the use of ssl-proxies, it is recommended
+ *  to configure the pinningDescriptions for the host. These d
  *
  *  Note: This feature must be enabled with a FeatureCode
+ *  Note: This feature must be be set before making any other BlinkUp Calls
  *
  *  @param privateCloudHost Server host to connect to
- *  @param anchorCertCN     Common Name of the servers anchor certificate
+ *  @param sslPinningDescriptions SSL Pinning Description. Nil for no pinning.
  */
-+ (void)setPrivateCloudHost:(NSString *_Nullable)privateCloudHost anchorCertCN:(NSString *_Nullable)anchorCertCN;
++ (void)setPrivateCloudHost:(NSString *_Nullable)privateCloudHost pinningDescriptions:(NSArray<BUPinningDescription *> *_Nullable) sslPinningDescriptions;
 
 @end

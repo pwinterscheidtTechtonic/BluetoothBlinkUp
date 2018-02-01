@@ -6,7 +6,7 @@
  *
  */
 
-// SDK v19.7.0
+// SDK v19.7.1
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -14,12 +14,12 @@
 /*!
  *  @brief SDK Version number as double
  */
-static double BlinkUpVersionNumber = 19.0700;
+static double BlinkUpVersionNumber = 19.0701;
 
 /*!
  *  @brief SDK version number as string
  */
-static NSString *const BlinkUpVersionString = @"19.7.0";
+static NSString *const BlinkUpVersionString = @"19.7.1";
 
 #import <BlinkUp/BUSDKFeatures.h>
 #import <BlinkUp/BUBasicController.h>
@@ -39,3 +39,6 @@ static NSString *const BlinkUpVersionString = @"19.7.0";
 #import <BlinkUp/BUDHCPAddressing.h>
 #import <BlinkUp/BUNetworkProxy.h>
 #import <BlinkUp/BUHelper.h>
+#import <BlinkUp/BUPublicKeyAlgorithm.h>
+#import <BlinkUp/BUPinningDescription.h>
+#import <BlinkUp/BUPinningSPKIData.h>

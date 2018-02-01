@@ -28,7 +28,7 @@
  @param presentingViewController The view that is out of rotation or has the status bar
             in the incorrect orientation
  */
-+(void) fixRotationForViewController:(UIViewController *) presentingViewController;
++(void) fixRotationForViewController:(UIViewController *_Nonnull) presentingViewController;
 
 
 
@@ -41,4 +41,16 @@
  @return True if the interface should rotate, false is a flash is occurring
  */
 +(BOOL) shouldAutorotate;
+
+
+
+/**
+ Hardware model of the iOS Device
+
+ @return A String representation of the hardware device
+ */
++(nonnull NSString *) hardwareModel;
++(nonnull NSString *) hardwareOS;
++(nonnull NSString *) userIdentifier;
++(void) setUserIdentifier:(NSString * _Nonnull) identifier;
 @end

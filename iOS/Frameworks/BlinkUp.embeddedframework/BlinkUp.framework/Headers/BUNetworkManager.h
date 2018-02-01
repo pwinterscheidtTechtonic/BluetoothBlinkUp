@@ -210,7 +210,7 @@
 
 /*!
  *  Saves the ssid (using the current password property) to storage
- *   This should not be called on configurations where useSavedPassword is true as it already saved
+ *   This should not be called on configurations where useSavedPassword is true as it is already saved
  */
 - (void)saveConfig;
 
