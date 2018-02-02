@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B04358A20232EB5003DAA55 /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B04358920232EB4003DAA55 /* BlinkUp.framework */; };
 		3B1DC726201B768200369C00 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3B1DC725201B768200369C00 /* Settings.bundle */; };
 		3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B8F1FE2980F0004D87E /* AppDelegate.swift */; };
 		3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */; };
@@ -23,7 +22,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3B04358920232EB4003DAA55 /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BlinkUp.framework; path = BlinkUp.embeddedframework/BlinkUp.framework; sourceTree = "<group>"; };
 		3B1DC725201B768200369C00 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothBlinkUp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B232B8F1FE2980F0004D87E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -46,7 +44,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */,
-				3B04358A20232EB5003DAA55 /* BlinkUp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +89,6 @@
 		3B232BA71FE298980004D87E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3B04358920232EB4003DAA55 /* BlinkUp.framework */,
 				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
