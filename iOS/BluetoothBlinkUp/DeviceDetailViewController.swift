@@ -260,7 +260,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                         if let aDevice = self.device {
                             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
                             self.connected = false
-                            NSLog("Cancelling connection")
+                            NSLog("Closing connection")
                         }
                     })
                     
@@ -505,12 +505,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             // just warn the user via an alert to expect the device to connect
                             showAlert("imp WiFi Cleared", "Your imp’s WiFi credentials have been cleared")
                             
-                            // Close the connection in CANCEL_TYPE seconds' time
+                            // Close the connection in CANCEL_TIME seconds' time
                             self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
                                 if let aDevice = self.device {
                                     self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
                                     self.connected = false
-                                    NSLog("Cancelling connection")
+                                    NSLog("Closing connection")
                                 }
                             })
                         }
@@ -520,9 +520,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
 
         // Clean up the UI
+        self.sendLabel.text = ""
         self.isSending = false
         self.blinkUpProgressBar.stopAnimating()
-        self.sendLabel.text = ""
     }
 
     @objc @IBAction func showPassword(_ sender: Any) {
@@ -535,9 +535,15 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     // MARK: - Utility Functions
 
     func showAlert(_ title: String, _ message: String) {
-        let alert = UIAlertController.init(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .`default`, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        let alert = UIAlertController.init(title: title,
+                                           message: message,
+                                           preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
+                                      style: .`default`,
+                                      handler: nil))
+        self.present(alert,
+                     animated: true,
+                     completion: nil)
     }
 
 
