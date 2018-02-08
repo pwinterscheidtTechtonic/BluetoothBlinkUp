@@ -86,7 +86,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Watch for app going to background with ImpDetailViewController active
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.closeUp),
-                                               name: NSNotification.Name.UIApplicationWillResignActive,
+                                               name: NSNotification.Name.UIApplicationDidEnterBackground,
                                                object: nil)
 
         // Add a long-press gesture to the UITableView to pop up the Info panel

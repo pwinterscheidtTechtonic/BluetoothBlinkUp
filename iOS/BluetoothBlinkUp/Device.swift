@@ -42,7 +42,7 @@ class Device: NSObject {
 
     var name: String = ""
     var type: String = ""
-    var devID: String = "TBD"
+    var devID: String = "Loading..."
     var peripheral: CBPeripheral!
     var characteristics: [CBCharacteristic] = []
     var isConnected: Bool = false
