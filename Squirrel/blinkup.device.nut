@@ -401,11 +401,10 @@ class BTLEBlinkUp {
 
             // Reboot the imp upon idle
             // (to allow writes to flash time to take place, etc.)
-            on.idle(function() {
+            imp.onidle(function() {
                 imp.reset();
             }.bindenv(this));
-        }
-
+        }.bindenv(this);
         _blinkup.clear <- function() {
             // Close the existing connection to the mobile app
             if (_incoming != null) _incoming.close();
@@ -563,7 +562,7 @@ function doBluetooth() {
         // with the host app, eg. to inform it activation has taken place
         if ("address" in data) server.log("Device " + data.address + " has " + data.state);
         if ("security" in data) server.log("Connection security mode: " + data.security);
-        if ("activated" in state && "spiflash" in hardware && imp.info().type == "imp004m") {
+        if ("activated" in data && "spiflash" in hardware && imp.info().type == "imp004m") {
             // Write BlinkUp signature post-configuration
             hardware.spiflash.enable();
             local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
