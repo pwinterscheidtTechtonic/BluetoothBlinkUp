@@ -562,16 +562,16 @@ function doBluetooth() {
         // This is the callback through which the BLE sub-system communicates
         // with the host app, eg. to inform it activation has taken place
         if ("address" in data) server.log("Device " + data.address + " has " + data.state);
-
+        if ("security" in data) server.log("Connection security mode: " + data.security);
         if ("activated" in state && "spiflash" in hardware && imp.info().type == "imp004m") {
             // Write BlinkUp signature post-configuration
-            hardware.spiflash.erasesector(0x0000);
+            hardware.spiflash.enable();
             local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
             if (ok != 0) server.error("SPIflash write failed");
         }
     });
 
-    server.log("Running...");
+    server.log("Bluetooth LE listening for BlinkUp...");
 }
 
 // RUNTIME START
