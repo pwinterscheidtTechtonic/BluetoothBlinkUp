@@ -53,7 +53,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
     // Constants
     let DEVICE_SCAN_TIMEOUT = 15.0
-
+    let BLINKUP_SERVICE_UUID = "FADA47BE-C455-48C9-A5F2-AF7CF368D719"
+    let DEVICE_INFO_SERVICE_UUID = "180A"
+    let DEVICE_INFO_MODEL_CHARACTERISTIC_UUID = "2A24"
+    let DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID = "2A25"
     
     // MARK: - View lifecycle functions
 
@@ -104,6 +107,21 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         self.refreshControl!.addTarget(self, action: #selector(self.startScan), for: UIControlEvents.valueChanged)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+
+        super.viewDidAppear(animated)
+
+        if self.ddvc != nil {
+            // Coming back from the Device Details View Controller
+            self.ddvc = nil
+        } else {
+            // Coming back from the background (most likely)
+            if self.refreshControl!.isRefreshing { self.refreshControl!.endRefreshing() }
+            initTable()
+            self.devicesTable.reloadData();
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
 
         super.viewDidAppear(animated)
@@ -117,8 +135,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             // UPDATE 1/24/18 Make it optional, ie. not run at startup
             // getRawkey()
         }
-
-        if self.ddvc != nil { self.ddvc = nil }
     }
 
 
@@ -134,7 +150,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 self.devicesTable.reloadData()
 
                 // Start scanning for the imp004m GATT server by using its key GATT service UUID
-                let s:CBUUID = CBUUID(string: "FADA47BE-C455-48C9-A5F2-AF7CF368D719")
+                let s:CBUUID = CBUUID(string: BLINKUP_SERVICE_UUID)
                 self.bluetoothManager.delegate = self
                 self.bluetoothManager.scanForPeripherals(withServices:[s], options:nil)
                 self.scanning = true
@@ -177,7 +193,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.bluetoothManager.stopScan()
 
             // Warn the user
-            if devices.count == 0 && showAnAlert {
+            if self.devices.count == 0 && showAnAlert {
                 showAlert("No Bluetooth-enabled imp Devices Found", "")
                 initTable()
             }
@@ -195,6 +211,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         let text: Device = Device()
         text.name = "Pull down to search for Bluetooth-enabled imps"
         text.devID = "NO"
+        self.devices.removeAll()
         self.devices.append(text)
         self.devicesTable.reloadData()
     }
@@ -471,7 +488,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             if let services = peripheral.services {
                 for i in 0..<services.count {
                     let service: CBService = services[i]
-                    if service.uuid.uuidString == "180A" {
+                    if service.uuid.uuidString == DEVICE_INFO_SERVICE_UUID {
                         // The device is offering the 'device info' service, so ask for a list of the all (hence 'nil') of the service's characteristics.
                         // This asynchronous call will be picked up by 'peripheral.didDiscoverCharacteristicsFor()'
                         peripheral.discoverCharacteristics(nil, for: service)
@@ -512,7 +529,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 for i in 0..<list.count {
                     let ch:CBCharacteristic? = list[i]
                     if ch != nil {
-                        if ch!.uuid.uuidString == "2A25" {
+                        if ch!.uuid.uuidString == DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID {
                             // The peripheral DOES contain the expected characteristic,
                             // so read the characteristics value. When it has been read,
                             // 'peripheral.didUpdateValueFor()' will be called
@@ -541,7 +558,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
         // We have successfully read the imp004m application's device ID characteristic's value
-        if characteristic.uuid.uuidString == "2A25" {
+        if characteristic.uuid.uuidString == DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID {
             if let data = characteristic.value {
                 if let aDevice = getDevice(peripheral) {
                     // Add the device ID to the device record
@@ -551,7 +568,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     for i in 0..<aDevice.characteristics.count {
                         let ch:CBCharacteristic? = aDevice.characteristics[i]
                         if ch != nil {
-                            if ch!.uuid.uuidString == "2A24" {
+                            if ch!.uuid.uuidString == DEVICE_INFO_MODEL_CHARACTERISTIC_UUID {
                                 // The peripheral DOES contain the expected characteristic,
                                 // so read the characteristics value. When it has been read,
                                 // 'peripheral.didUpdateValueFor()' will be called
