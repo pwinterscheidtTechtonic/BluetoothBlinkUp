@@ -1,5 +1,6 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
+//  Version: 0.0.1
 //
 //  Copyright 2017-18 Electric Imp
 //
@@ -393,13 +394,18 @@ class BTLEBlinkUp {
                 imp.setenroltokens(_blinkup.planid, _blinkup.token);
             }
 
-            // Restart the connection to the server
-            server.connect(function(r) {
-                if (r == SERVER_CONNECTED) {
-                    server.log("Device reconnected after WiFi change");
-                }
-            }, 30);
-        }.bindenv(this);
+            // Inform the host app about activation - it may use this, eg. to
+            // write a 'has activated' signature to the SPI flash
+            local data = { "activated": true };
+            _incomingCB(data);
+
+            // Reboot the imp upon idle
+            // (to allow writes to flash time to take place, etc.)
+            on.idle(function() {
+                imp.reset();
+            }.bindenv(this));
+        }
+
         _blinkup.clear <- function() {
             // Close the existing connection to the mobile app
             if (_incoming != null) _incoming.close();
@@ -538,16 +544,31 @@ agent.on("clear.spiflash", function(data) {
 function start() {
     // Application code starts here
     server.log("Application starting...");
+    server.log("Use the agent to reset device state");
 }
 
 // This function defines this app's activation flow: preparing the device
 // for enrollment into the Electric Imp impCloud and applying the end-user's
 // local WiFi network settings.
 function doBluetooth() {
+    // Instantiate the BTLEBlinkUp library
     bt = BTLEBlinkUp();
+
+    // Don't use security
     bt.setSecurity(1);
+
+    // Set the device up to listen for BlinkUp data
     bt.listenForBlinkUp(null, function(data) {
-        server.log("Device " + data.address + " has " + data.state);
+        // This is the callback through which the BLE sub-system communicates
+        // with the host app, eg. to inform it activation has taken place
+        if ("address" in data) server.log("Device " + data.address + " has " + data.state);
+
+        if ("activated" in state && "spiflash" in hardware && imp.info().type == "imp004m") {
+            // Write BlinkUp signature post-configuration
+            hardware.spiflash.erasesector(0x0000);
+            local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
+            if (ok != 0) server.error("SPIflash write failed");
+        }
     });
 
     server.log("Running...");
@@ -566,15 +587,16 @@ if ("spiflash" in hardware && imp.info().type == "imp004m") {
     foreach (byte in bytes) {
         if (byte == 0xC3) check++;
     }
-    check = 0;
+
     if (check >= 4) {
+        // Device is activated so go to application code
         start();
     } else {
+        // Device is not activated so bring up Bluetooth LE
         doBluetooth();
     }
 } else {
-    // We're on some other imp; likely we will never come here
-    // Just start the app anyway
+    // Just start the app anyway and ignore Bluetooth
     start();
 }
 
