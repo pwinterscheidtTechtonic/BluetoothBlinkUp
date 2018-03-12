@@ -77,6 +77,7 @@ class BTLEBlinkUp {
 
     function setSecurity(mode = 1, pin = "000000") {
         // Specify the Bluetooth LE security mode (and PIN) as per bluetooth.setsecurity()
+        // It will default to no security (mode 1) in case of error
         // NOTE This needs to be run separately from listenForBlinkUp()
 
         if (ble == null) {
@@ -135,8 +136,9 @@ class BTLEBlinkUp {
 
     function serve(otherServices = null) {
         // Set up the Bluetooth GATT server
+        // This always adds the BlinkUp service and standard Device Info service
         // The parameter 'otherServices' takes an array of one or more services which you would like
-        // the device to provides in addition to BlinkUp and the standard Device Information service
+        // the device to provides in addition to BlinkUp and the standard Device Info service
         if (ble == null) {
             server.error("BTLEBlinkUp.serve() - Bluetooth LE not initialized");
             return;
@@ -274,6 +276,16 @@ class BTLEBlinkUp {
             return;
         }
 
+        // Check the 'min' and 'max' values
+        if (min < 0 || min > 100) min = 100;
+        if (max < 0 || max > 100) max = 100;
+        if (min > max) {
+          // Swap 'min' and 'max' around if 'min' is bigger than 'max'
+          local a = max;
+          max = min;
+          min = a;
+        }
+
         // Advertise the supplied advert then exit
         if (advert != null) {
             ble.startadvertise(advert, min, max);
@@ -316,10 +328,10 @@ class BTLEBlinkUp {
         // Register the host app's connection/disconnection notification callback.
         // This callback takes a single parameter: a table which contains some or all
         // of the following keys:
-        // conn — the connection's imp API BluetoothConnection instance
-        // address - the connection's address
-        // security - the security mode of the connection (1, 3 or 4)
-        // state - the state of the connection: "connnected" or "disconnected"
+        //   conn — the connection's imp API BluetoothConnection instance
+        //   address - the connection's address
+        //   security - the security mode of the connection (1, 3 or 4)
+        //   state - the state of the connection: "connnected" or "disconnected"
 
         // Check for a valid Bluetooth instance
         if (ble == null) {
