@@ -35,6 +35,7 @@ class BTLEBlinkUp {
 
     // Public instance properties
     ble = null;
+    agentURL = null;
 
     // Private instance properties
     _uuids = null;
@@ -248,11 +249,13 @@ class BTLEBlinkUp {
         services.append(service);
 
         // Device information service
+        server.log(agentURL);
         service = { "uuid": 0x180A,
                     "chars": [
                       { "uuid": 0x2A29, "value": "Electric Imp" },           // manufacturer name
                       { "uuid": 0x2A25, "value": hardware.getdeviceid() },   // serial number
                       { "uuid": 0x2A24, "value": imp.info().type },          // model number
+                      { "uuid": 0x2A23, "value": (agentURL != null ? agentURL : "null") },   // system ID (agent ID)
                       { "uuid": 0x2A26, "value": imp.getsoftwareversion() }] // firmware version
                     };
 
@@ -556,21 +559,26 @@ function doBluetooth() {
     // Don't use security
     bt.setSecurity(1);
 
-    // Set the device up to listen for BlinkUp data
-    bt.listenForBlinkUp(null, function(data) {
-        // This is the callback through which the BLE sub-system communicates
-        // with the host app, eg. to inform it activation has taken place
-        if ("address" in data) server.log("Device " + data.address + " has " + data.state);
-        if ("security" in data) server.log("Connection security mode: " + data.security);
-        if ("activated" in data && "spiflash" in hardware && imp.info().type == "imp004m") {
-            // Write BlinkUp signature post-configuration
-            hardware.spiflash.enable();
-            local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
-            if (ok != 0) server.error("SPIflash write failed");
-        }
-    });
+    agent.on("set.agent.url", function(data) {
+        bt.agentURL = data;
+        // Set the device up to listen for BlinkUp data
+        bt.listenForBlinkUp(null, function(data) {
+            // This is the callback through which the BLE sub-system communicates
+            // with the host app, eg. to inform it activation has taken place
+            if ("address" in data) server.log("Device " + data.address + " has " + data.state);
+            if ("security" in data) server.log("Connection security mode: " + data.security);
+            if ("activated" in data && "spiflash" in hardware && imp.info().type == "imp004m") {
+                // Write BlinkUp signature post-configuration
+                hardware.spiflash.enable();
+                local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
+                if (ok != 0) server.error("SPIflash write failed");
+            }
+        });
 
-    server.log("Bluetooth LE listening for BlinkUp...");
+        server.log("Bluetooth LE listening for BlinkUp...");
+    }.bindenv(this));
+
+    agent.send("get.agent.url", true);
 }
 
 // RUNTIME START
@@ -598,4 +606,3 @@ if ("spiflash" in hardware && imp.info().type == "imp004m") {
     // Just start the app anyway and ignore Bluetooth
     start();
 }
-

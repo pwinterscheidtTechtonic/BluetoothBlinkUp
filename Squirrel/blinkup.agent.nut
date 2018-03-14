@@ -142,6 +142,11 @@ local api = null;
 
 // RUNTIME START
 
+// Send the device the Agent URL when asked
+device.on("get.agent.url", function(dummy) {
+    device.send("set.agent.url", http.agenturl());
+});
+
 // Set up the Web API
 api = Rocky();
 
@@ -166,7 +171,7 @@ api.post("/action", function(context) {
             if (data.action == "reset") {
                 device.send("clear.spiflash", true);
                 server.log("Device instructed to clear its SPI flash activation flag");
-                response.send(200, "OK");
+                context.send(200, "OK");
                 return;
             }
         }
