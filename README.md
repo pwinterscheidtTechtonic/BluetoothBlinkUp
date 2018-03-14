@@ -24,6 +24,10 @@ When the iOS app makes use of the Electric Imp BlinkUp SDK, it performs producti
 
 Simply setting and clearing the WiFi settings can be performed on any device running the provided Squirrel code.
 
+## Building the App ##
+
+In order to build the app, you will need the BlinkUp SDK. Please follow the instructions supplied with the SDK to learn how to add the SDK files to the app project. The SDK files are not included in this project.
+
 ## Using the App ##
 
 When the app has launched, you may be required to authorize the app to use Bluetooth &mdash; please do so. Now pull down the list view to start a scan (or tap ‘Actions’ and select ‘Start Scan’) to search for compatible devices. Any devices running the demo’s Squirrel code will now appear in the list &mdash; tap one to view the list of compatible WiFi networks the device can see. Select your network from the list and enter its password, if it has one. You can tap the eye icon in the password field to view the password characters.
