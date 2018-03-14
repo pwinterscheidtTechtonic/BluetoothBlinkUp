@@ -332,14 +332,27 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 case .responded(let info):
                                     // The server indicates that the device has enrolled successfully, so we're done
                                     let na: String = "N/A"
-                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™. It is accessible at\n\(info.agentURL?.absoluteString ?? na)", preferredStyle: UIAlertControllerStyle.actionSheet)
-                                    var action: UIAlertAction = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™.", preferredStyle: UIAlertControllerStyle.actionSheet)
+                                    
+                                    var action: UIAlertAction = UIAlertAction.init(title: "Open URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                        if let us = info.agentURL?.absoluteString {
+                                            // Open the agent URL in Safari
+                                            let uiapp = UIApplication.shared
+                                            let url: URL = URL.init(string: us)!
+                                            uiapp.open(url, options: [:], completionHandler: nil)
+                                        }
+                                    }
+                                    actionMenu.addAction(action)
+                                    
+                                    
+                                    action = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
                                             if let us = info.agentURL?.absoluteString {
                                                 let pb: UIPasteboard = UIPasteboard.general
                                                 pb.setValue(us, forPasteboardType: "public.text")
                                             }
                                         }
                                     actionMenu.addAction(action)
+                                    
                                     action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
                                     actionMenu.addAction(action)
                                     self.present(actionMenu, animated: true, completion: nil)
