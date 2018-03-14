@@ -583,6 +583,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         if (error != nil) {
             NSLog("\(error!.localizedDescription) for device \(deviceName)")
+            showAlert("Could not connect to \"\(deviceName)\"", "Please go back to the devices list and re-select \"\(deviceName)\", if necessary performing a new scan")
         } else {
             NSLog("didFailToConnect() called for device \(deviceName)")
         }

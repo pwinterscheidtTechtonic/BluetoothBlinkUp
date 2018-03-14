@@ -109,7 +109,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
     override func viewWillAppear(_ animated: Bool) {
 
-        super.viewDidAppear(animated)
+        super.viewWillAppear(animated)
 
         if self.ddvc != nil {
             // Coming back from the Device Details View Controller
