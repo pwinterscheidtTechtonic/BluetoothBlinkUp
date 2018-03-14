@@ -44,29 +44,22 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
         <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-imp.ico'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <style>
-            .center { margin-left: auto;
-                      margin-right: auto;
-                      margin-bottom: auto;
-                      margin-top: auto; }
-            .showhide { -webkit-touch-callout: none;
-                        -webkit-user-select: none;
-                        -khtml-user-select: none;
-                        -moz-user-select: none;
-                        -ms-user-select: none;
-                        user-select: none;
-                        cursor: pointer }
             body { background-color: #25ABDC; }
             p {color: white; font-family: Abel, sans-serif; font-size: 18px}
             p.error-message {color:#ffcc00; font-size: 16px}
             p.colophon {font-size: 14px; text-align: center}
             h2 {color: white; font-family: Abel, sans-serif; font-size: 36px}
-            h4 {color: white; font-family: Abel, sans-serif; font-size: 22px}
+            h4 {color: white; font-family: Abel, sans-serif; font-size: 18px}
             td {color: white; font-family: Abel, sans-serif}
             hr {border-color: #ffcc00}
             .tabborder {width: 25%%}
             .tabcontent {width: 50%%}
             .uicontent {border: 2px solid white}
             .container {padding: 20px}
+            .center { margin-left: auto;
+                      margin-right: auto;
+                      margin-bottom: auto;
+                      margin-top: auto; }
 
             @media only screen and (max-width: 640px) {
                 .tabborder {width: 5%%}
@@ -79,7 +72,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
     <body>
         <div class='container'>
             <div class='uicontent'>
-                <h2 align='center'>Electric Imp BlinkUp™ Demo<br>&nbsp;</h2>
+                <h2 align='center'>Electric Imp BlinkUp™ Demo</h2>
                 <p>&nbsp;</p>
                 <div class='current-status-readout' align='center'>
                     <h4 class='readout-id'>Device ID: <span></span></h4>
