@@ -57,6 +57,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     let DEVICE_INFO_SERVICE_UUID = "180A"
     let DEVICE_INFO_MODEL_CHARACTERISTIC_UUID = "2A24"
     let DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID = "2A25"
+    let DEVICE_INFO_AGENT_CHARACTERISTIC_UUID = "2A23"
     
     // MARK: - View lifecycle functions
 
@@ -400,6 +401,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.ddvc.bluetoothManager = self.bluetoothManager
             self.ddvc.navigationItem.title = aDevice.devID
             self.ddvc.harvey = self.harvey
+            self.ddvc.agentURL = aDevice.agent
 
             // Set up the left-hand nav bar button with an icon and text
             let button = UIButton(type: UIButtonType.system)
@@ -587,12 +589,33 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     }
                 }
             }
+        } else if characteristic.uuid.uuidString == DEVICE_INFO_MODEL_CHARACTERISTIC_UUID {
+            if let data = characteristic.value {
+                if let aDevice = getDevice(peripheral) {
+                    // Add the imp model type to the device record
+                    aDevice.type = String.init(data: data, encoding: String.Encoding.utf8)!
+                    self.devicesTable.reloadData()
+                    
+                    for i in 0..<aDevice.characteristics.count {
+                        let ch:CBCharacteristic? = aDevice.characteristics[i]
+                        if ch != nil {
+                            NSLog("\(ch!.uuid.uuidString)")
+                            if ch!.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
+                                // The peripheral DOES contain the expected characteristic,
+                                // so read the characteristics value. When it has been read,
+                                // 'peripheral.didUpdateValueFor()' will be called
+                                peripheral.readValue(for: ch!)
+                                break
+                            }
+                        }
+                    }
+                }
+            }
         } else {
             if let data = characteristic.value {
                 if let aDevice = getDevice(peripheral) {
-                    // Add the device ID to the device record
-                    aDevice.type = String.init(data: data, encoding: String.Encoding.utf8)!
-                    self.devicesTable.reloadData()
+                    // Add the agent URL to the device record
+                    aDevice.agent = String.init(data: data, encoding: String.Encoding.utf8)!
 
                     // Disconnect now we have the data
                     self.bluetoothManager.cancelPeripheralConnection(peripheral)

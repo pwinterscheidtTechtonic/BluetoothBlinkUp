@@ -53,6 +53,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     var isSending: Bool = false
     var isClearing: Bool = false
     var harvey: String!
+    var agentURL: String!
     var scanTimer: Timer!
     var cheatTimer: Timer!
     
@@ -285,21 +286,43 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
                     // Since we can't poll the server for this instance (we have no API key), we
                     // just warn the user via an alert to expect the device to connect
-                    showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
-
-                    // Close the connection in CANCEL_TYPE seconds' time
+                    // Close the connection in CANCEL_TIME seconds' time
                     self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
                         if let aDevice = self.device {
                             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
                             self.connected = false
-                            NSLog("Closing connection")
+                            NSLog("Closing WiFi transmission connection")
+                            
+                            // Clean up the UI
+                            self.sendLabel.text = ""
+                            self.isSending = false
+                            self.blinkUpProgressBar.stopAnimating()
+                            
+                            if (aDevice.agent.count > 0) {
+                                let actionMenu = UIAlertController.init(title: "Device \(aDevice.devID)\nHas Connected", message: "", preferredStyle: UIAlertControllerStyle.actionSheet)
+                                
+                                var action: UIAlertAction = UIAlertAction.init(title: "Open URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                    let uiapp = UIApplication.shared
+                                    let url: URL = URL.init(string: aDevice.agent)!
+                                    uiapp.open(url, options: [:], completionHandler: nil)
+                                }
+                                
+                                actionMenu.addAction(action)
+                                
+                                action = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                    let pb: UIPasteboard = UIPasteboard.general
+                                    pb.setValue(aDevice.agent, forPasteboardType: "public.text")
+                                }
+                                actionMenu.addAction(action)
+                                
+                                action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
+                                actionMenu.addAction(action)
+                                self.present(actionMenu, animated: true, completion: nil)
+                            } else {
+                                self.showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
+                            }
                         }
                     })
-                    
-                    // Clean up the UI
-                    self.sendLabel.text = ""
-                    self.isSending = false
-                    self.blinkUpProgressBar.stopAnimating()
                 }
             } else {
                 // The user HAS input a BlinkUp API key, so perform a full activation
