@@ -49,6 +49,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     var availableNetworks: [ [String] ] = []
     var config: BUConfigId? = nil
     var connected: Bool = false
+    var clearList: Bool = false
     var isSending: Bool = false
     var isClearing: Bool = false
     var harvey: String!
@@ -58,6 +59,14 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     // Constants
     let DEVICE_SCAN_TIMEOUT = 5.0
     let CANCEL_TIME = 3.0
+    let BLINKUP_SERVICE_UUID = "FADA47BE-C455-48C9-A5F2-AF7CF368D719"
+    let SSID_SETTER_UUID = "5EBA1956-32D3-47C6-81A6-A7E59F18DAC0"
+    let PASSWORD_SETTER_UUID = "ED694AB9-4756-4528-AA3A-799A4FD11117"
+    let PLANID_SETTER_UUID = "A90AB0DC-7B5C-439A-9AB5-2107E0BD816E"
+    let TOKEN_SETTER_UUID = "BD107D3E-4878-4F6D-AF3D-DA3B234FF584"
+    let BLINKUP_TRIGGER_UUID = "F299C342-8A8A-4544-AC42-08C841737B1B"
+    let WIFI_GETTER_UUID = "57A9ED95-ADD5-4913-8494-57759B79A46C"
+    let WIFI_CLEAR_TRIGGER_UUID = "2BE5DDBA-3286-4D09-A652-F24FAA514AF5"
     
 
     // MARK: - View Lifecycle Functions
@@ -76,24 +85,34 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.passwordField.leftView = overlayButton
         self.passwordField.leftViewMode = UITextFieldViewMode.always
 
-        // Start watching for the app re-activating
-
+        // Watch for app returning to foreground from the ImpDetailViewController
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.connectToDevice),
+                                               name: NSNotification.Name.UIApplicationWillEnterForeground,
+                                               object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
 
         super.viewWillAppear(animated)
 
-        initUI()
         initNetworks()
-
+        connectToDevice()
+    }
+    
+    @objc func connectToDevice() {
+        
+        initUI()
+        
         // Get the networks from the device
         if let aDevice: Device = device {
             // NOTE We need to set the objects' delegates to 'self' so that the correct delegate functions are called
             aDevice.peripheral.delegate = self
             self.bluetoothManager.delegate = self
             if !self.connected {
+                self.wifiPicker.isUserInteractionEnabled = false
                 self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                self.blinkUpProgressBar.startAnimating()
                 self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
                                                       target: self,
                                                       selector: #selector(self.endConnectWithAlert),
@@ -116,8 +135,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         if let aDevice: Device = device {
             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
             self.connected = false
-            showAlert("Cannot connect to \(aDevice.name)", "Go back to the device list and re-scan or select another device")
+            showDisconnectAlert("Could not connect to \"\(aDevice.name)\"", "Please go back to the devices list and re-select \"\(aDevice.name)\", if necessary performing a new scan")
         }
+        
+        self.isClearing = false
+        self.isSending = false
+        self.blinkUpProgressBar.stopAnimating()
     }
     
     @objc func appWillEnterForeground() {
@@ -155,9 +178,10 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.availableNetworks.append(["None", "unlocked"])
 
         // Set the UI - disabling the picker
-        wifiPicker.reloadAllComponents()
-        wifiPicker.isUserInteractionEnabled = false
-        wifiPicker.alpha = 0.5
+        self.wifiPicker.reloadAllComponents()
+        self.wifiPicker.isUserInteractionEnabled = false
+        self.wifiPicker.alpha = 0.5
+        self.wifiPicker.isUserInteractionEnabled = true
     }
 
     @objc func goBack() {
@@ -224,6 +248,13 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 self.bluetoothManager.connect(aDevice.peripheral, options: nil)
                 // Pick up the action at didConnect(), which is called when the
                 // iDevice has connected to the imp004m
+                
+                // Set up a timeout
+                self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
+                                                      target: self,
+                                                      selector: #selector(self.endConnectWithAlert),
+                                                      userInfo: nil,
+                                                      repeats: false)
             }
         } else {
             // App is already connected to the peripheral so do BlinkUp
@@ -238,6 +269,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // If no API key is known to the app, it will just transmit WiFi data
 
         self.isSending = true
+        if self.scanTimer.isValid { self.scanTimer.invalidate() }
         
         // NOTE The progress indicator is already active at this point
         if self.connected {
@@ -349,7 +381,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         } else {
             // Should be connected at this point, but for some reason we're not
             // Post a warning to the user
-            showAlert("Connect to a Device", "You must be connected to an imp-enabled device with Bluetooth in order to perform BlinkUp. Return to the Device List and re-select the device")
+            showAlert("Please connect to a Device", "You must be connected to an imp-enabled device with Bluetooth in order to perform BlinkUp. Return to the Device List and re-select the device")
         }
     }
 
@@ -369,7 +401,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         for i in 0..<device.characteristics.count {
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
-                if ch!.uuid.uuidString == "BD107D3E-4878-4F6D-AF3D-DA3B234FF584" {
+                if ch!.uuid.uuidString == TOKEN_SETTER_UUID {
                     if let s = tdata {
                         // At the first GATT write (or read) iOS will handle pairing.
                         // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
@@ -386,7 +418,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         for i in 0..<device.characteristics.count {
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
-                if ch!.uuid.uuidString == "A90AB0DC-7B5C-439A-9AB5-2107E0BD816E" {
+                if ch!.uuid.uuidString == PLANID_SETTER_UUID {
                     if let s = pdata {
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing plan ID characteristic \(ch!.uuid.uuidString)")
@@ -414,7 +446,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             // First the SSID
             let ch:CBCharacteristic? = device.characteristics[i]
             if ch != nil {
-                if ch!.uuid.uuidString == "5EBA1956-32D3-47C6-81A6-A7E59F18DAC0" {
+                if ch!.uuid.uuidString == SSID_SETTER_UUID {
                     if let s = sdata {
                         // At the first GATT write (or read) iOS will handle pairing.
                         // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
@@ -430,7 +462,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         for i in 0..<device.characteristics.count {
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
-                if ch!.uuid.uuidString == "ED694AB9-4756-4528-AA3A-799A4FD11117" {
+                if ch!.uuid.uuidString == PASSWORD_SETTER_UUID {
                     if let s = pdata {
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing password characteristic \(ch!.uuid.uuidString)")
@@ -443,7 +475,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         for i in 0..<device.characteristics.count {
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
-                if ch!.uuid.uuidString == "F299C342-8A8A-4544-AC42-08C841737B1B" {
+                if ch!.uuid.uuidString == BLINKUP_TRIGGER_UUID {
                     if let s = sdata {
                         device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing 'set network' trigger characteristic \(ch!.uuid.uuidString)")
@@ -475,6 +507,13 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 self.bluetoothManager.connect(aDevice.peripheral, options: nil)
                 // Pick up the action at didConnect(), which is called when the
                 // iDevice has connected to the imp
+                
+                // Set up a timeout
+                self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
+                                                      target: self,
+                                                      selector: #selector(self.endConnectWithAlert),
+                                                      userInfo: nil,
+                                                      repeats: false)
             }
         } else {
             // App is already connected to the peripheral so do BlinkUp
@@ -486,6 +525,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         self.isClearing = false
         self.isSending = true
+        if self.scanTimer.isValid { self.scanTimer.invalidate() }
 
         if let aDevice = self.device {
             // Work through the characteristic list for the service, to match them
@@ -493,7 +533,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             for i in 0..<aDevice.characteristics.count {
                 let ch:CBCharacteristic? = aDevice.characteristics[i]
                 if ch != nil {
-                    if ch!.uuid.uuidString == "2BE5DDBA-3286-4D09-A652-F24FAA514AF5" {
+                    if ch!.uuid.uuidString == WIFI_CLEAR_TRIGGER_UUID {
                         if let s = "clear".data(using: String.Encoding.utf8) {
                             // At the first GATT write (or read) iOS will handle pairing.
                             // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
@@ -545,7 +585,21 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                      animated: true,
                      completion: nil)
     }
-
+    
+    func showDisconnectAlert(_ title: String, _ message: String) {
+        let alert = UIAlertController.init(title: title,
+                                           message: message,
+                                           preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
+                                      style: .`default`,
+                                      handler: nil))
+        self.present(alert,
+                     animated: true) {
+                        self.initUI()
+                        self.initNetworks()
+                        self.clearList = true
+        }
+    }
 
     // MARK: - CBManagerDelegate Functions
 
@@ -583,7 +637,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         if (error != nil) {
             NSLog("\(error!.localizedDescription) for device \(deviceName)")
-            showAlert("Could not connect to \"\(deviceName)\"", "Please go back to the devices list and re-select \"\(deviceName)\", if necessary performing a new scan")
+            showDisconnectAlert("Could not connect to \"\(deviceName)\"", "Please go back to the devices list and re-select \"\(deviceName)\", if necessary performing a new scan")
         } else {
             NSLog("didFailToConnect() called for device \(deviceName)")
         }
@@ -618,7 +672,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             if let services = peripheral.services {
                 for i in 0..<services.count {
                     let service: CBService = services[i]
-                    if service.uuid.uuidString == "FADA47BE-C455-48C9-A5F2-AF7CF368D719" {
+                    if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
                         // Ask the peripheral for a list of the all (hence 'nil') of the service's characteristics.
                         // This asynchronous call will be picked up by 'peripheral.didDiscoverCharacteristicsFor()'
                         peripheral.discoverCharacteristics(nil, for: service)
@@ -667,7 +721,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                     for i in 0..<aDevice.characteristics.count {
                         let ch:CBCharacteristic? = aDevice.characteristics[i]
                         if ch != nil {
-                            if ch!.uuid.uuidString == "57A9ED95-ADD5-4913-8494-57759B79A46C" {
+                            if ch!.uuid.uuidString == WIFI_GETTER_UUID {
                                 // The peripheral DOES contain the expected characteristic,
                                 // so read the characteristics value. When it has been read,
                                 // 'peripheral.didUpdateValueFor()' will be called
@@ -695,7 +749,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // We have successfully read the imp application's networks list characteristic, so use
         // the value of the characteristic (a comma-separated string of network names) to populate
         // the 'availableNetworks' array and thus the UI's UIPickerView
-        if characteristic.uuid.uuidString == "57A9ED95-ADD5-4913-8494-57759B79A46C" {
+        if characteristic.uuid.uuidString == WIFI_GETTER_UUID {
             if let data = characteristic.value {
                 let networkList:String? = String.init(data: data, encoding: String.Encoding.utf8)
                 if networkList != nil {

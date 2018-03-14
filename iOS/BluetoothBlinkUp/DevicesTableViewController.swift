@@ -113,6 +113,14 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         if self.ddvc != nil {
             // Coming back from the Device Details View Controller
+            if self.ddvc.clearList {
+                // We could not connect at some point, so clear the device
+                // list to prepare for a new scan
+                initTable()
+                self.devicesTable.reloadData();
+            }
+            
+            // Zap the Device Details View Controller
             self.ddvc = nil
         } else {
             // Coming back from the background (most likely)
