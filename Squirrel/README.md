@@ -1,4 +1,4 @@
-# BTLEBlinkUp #
+# BTLEBlinkUp Library #
 
 This library provides a foundation for activating end-user devices via Bluetooth LE on imp modules that support this wireless technology (currently imp004m only) using BlinkUp™.
 

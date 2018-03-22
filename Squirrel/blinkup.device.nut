@@ -1,6 +1,6 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
-//  Version: 0.0.1
+//  Version: 1.0.0
 //
 //  Copyright 2017-18 Electric Imp
 //
@@ -31,7 +31,7 @@ const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
 
 class BTLEBlinkUp {
 
-    static VERSION = "0.0.1";
+    static VERSION = "1.0.0";
 
     // Public instance properties
     ble = null;
@@ -102,8 +102,8 @@ class BTLEBlinkUp {
 
         // Parameter 'pin' should be a string or an integer and no more than six digits
         if (typeof pin == "string") {
-            if (pin.len() > 6) {
-                server.error("BTLEBlinkUp.setSecurity() - security PIN cannot be more than six characters");
+            if (pin.len() > 6 || pin.len() < 1) {
+                server.error("BTLEBlinkUp.setSecurity() - security PIN must be six characters");
                 ble.setsecurity(1);
                 return;
             }
@@ -127,7 +127,7 @@ class BTLEBlinkUp {
             return;
         }
 
-        if (mode == 1) {
+        if (mode == 1 || (mode != 3 && mode != 4)) {
             // Ignore the pin as it's not needed
             ble.setsecurity(1);
         } else {
@@ -250,10 +250,10 @@ class BTLEBlinkUp {
         // Device information service
         service = { "uuid": 0x180A,
                     "chars": [
-                      { "uuid": 0x2A29, "value": "Electric Imp" },           // manufacturer name
-                      { "uuid": 0x2A25, "value": hardware.getdeviceid() },   // serial number
-                      { "uuid": 0x2A24, "value": imp.info().type },          // model number
-                      { "uuid": 0x2A26, "value": imp.getsoftwareversion() }] // firmware version
+                      { "uuid": 0x2A29, "value": "Electric Imp" },            // manufacturer name
+                      { "uuid": 0x2A25, "value": hardware.getdeviceid() },    // serial number
+                      { "uuid": 0x2A24, "value": imp.info().type },           // model number
+                      { "uuid": 0x2A26, "value": imp.getsoftwareversion() }]  // firmware version
                     };
 
         services.append(service);
