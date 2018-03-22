@@ -40,6 +40,12 @@ Optionally, tap ‘Clear WiFi Settings’ to erase your device’s WiFi credenti
 
 <p align="center"><img src="images/04.png" width="375" style="border: 1px solid #DDDDDD" >&nbsp;&nbsp;<img src="images/05.jpg" width="375" style="border: 1px solid #DDDDDD"></p>
 
+## Post BlinkUp ##
+
+The sample Squirrel code provides a web UI which is served by the agent and can be visited by entering the agent URL into a desktop browser, or by selecting the ‘Open Agent URL’ option presented by the app after the target device has activated.
+
+In addition to displaying device information &mdash; in the real world, an application might present a device management UI, for example &mdash; the web interface allows you to clear the activation signature the code applies to the device’s SPI flash. The signature is set so that, after a restart, the device runs is expected application flow rather than the pre-application BlinkUp flow. Clearing the signature, followed by a restart, puts the device back into BlinkUp mode.
+
 ## iOS Bluetooth Attribute Caching ##
 
 By default, iOS caches the attribute information it discovers from devices, as does Android. This ensures that future scans need not use the radio, conserving power. However, it also means if you change your Squirrel app’s served attributes during development, they will not be immediately detected by the app.
