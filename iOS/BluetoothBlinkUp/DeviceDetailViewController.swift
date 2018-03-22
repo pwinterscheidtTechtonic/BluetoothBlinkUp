@@ -237,6 +237,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             self.showAlert("There are no networks to connect to", "")
             return
         }
+        
+        // The user has not entered an API key
+        if self.harvey.count == 0 {
+            self.showAlert("BlinkUp™ Requires an API key", "Please go back to the device list, tap ‘Actions’ and select ‘Enter Your BlinkUp API Key’")
+            return
+        }
 
         self.blinkUpProgressBar.startAnimating()
 
@@ -277,30 +283,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             sendLabel.text = "Sending BlinkUp data"
 
             if self.harvey.count == 0 {
-                // The user HAS NOT input a BlinkUp API key, so just send across WiFi credentials,
-                // ie. do not perform a device enrolment too
-                if let aDevice = self.device {
-                    // Transmit the WiFi data
-                    sendWiFiData(aDevice)
-
-                    // Since we can't poll the server for this instance (we have no API key), we
-                    // just warn the user via an alert to expect the device to connect
-                    showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
-
-                    // Close the connection in CANCEL_TYPE seconds' time
-                    self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
-                        if let aDevice = self.device {
-                            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
-                            self.connected = false
-                            NSLog("Closing connection")
-                        }
-                    })
-                    
-                    // Clean up the UI
-                    self.sendLabel.text = ""
-                    self.isSending = false
-                    self.blinkUpProgressBar.stopAnimating()
-                }
+                self.showAlert("BlinkUp™ Requires an API key", "Please go back to the device list, tap ‘Actions’ and select ‘Enter Your BlinkUp API Key’")
+                return
             } else {
                 // The user HAS input a BlinkUp API key, so perform a full activation
                 // (enrol the deviceand transmit WiFi credentials).
@@ -332,13 +316,22 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 case .responded(let info):
                                     // The server indicates that the device has enrolled successfully, so we're done
                                     let na: String = "N/A"
-                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™. It is accessible at\n\(info.agentURL?.absoluteString ?? na)", preferredStyle: UIAlertControllerStyle.actionSheet)
-                                    var action: UIAlertAction = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                            if let us = info.agentURL?.absoluteString {
-                                                let pb: UIPasteboard = UIPasteboard.general
-                                                pb.setValue(us, forPasteboardType: "public.text")
-                                            }
+                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™. Its agent is accessible at\n\(info.agentURL?.absoluteString ?? na)", preferredStyle: UIAlertControllerStyle.actionSheet)
+                                    
+                                    var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                        if let us = info.agentURL?.absoluteString {
+                                            let pb: UIPasteboard = UIPasteboard.general
+                                            pb.setValue(us, forPasteboardType: "public.text")
                                         }
+                                    }
+                                    actionMenu.addAction(action)
+                                    
+                                    action = UIAlertAction.init(title: "Copy Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                        if let us = info.agentURL?.absoluteString {
+                                            let pb: UIPasteboard = UIPasteboard.general
+                                            pb.setValue(us, forPasteboardType: "public.text")
+                                        }
+                                    }
                                     actionMenu.addAction(action)
                                     action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
                                     actionMenu.addAction(action)
