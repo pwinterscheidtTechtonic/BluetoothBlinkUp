@@ -141,7 +141,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             // There is no saved API key so get one by presenting
             // the key request panel
             // UPDATE 1/24/18 Make it optional, ie. not run at startup
-            // getRawkey()
+            // UPDATE 3/22/18 Make it mandatory for sample code usage
+            getRawkey()
         }
     }
 
@@ -633,7 +634,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func getRawkey() {
 
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
-        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key\n(Optional)", message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.", preferredStyle: UIAlertControllerStyle.alert)
+        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp™ API Key", message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.", preferredStyle: UIAlertControllerStyle.alert)
         keyEntryController.addTextField(configurationHandler: { (textField) in
             textField.isSecureTextEntry = true
             textField.placeholder = "BlinkUp API key"
