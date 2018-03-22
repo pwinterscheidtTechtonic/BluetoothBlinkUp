@@ -301,7 +301,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             if (aDevice.agent.count > 0) {
                                 let actionMenu = UIAlertController.init(title: "Device \(aDevice.devID)\nHas Connected", message: "", preferredStyle: UIAlertControllerStyle.actionSheet)
                                 
-                                var action: UIAlertAction = UIAlertAction.init(title: "Open URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
                                     let uiapp = UIApplication.shared
                                     let url: URL = URL.init(string: aDevice.agent)!
                                     uiapp.open(url, options: [:], completionHandler: nil)
@@ -309,7 +309,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 
                                 actionMenu.addAction(action)
                                 
-                                action = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                action = UIAlertAction.init(title: "Copy Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
                                     let pb: UIPasteboard = UIPasteboard.general
                                     pb.setValue(aDevice.agent, forPasteboardType: "public.text")
                                 }
@@ -357,7 +357,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                     let na: String = "N/A"
                                     let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™.", preferredStyle: UIAlertControllerStyle.actionSheet)
                                     
-                                    var action: UIAlertAction = UIAlertAction.init(title: "Open URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                    var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
                                         if let us = info.agentURL?.absoluteString {
                                             // Open the agent URL in Safari
                                             let uiapp = UIApplication.shared
@@ -368,7 +368,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                     actionMenu.addAction(action)
                                     
                                     
-                                    action = UIAlertAction.init(title: "Copy URL", style: UIAlertActionStyle.default) { (alertAction) in
+                                    action = UIAlertAction.init(title: "Copy Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
                                             if let us = info.agentURL?.absoluteString {
                                                 let pb: UIPasteboard = UIPasteboard.general
                                                 pb.setValue(us, forPasteboardType: "public.text")
