@@ -102,22 +102,26 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     
     @objc func connectToDevice() {
         
-        initUI()
+        // App is about to come back into view after the user previously
+        // switched to a different app, so reset the UI - unless we're sending
+        if !self.isSending {
+            initUI()
         
-        // Get the networks from the device
-        if let aDevice: Device = device {
-            // NOTE We need to set the objects' delegates to 'self' so that the correct delegate functions are called
-            aDevice.peripheral.delegate = self
-            self.bluetoothManager.delegate = self
-            if !self.connected {
-                self.wifiPicker.isUserInteractionEnabled = false
-                self.bluetoothManager.connect(aDevice.peripheral, options: nil)
-                self.blinkUpProgressBar.startAnimating()
-                self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
-                                                      target: self,
-                                                      selector: #selector(self.endConnectWithAlert),
-                                                      userInfo: nil,
-                                                      repeats: false)
+            // Get the networks from the device
+            if let aDevice: Device = device {
+                // NOTE We need to set the objects' delegates to 'self' so that the correct delegate functions are called
+                aDevice.peripheral.delegate = self
+                self.bluetoothManager.delegate = self
+                if !self.connected {
+                    self.wifiPicker.isUserInteractionEnabled = false
+                    self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                    self.blinkUpProgressBar.startAnimating()
+                    self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
+                                                          target: self,
+                                                          selector: #selector(self.endConnectWithAlert),
+                                                          userInfo: nil,
+                                                          repeats: false)
+                }
             }
         }
     }
@@ -125,7 +129,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     override func viewDidAppear(_ animated: Bool) {
 
         super.viewDidAppear(animated)
-
     }
     
     @objc func endConnectWithAlert() {
@@ -143,23 +146,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.blinkUpProgressBar.stopAnimating()
     }
     
-    @objc func appWillEnterForeground() {
-
-        // App is about to come back into view after the user previously
-        // switched to a different app, so reset the UI - unless we're sending
-        if !self.isSending {
-            if self.connected {
-                if let aDevice: Device = self.device {
-                    self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
-                    self.connected = false
-                }
-            }
-
-            initUI()
-            initNetworks()
-        }
-    }
-
     func initUI() {
 
         // Initialise the UI
@@ -320,8 +306,10 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                     
                                     var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
                                         if let us = info.agentURL?.absoluteString {
-                                            let pb: UIPasteboard = UIPasteboard.general
-                                            pb.setValue(us, forPasteboardType: "public.text")
+                                            // Open the agent URL in Safari
+                                            let uiapp = UIApplication.shared
+                                            let url: URL = URL.init(string: us)!
+                                            uiapp.open(url, options: [:], completionHandler: nil)
                                         }
                                     }
                                     actionMenu.addAction(action)
