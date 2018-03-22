@@ -2,21 +2,21 @@
 
 This example comprises Squirrel code to run on an imp-based test device &mdash; this requires impOS™ 37 or above &mdash; and an Xcode project which you can use to build an iOS app (written in Swift) that is capable of finding and configuring test devices running the Squirrel code.
 
-The Squirrel code provides a basic framework for supporting BlinkUp™ via Bluetooth. The iOS app is used to scan for nearby Bluetooth-enabled imp-based devices, to select one of them, and then to choose a local wireless network, enter its password and transmit that information to the test device to perform BlinkUp.
+The Squirrel code provides a basic framework for supporting BlinkUp™ via Bluetooth, driven by a library class. The iOS app is used to scan for nearby Bluetooth-enabled imp-based devices, to select one of them, and then to choose a local wireless network, enter its password and transmit that information to the test device to perform BlinkUp.
 
-The app can perform a full device activation (this requires a BlinkUp API key, see below), or simply update an already activated device’s WiFi details. It can also be used to clear a device’s WiFi settings.
+The app will perform a full device activation, and this requires a BlinkUp API key, see below. It can also be used to clear a device’s WiFi settings.
 
 **Note** The iOS code can be run in Xcode’s Device Simulator, but this will not be able to access Bluetooth. To use Bluetooth, you must run the app on a connected Apple device. This requires a Apple Developer Account.
 
 ## BlinkUp Preparation ##
 
-The iOS app can make use of the Electric Imp BlinkUp SDK to activate a fresh development device. As such, it requires the entry of a BlinkUp API key to authorize its access to the Electric Imp impCloud™. The app does not prompt the user for this key because the app can be used without it to configure devices that have already been activated. To enter your key, tap ‘Actions’ in the navigation bar and select ‘Enter your BlinkUp API key’ from the menu.
+The iOS app makes use of the Electric Imp BlinkUp SDK to activate a fresh production device running the included Squirrel code. As such, it requires the entry of a BlinkUp API key to authorize its access to the Electric Imp impCloud™. The app prompts the user for this key, which can also be entered (or cleared) by tapping ‘Actions’ in the navigation bar and then ‘Enter your BlinkUp™ API key’ from the menu. We recommend you copy your API key from a text file or other source, and paste it into the app.
 
 Please note that Electric Imp makes BlinkUp API keys available **to customers only**. This sample code cannot be used by holders of free Electric Imp accounts.
 
-Your BlinkUp API key will be stored in the iOS keychain. If you wish to clear a stored password, open the ‘Enter your BlinkUp API key’ panel, ensure no key is entered, and tap ‘Submit’.
+Your BlinkUp API key will be stored in the iOS keychain. If you wish to clear a stored password, open the ‘Enter your BlinkUp™ API key’ panel, ensure no key is entered, and tap ‘Submit’.
 
-Setting only the device’s WiFi credentials does not make use of the BlinkUp SDK, so this is the default action if you do not provide an API key. Clearing the WiFi settings does not make use of the BlinkUp SDK.
+Clearing the WiFi settings does not make use of the BlinkUp SDK.
 
 ## Hardware Preparation ##
 
@@ -34,7 +34,7 @@ When the app has launched, you may be required to authorize the app to use Bluet
 
 <p align="center"><img src="images/01.png" width="375" style="border: 1px solid #DDDDDD" >&nbsp;&nbsp;<img src="images/02.png" width="375" style="border: 1px solid #DDDDDD"></p>
 
-Finally, tap ‘Send BlinkUp’ to transmit the WiFi credentials to the device. It will then reconnect to the new network. The device logs details of the process, so you can observe it connect if you are viewing the log stream in impCentral™ or an impCentral API-based tool.
+Finally, tap ‘Send BlinkUp’ to transmit the WiFi credentials to the device. It will then reconnect to the new network. The device logs details of the process, so you can observe it connect if you are viewing the log stream in impCentral™ or an impCentral API-based tool. After the device has been activated, the app will inform you. You can copy the device’s agent URL at this point, or open it in the phone’s default browser.
 
 Optionally, tap ‘Clear WiFi Settings’ to erase your device’s WiFi credentials. It is not necessary to clear WiFi settings before setting them, but this feature is included here to demonstrate the range of device configuration features you can implement using Bluetooth.
 
