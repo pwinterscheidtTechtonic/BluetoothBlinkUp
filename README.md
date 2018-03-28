@@ -40,7 +40,7 @@ When the iOS app has launched, you may be required to authorize the app to use B
 
 Now pull down the list view to start a scan (or tap ‘Actions’ and select ‘Start Scan’) to search for compatible devices. Any devices running the demo’s Squirrel code, such as your Breakout Board, will now appear in the list &mdash; tap one to view the list of compatible WiFi networks the device can see. Select your network from the list and enter its password, if it has one. You can tap the eye icon in the password field to view the password characters.
 
-<p align="center"><img src="images/01.png" width="375" style="border: 1px solid #DDDDDD" >&nbsp;&nbsp;<img src="images/02.png" width="375" style="border: 1px solid #DDDDDD"></p>
+<p align="center"><img src="images/01.png" width="375" style="border: 1px solid #000000" >&nbsp;&nbsp;<img src="images/02.png" width="375" style="border: 1px solid #000000"></p>
 
 Finally, tap ‘Send BlinkUp’ to transmit the WiFi credentials to the Breakout Board. It will then reconnect to the new network. The Breakout Board logs details of the process, so you can observe it connect if you are viewing the log stream in impCentral™ or an impCentral API-based tool. After the Breakout Board has been activated, the app will inform you. You can copy the device’s agent URL at this point, or open it in the phone’s default browser.
 
