@@ -24,3 +24,7 @@ DerivedData/
 ## BlinkUp SDK Files
 iOS/Frameworks/*
 iOS/BluetoothBlinkUp/BlinkUpSwiftExtensions/*
+
+## Other
+iOS/Art/*
+
