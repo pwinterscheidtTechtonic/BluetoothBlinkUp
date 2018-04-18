@@ -66,4 +66,6 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 
 This sample Squirrel and iOS application code is made available under the MIT License.
 
+The BlinkUp SDK is licensed separately and is not available under an open source license.
+
 Copyright © 2018, Electric Imp, Inc.
