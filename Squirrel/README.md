@@ -146,4 +146,4 @@ This method registers a callback function that will be triggered when a remote d
 
 ## License ##
 
-BTLEBlinkUp is licensed under the terms and conditions of the MIT License.
+The BTLEBlinkUp library is licensed under the terms and conditions of the MIT License.
