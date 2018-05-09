@@ -299,25 +299,10 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             self.blinkUpProgressBar.stopAnimating()
                             
                             if (aDevice.agent.count > 0) {
-                                let actionMenu = UIAlertController.init(title: "Device \(aDevice.devID)\nHas Connected", message: "", preferredStyle: UIAlertControllerStyle.actionSheet)
-                                
-                                var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                    let uiapp = UIApplication.shared
-                                    let url: URL = URL.init(string: aDevice.agent)!
-                                    uiapp.open(url, options: [:], completionHandler: nil)
-                                }
-                                
-                                actionMenu.addAction(action)
-                                
-                                action = UIAlertAction.init(title: "Copy Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                    let pb: UIPasteboard = UIPasteboard.general
-                                    pb.setValue(aDevice.agent, forPasteboardType: "public.text")
-                                }
-                                actionMenu.addAction(action)
-                                
-                                action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
-                                actionMenu.addAction(action)
-                                self.present(actionMenu, animated: true, completion: nil)
+                                let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
+                                let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
+                                awvc.agentURL = aDevice.agent
+                                self.navigationController!.pushViewController(awvc, animated: true)
                             } else {
                                 self.showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
                             }
