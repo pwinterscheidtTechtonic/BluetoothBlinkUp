@@ -49,6 +49,18 @@ class AgentWebViewController: UIViewController {
                 let request: URLRequest = URLRequest.init(url: url)
                 webView.load(request)
             }
+        } else {
+            // We've been given no agent URL, so load up and display
+            // a premade HTML-based message
+            if let docPath = Bundle.main.path(forResource: "default", ofType: "html") {
+                if let data = FileManager.default.contents(atPath: docPath) {
+                    if let dataString = String.init(data: data, encoding: String.Encoding.utf8) {
+                        webView.loadHTMLString(dataString, baseURL: nil)
+                    }
+                }
+            }
+            
+            
         }
     }
     

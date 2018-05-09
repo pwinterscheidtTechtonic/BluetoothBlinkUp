@@ -298,6 +298,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             self.isSending = false
                             self.blinkUpProgressBar.stopAnimating()
                             
+                            // Instantiate and show a webview containing the agent-served UI
+                            // TODO Incorporate a check to load the agent-served string and check that
+                            //      it is valid HTML before loading
                             if (aDevice.agent.count > 0) {
                                 let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
                                 let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
