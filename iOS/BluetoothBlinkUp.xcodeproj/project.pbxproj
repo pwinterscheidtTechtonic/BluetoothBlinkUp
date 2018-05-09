@@ -17,6 +17,7 @@
 		3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */; };
 		3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAA1FE2A1910004D87E /* BUConfigId.swift */; };
 		3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */; };
+		3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */; };
 		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
 		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
 		3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */; };
@@ -35,6 +36,7 @@
 		3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		3B232BAA1FE2A1910004D87E /* BUConfigId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUConfigId.swift; path = BlinkUpSwiftExtensions/BUConfigId.swift; sourceTree = "<group>"; };
 		3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUDevicePoller.swift; path = BlinkUpSwiftExtensions/BUDevicePoller.swift; sourceTree = "<group>"; };
+		3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentWebViewController.swift; sourceTree = "<group>"; };
 		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItem.swift; sourceTree = "<group>"; };
 		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				3B232B8F1FE2980F0004D87E /* AppDelegate.swift */,
 				3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */,
 				3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */,
+				3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */,
 				3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */,
 				3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */,
 				3B232BAA1FE2A1910004D87E /* BUConfigId.swift */,
@@ -175,6 +178,7 @@
 				3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */,
 				3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */,
 				3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */,
+				3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */,
 				3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */,
 				3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */,
 				3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */,
