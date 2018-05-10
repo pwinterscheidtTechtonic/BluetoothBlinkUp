@@ -33,35 +33,68 @@
 import UIKit
 import WebKit
 
-class AgentWebViewController: UIViewController {
+class AgentWebViewController: UIViewController, WKNavigationDelegate {
 
     @IBOutlet weak var webView: WKWebView!
-    
+    @IBOutlet weak var backView: UIImageView!
+    @IBOutlet weak var loadProgress: UIActivityIndicatorView!
+
     var agentURL: String = ""
+
     
+    // MARK: - View Lifecycle Functions
+
+    override func viewDidLoad() {
+
+        super.viewDidLoad()
+
+        self.webView.navigationDelegate = self
+        self.loadProgress.isHidden = true
+        self.backView.isUserInteractionEnabled = false
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         
         super.viewWillAppear(animated)
-        
+
+        self.backView.isHidden = false
+
         if agentURL.count > 0 {
+            // We have a non-zero agent URL string, so pass it to the web view to load
             if let url = URL.init(string: agentURL) {
                 let request: URLRequest = URLRequest.init(url: url)
-                webView.load(request)
+                self.loadProgress.startAnimating()
+                self.webView.load(request)
             }
         } else {
-            // We've been given no agent URL, so load up and display
-            // a premade HTML-based message
+            // We've been given no agent URL, so load up and display a premade HTML-based message
             if let docPath = Bundle.main.path(forResource: "default", ofType: "html") {
                 if let data = FileManager.default.contents(atPath: docPath) {
                     if let dataString = String.init(data: data, encoding: String.Encoding.utf8) {
-                        webView.loadHTMLString(dataString, baseURL: nil)
+                        self.webView.loadHTMLString(dataString, baseURL: Bundle.main.bundleURL)
                     }
                 }
             }
-            
-            
         }
+    }
+
+
+    // MARK: - WKWebView Delegate Functions
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+
+        // The agent-served UI has been loaded, so hide the background image, etc.
+        self.loadProgress.stopAnimating()
+        self.backView.isHidden = true
+    }
+
+
+    // MARK: - App Navigation Functions
+
+    @objc func goBack() {
+
+        // Jump back to the previous screen
+        self.navigationController!.popViewController(animated: true)
     }
     
 }
