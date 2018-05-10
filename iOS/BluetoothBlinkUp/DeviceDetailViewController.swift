@@ -305,6 +305,15 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
                                 let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
                                 awvc.agentURL = aDevice.agent
+
+                                // Set up the left-hand nav bar button with an icon and text
+                                let button = UIButton(type: UIButtonType.system)
+                                button.setImage(UIImage(named: "icon_back"), for: UIControlState.normal)
+                                button.setTitle("Back", for: UIControlState.normal)
+                                button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                                button.sizeToFit()
+                                button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControlEvents.touchUpInside)
+                                awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
                                 self.navigationController!.pushViewController(awvc, animated: true)
                             } else {
                                 self.showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
