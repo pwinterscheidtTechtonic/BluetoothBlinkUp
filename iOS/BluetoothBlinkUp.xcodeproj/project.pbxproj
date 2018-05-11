@@ -22,6 +22,7 @@
 		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
 		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
 		3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */; };
+		3BFF6BA220A5AC1F00F08ABD /* back.html in Resources */ = {isa = PBXBuildFile; fileRef = 3BFF6BA120A5AC1E00F08ABD /* back.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItem.swift; sourceTree = "<group>"; };
 		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
+		3BFF6BA120A5AC1E00F08ABD /* back.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = back.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 				3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */,
 				3B232B961FE2980F0004D87E /* Assets.xcassets */,
 				3B42BC0C20A3608F0031FA97 /* default.html */,
+				3BFF6BA120A5AC1E00F08ABD /* back.html */,
 				3B1DC725201B768200369C00 /* Settings.bundle */,
 				3B232B9B1FE2980F0004D87E /* Info.plist */,
 			);
@@ -167,6 +170,7 @@
 				3B42BC0D20A360900031FA97 /* default.html in Resources */,
 				3B1DC726201B768200369C00 /* Settings.bundle in Resources */,
 				3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */,
+				3BFF6BA220A5AC1F00F08ABD /* back.html in Resources */,
 				3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */,
 				3B232B951FE2980F0004D87E /* Main.storyboard in Resources */,
 			);

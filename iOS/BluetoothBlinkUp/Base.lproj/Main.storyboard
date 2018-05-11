@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -159,43 +158,33 @@
                             <wkWebView contentMode="scaleToFill" allowsLinkPreview="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vSZ-8g-Jwv">
                                 <rect key="frame" x="0.0" y="20" width="375" height="647"/>
                                 <color key="backgroundColor" red="0.92143100499999997" green="0.92145264149999995" blue="0.92144101860000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <wkWebViewConfiguration key="configuration" allowsAirPlayForMediaPlayback="NO" allowsPictureInPictureMediaPlayback="NO">
-                                    <dataDetectorTypes key="dataDetectorTypes"/>
+                                <wkWebViewConfiguration key="configuration" allowsAirPlayForMediaPlayback="NO" allowsPictureInPictureMediaPlayback="NO" suppressesIncrementalRendering="YES">
+                                    <dataDetectorTypes key="dataDetectorTypes" none="YES"/>
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
                             </wkWebView>
-                            <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="back" translatesAutoresizingMaskIntoConstraints="NO" id="Ow7-AE-42o">
-                                <rect key="frame" x="59" y="205.5" width="256" height="256"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="256" id="JGd-JN-cZY"/>
-                                    <constraint firstAttribute="width" constant="256" id="Wcz-GP-pfG"/>
-                                </constraints>
-                            </imageView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="AcP-Ew-dgf">
-                                <rect key="frame" x="169" y="66" width="37" height="37"/>
+                                <rect key="frame" x="169" y="315" width="37" height="37"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="37" id="Jzr-9F-vWL"/>
-                                    <constraint firstAttribute="height" constant="37" id="KAN-GQ-cfM"/>
+                                    <constraint firstAttribute="width" constant="37" id="ZzE-gF-s9R"/>
+                                    <constraint firstAttribute="height" constant="37" id="np6-xI-A2S"/>
                                 </constraints>
-                                <color key="color" red="0.049625284970000003" green="0.66577929260000002" blue="0.70767682789999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="color" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="vSZ-8g-Jwv" firstAttribute="leading" secondItem="gtW-Ee-Fgm" secondAttribute="leading" id="2TW-uO-n29"/>
-                            <constraint firstItem="Ow7-AE-42o" firstAttribute="centerY" secondItem="xTM-a0-vWU" secondAttribute="centerY" id="3zG-jc-CN8"/>
                             <constraint firstItem="vSZ-8g-Jwv" firstAttribute="bottom" secondItem="gtW-Ee-Fgm" secondAttribute="bottom" id="6eZ-C6-3SI"/>
-                            <constraint firstItem="AcP-Ew-dgf" firstAttribute="top" secondItem="gtW-Ee-Fgm" secondAttribute="top" constant="46" id="B1G-v4-f5w"/>
-                            <constraint firstItem="AcP-Ew-dgf" firstAttribute="centerX" secondItem="xTM-a0-vWU" secondAttribute="centerX" id="UBh-Fh-0o9"/>
                             <constraint firstItem="vSZ-8g-Jwv" firstAttribute="top" secondItem="gtW-Ee-Fgm" secondAttribute="top" id="VLS-Ed-izM"/>
+                            <constraint firstItem="AcP-Ew-dgf" firstAttribute="centerX" secondItem="xTM-a0-vWU" secondAttribute="centerX" id="Zoq-gW-Hd4"/>
+                            <constraint firstItem="AcP-Ew-dgf" firstAttribute="centerY" secondItem="xTM-a0-vWU" secondAttribute="centerY" id="jVX-Nl-rXX"/>
                             <constraint firstItem="vSZ-8g-Jwv" firstAttribute="trailing" secondItem="gtW-Ee-Fgm" secondAttribute="trailing" id="vjw-nb-19r"/>
-                            <constraint firstItem="Ow7-AE-42o" firstAttribute="centerX" secondItem="xTM-a0-vWU" secondAttribute="centerX" id="whA-wh-9ih"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="gtW-Ee-Fgm"/>
                     </view>
                     <connections>
-                        <outlet property="backView" destination="Ow7-AE-42o" id="Oze-yO-cUg"/>
                         <outlet property="loadProgress" destination="AcP-Ew-dgf" id="RVN-dG-djp"/>
                         <outlet property="webView" destination="vSZ-8g-Jwv" id="qJP-vt-iyG"/>
                     </connections>
@@ -303,7 +292,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="back" width="256" height="256"/>
         <image name="downarrow" width="16" height="16"/>
         <image name="imp004m" width="32" height="32"/>
     </resources>
