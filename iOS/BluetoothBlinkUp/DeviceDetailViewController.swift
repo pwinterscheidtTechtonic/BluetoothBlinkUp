@@ -351,33 +351,26 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 switch(response) {
                                 case .responded(let info):
                                     // The server indicates that the device has enrolled successfully, so we're done
-                                    let na: String = "N/A"
-                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™.", preferredStyle: UIAlertControllerStyle.actionSheet)
-                                    
-                                    var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                        if let us = info.agentURL?.absoluteString {
-                                            // Open the agent URL in Safari
-                                            let uiapp = UIApplication.shared
-                                            let url: URL = URL.init(string: us)!
-                                            uiapp.open(url, options: [:], completionHandler: nil)
-                                        }
-                                    }
-                                    actionMenu.addAction(action)
-                                    
-                                    
-                                    action = UIAlertAction.init(title: "Copy Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                            if let us = info.agentURL?.absoluteString {
-                                                let pb: UIPasteboard = UIPasteboard.general
-                                                pb.setValue(us, forPasteboardType: "public.text")
-                                            }
-                                        }
-                                    actionMenu.addAction(action)
-                                    
-                                    action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
-                                    actionMenu.addAction(action)
-                                    self.present(actionMenu, animated: true, completion: nil)
                                     self.sendLabel.text = ""
                                     self.blinkUpProgressBar.stopAnimating()
+
+                                    if let us = info.agentURL?.absoluteString {
+                                        let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
+                                        let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
+                                        awvc.agentURL = us
+
+                                        // Set up the left-hand nav bar button with an icon and text
+                                        let button = UIButton(type: UIButtonType.system)
+                                        button.setImage(UIImage(named: "icon_back"), for: UIControlState.normal)
+                                        button.setTitle("Back", for: UIControlState.normal)
+                                        button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                                        button.sizeToFit()
+                                        button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControlEvents.touchUpInside)
+                                        awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+                                        self.navigationController!.pushViewController(awvc, animated: true)
+                                    } else {
+                                        self.showAlert("Device Enrolled", "Your device has connected to the Electric Imp impCloud™.")
+                                    }
                                 case .error(let error):
                                     // Something went wrong, so dump the error and perform the timed out flow
                                     NSLog(error.description)

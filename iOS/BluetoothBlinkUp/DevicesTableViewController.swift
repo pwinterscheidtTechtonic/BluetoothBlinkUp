@@ -611,7 +611,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     }
                 }
             }
-        } else {
+        } else if characteristic.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
             if let data = characteristic.value {
                 if let aDevice = getDevice(peripheral) {
                     // Add the agent URL to the device record
