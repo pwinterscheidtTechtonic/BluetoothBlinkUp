@@ -1,6 +1,6 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.agent.nut
-//  Version: 1.0.0
+//  Version: 1.0.1
 //
 //  Copyright 2017-18 Electric Imp
 //
@@ -82,7 +82,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 </div>
                 <p>&nbsp;</p>
                 <div class='reset-button' style='color:dimGrey;font-family:Abel,sans-serif' align='center'>
-                    <button type='submit' id='resetter' style='height:32px;width:200px'>Clear BlinkUp Signature on Device</button>
+                    <button type='submit' id='resetter' style='height:32px;width:200px'>Clear BlinkUp Signature</button>
                 </div>
                 <p>&nbsp;</p>
                 <p class='colophon'>BlinkUp Demo &copy; Electric Imp, Inc. 2018</p>
@@ -176,7 +176,7 @@ api.post("/action", function(context) {
             }
         }
 
-        context.send(400, "Unknown command");
+        response.send(400, "Unknown command");
     } catch (err) {
         server.error(err);
         context.send(400, "Bad data posted");
