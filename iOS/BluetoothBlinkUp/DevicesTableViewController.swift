@@ -616,6 +616,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 if let aDevice = getDevice(peripheral) {
                     // Add the agent URL to the device record
                     aDevice.agent = String.init(data: data, encoding: String.Encoding.utf8)!
+                    if aDevice.agent == "null" { aDevice.agent = ""; }
 
                     // Disconnect now we have the data
                     self.bluetoothManager.cancelPeripheralConnection(peripheral)
