@@ -10,7 +10,14 @@ At this time, BTLEBlinkUp is still in development and not yet part of the Electr
 
 ### Constructor: BTLEBlinkUp(*[lpoPin][, regonPin][, uart][, uuids]*) ###
 
-The constructor has four parameters, all of which are optional. The first two, *lpoPin* and *regonPin*, take the two imp GPIO pins that have been connected to the Bluetooth LE radio’s LPO_IN and BT_REG_ON pins. These currently default to the imp004m Breakout Board pins with these functions: **hardware.pinE** and **hardware.pinJ**, respectively. The *uart* parameter takes a reference to the imp UART bus on which the imp’s Bluetooth radio is connected; it defaults to **hardware.uartFGJH**.
+#### Parameters ####
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *lpoPin* | imp **pin** object | No | The imp GPIO pin connected to the Bluetooth LE radio’s LPO_IN pin (Default: **hardware.pinE**) |
+| *regonPin* | imp **pin** object | No | The imp GPIO pin connected to the Bluetooth LE radio’s BT_REG_ON pin (Default: **hardware.pinJ**) |
+| *uart* | imp **uart** object | No | The imp UART on which the imp’s Bluetooth radio is connected (Default: **hardware.uartFGJH**) |
+| *uuids* | Array of strings | No | Used to specify alternative UUIDs for the BlinkUp service delivered by the library *(see below)* |
 
 The *uuids* parameter can be used to specify alternative UUIDs for the BlinkUp service delivered by the library. The UUIDs are supplied as a table with the following keys:
 
@@ -37,9 +44,14 @@ The value of each key is a string.
 
 This method provides the easiest way to provide BlinkUp via Bluetooth LE. It boots up the imp’s Bluetooth LE radio; sets up and serves two GATT services, BlinkUp and the standard Device Information service; prepares the imp to receive connections from the mobile app being used to provide the imp with activation data; and advertises the imp’s availability to other Bluetooth LE devices.
 
-The method has two parameters, both of which are optional. The first, *advert* is a string or blob of up to 31 bytes in length — this is the imp’s Bluetooth LE advertisement payload. If you do not specify a payload, the library generates one for you using the BlinkUp service UUID (default or supplied) and the type of imp module as a device name string (eg. `imp004m`).
+#### Parameters ####
 
-The *callback* parameter takes a function which will be triggered when a remote device connects to the imp, or actively disconnects from it. This function has a single parameter into which a table is passed containing any of the following keys:
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *advert* | String or blob | No | The imp’s Bluetooth LE advertisement payload, up to 31 bytes in length. If you do not specify a payload, the library generates one for you using the BlinkUp service UUID (default or supplied) and the type of imp module as a device name string (eg. `imp004m`) |
+| *callback* | Function | No | A function which will be triggered when a remote device connects to the imp, or actively disconnects from it |
+
+The *callback* function has a single parameter of its own into which a table is passed containing any of the following keys:
 
 | Key | Type | Notes |
 | --- | --- | --- |
@@ -49,29 +61,74 @@ The *callback* parameter takes a function which will be triggered when a remote 
 | *state* | String | The state of the remote device: `"connected"` or `"disconnected"` |
 | *error* | String | In the event of an error, a description of the error; otherwise `null` |
 
+#### Return Value ####
+
+Nothing.
+
 #### Example ####
 
-```
+```squirrel
 local bt = BTLEBlinkUp();
 bt.listenForBlinkUp(null, function(data) {
-    server.log("Device " + data.address + " has " + data.state);
+  server.log("Device " + data.address + " has " + data.state);
 });
+```
+
+### setAgentURL(*url*) ###
+
+This method allows you to inform the instance of the URL of host device's agent. You can also set this directly via the object property *agentURL*. If set, the agent URL will be included in the device information service provided by the instance.
+
+#### Parameters ####
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *url* | Integer | No | The URL of the device's agent (Default: `""`) |
+
+#### Return Value ####
+
+String &mdash; the agent URL applied.
+
+#### Example ####
+
+```squirrel
+local bt = BTLEBlinkUp();
+
+// Register a handler to receive the agent URL from the agent
+agent.on("set.agent.url", function(url) {
+  // Set the agentURL property and configure BLE
+  bt.setAgentURL(url);
+  configureBLEBlinkUp();
+}.bindenv(this));
+
+// Ask the agent for its URL
+// Agent simply returns its URL as a string
+agent.send("get.agent.url", true);
+}
 ```
 
 ### setSecurity(*mode, pin*) ###
 
-This method applies the required security mode: 1, 3 or 4. For more information, please see [**hardware.bluetooth.setsecurity()**](https://developer.electricimp.com/api/hardware/bluetooth/setsecurity/).
+This method applies the required security mode: 1, 3 or 4. For more information, please see [**hardware.bluetooth.setsecurity()**](https://developer.electricimp.com/api/hardware/bluetooth/setsecurity/). If any errors are encountered, eg. an incorrect security mode has been requested, the method will report the fact and set the security level to the default: no security. For this mode, no value need be passed into *pin*, but modes 3 and 4 both require the provision of a six-digit decimal PIN code for pairing. This can be a string or an integer.
 
-The default value of *mode* is 1 (no security). For this mode, no value need be passed into *pin*, but modes 3 and 4 both require the provision of a six-digit decimal PIN code for pairing. This can be a string or an integer. Values greater than six digits will trigger an error to be reported and the no security will be applied.
+#### Parameters ####
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *mode* | Integer | No | The required BLE security mode (Default: 1) |
+| *pin* | Integer or string | No | The six-digit PIN code (Required for modes 3 and 4) |
+
+#### Return Value ####
+
+Integer &mdash; the security mode applied.
 
 #### Example ####
 
-```
+```squirrel
 local advert = "\x11\x07\x19\xD7\x68\xF3\x7C\xAF\xF2\xA5\xC9\x48\x55\xC4\xBE\x47\xDA\xFA\x0A\x09\x69\x6D\x70\x30\x30\x34\x2D\x42\x42";
 local bt = BTLEBlinkUp();
 bt.setSecurity(4, "163524");
 bt.listenForBlinkUp(advert, function(data) {
-    server.log("Device " + data.address + " has " + data.state);
+  server.log("Device " + data.address + " has " + data.state);
 });
 ```
 
@@ -79,24 +136,31 @@ bt.listenForBlinkUp(advert, function(data) {
 
 This method sets up and begins serving BlinkUp and standard Device Information GATT services. The BlinkUp service uses the UUIDs supplied to the class construtor (or the defaults, if no UUIDs were specified). The latter uses the following UUIDs, as per the Bluetooth LE standard:
 
-```
+```squirrel
 service = { "uuid": 0x180A,
-              "chars": [
-                { "uuid": 0x2A29, "value": "Electric Imp" },           // Manufacturer name
-                { "uuid": 0x2A25, "value": hardware.getdeviceid() },   // Serial number
-                { "uuid": 0x2A24, "value": imp.info().type },          // Model number
-                { "uuid": 0x2A26, "value": imp.getsoftwareversion() }  // Firmware revision
-              ]
-           };
+            "chars": [
+              { "uuid": 0x2A29, "value": "Electric Imp" },           // Manufacturer name
+              { "uuid": 0x2A25, "value": hardware.getdeviceid() },   // Serial number
+              { "uuid": 0x2A24, "value": imp.info().type },          // Model number
+              { "uuid": 0x2A26, "value": imp.getsoftwareversion() }  // Firmware revision
+            ] };
 ```
-
-The parameter *otherServices* takes an array of service definition tables (or a single such service as a table) as detailed [here](https://developer.electricimp.com/api/hardware/bluetooth/servegatt/). These are loaded and served alongside the two services mentioned above.
 
 **Note** *serve()* is called implicitly by *listenForBlinkUp()*.
 
+#### Parameters ####
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *otherServices* | Array of tables | No | An array of service definition tables (or a single such service as a table) as detailed [here](. )These are loaded and served alongside the two services mentioned above |
+
+#### Return Value ####
+
+Nothing.
+
 #### Example ####
 
-```
+```squirrel
 // Add Battery Level sevice
 local bls = { "uuid": 0x180F,
               "chars": [
@@ -107,8 +171,7 @@ local bls = { "uuid": 0x180F,
                     b.writen(battery_percent, 'b');
                     return b;
                   }.bindenv(this) }
-              ]
-            };
+              ] };
 
 bt.serve(bls);
 ```
@@ -119,9 +182,21 @@ This method advertises the imp to other Bluetooth LE-enabled devices using the a
 
 **Note** *advertise()* is called implicitly by *listenForBlinkUp()*.
 
+#### Parameters ####
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *advert* | String | No | The imp’s Bluetooth LE advertisement payload, up to 31 bytes in length. If you do not specify a payload, the library generates one for you using the BlinkUp service UUID (default or supplied) and the type of imp module as a device name string (eg. `imp004m`) |
+| *min* | Integer | No | The minimum advertising interval in ms (Default: 100) |
+| *max* | Integer | No | The maximum advertising interval in ms (Default: 100) |
+
+#### Return Value ####
+
+Nothing.
+
 #### Example ####
 
-```
+```squirrel
 local advert = "\x11\x07\x19\xD7\x68\xF3\x7C\xAF\xF2\xA5\xC9\x48\x55\xC4\xBE\x47\xDA\xFA\x08\x09\x69\x6D\x70\x30\x30\x34\x6D";
 bt = BTLEBlinkUp();
 bt.setSecurity(1);
@@ -132,7 +207,17 @@ server.log("Bluetooth running...");
 
 ### onConnect(*[callback]*) ###
 
-This method registers a callback function that will be triggered when a remote device connects to the imp, or manually disconnects from it. This function has a single parameter into which a table is passed containing any of the following keys:
+This method registers a callback function that will be triggered when a remote device connects to the imp, or manually disconnects from it.
+
+**Note** *onConnect()* is called implicitly by *listenForBlinkUp()*.
+
+#### Parameters ####
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| *callback* | Function | No | A function which will be triggered when a remote device connects to the imp, or actively disconnects from it |
+
+The *callback* function has a single parameter of its own into which a table is passed containing any of the following keys:
 
 | Key | Type | Notes |
 | --- | --- | --- |
@@ -142,7 +227,9 @@ This method registers a callback function that will be triggered when a remote d
 | *state* | String | The state of the remote device: `"connected"` or `"disconnected"` |
 | *error* | String | In the event of an error, a description of the error; otherwise `null` |
 
-**Note** *onConnect()* is called implicitly by *listenForBlinkUp()*.
+#### Return Value ####
+
+Nothing.
 
 ## License ##
 

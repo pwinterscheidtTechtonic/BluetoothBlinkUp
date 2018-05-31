@@ -1,6 +1,6 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
-//  Version: 1.1.0
+//  Version: 1.1.1
 //
 //  Copyright 2017-18 Electric Imp
 //
@@ -31,7 +31,7 @@ const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
 
 class BTLEBlinkUp {
 
-    static VERSION = "0.0.1";
+    static VERSION = "0.0.2";
 
     // Public instance properties
     ble = null;
@@ -84,21 +84,21 @@ class BTLEBlinkUp {
 
         if (ble == null) {
             server.error("BTLEBlinkUp.setSecurity() - Bluetooth LE not initialized");
-            return;
+            return 1;
         }
 
         // Check that a valid mode has been provided
         if (mode != 1 && mode != 3 && mode != 4) {
             server.error("BTLEBlinkUp.setSecurity() - undefined security mode selected");
             ble.setsecurity(1);
-            return;
+            return 1;
         }
 
         // Check that a PIN has been provided for modes 3 and 4
         if (pin == null && mode > 1) {
             server.error("BTLEBlinkUp.setSecurity() - security modes 3 and 4 require a PIN");
             ble.setsecurity(1);
-            return;
+            return 1;
         }
 
         // Parameter 'pin' should be a string or an integer and no more than six digits
@@ -106,7 +106,7 @@ class BTLEBlinkUp {
             if (pin.len() > 6) {
                 server.error("BTLEBlinkUp.setSecurity() - security PIN cannot be more than six characters");
                 ble.setsecurity(1);
-                return;
+                return 1;
             }
 
             try {
@@ -114,18 +114,18 @@ class BTLEBlinkUp {
             } catch (err) {
                 server.error("BTLEBlinkUp.setSecurity() - security PIN must contain only decimal numeric characters");
                 ble.setsecurity(1);
-                return;
+                return 1;
             }
         } else if (typeof pin == "integer") {
             if (pin < 0 || pin > 999999) {
                 server.error("BTLEBlinkUp.setSecurity() - security PIN must contain 1 to 6 digits");
                 ble.setsecurity(1);
-                return;
+                return 1;
             }
         } else {
             server.error("BTLEBlinkUp.setSecurity() - security PIN must be a string or integer");
             ble.setsecurity(1);
-            return;
+            return 1;
         }
 
         if (mode == 1) {
@@ -134,6 +134,15 @@ class BTLEBlinkUp {
         } else {
             ble.setsecurity(mode, pin);
         }
+
+        return mode;
+    }
+
+    function setAgentURL(url = "") {
+        // Set the host device's agent's URL
+        // This is included in the device info service data
+        agentURL = typeof url == "string" ? url : "";
+        return agentURL;
     }
 
     function serve(otherServices = null) {
@@ -249,7 +258,6 @@ class BTLEBlinkUp {
         services.append(service);
 
         // Device information service
-        server.log(agentURL);
         service = { "uuid": 0x180A,
                     "chars": [
                       { "uuid": 0x2A29, "value": "Electric Imp" },           // manufacturer name
