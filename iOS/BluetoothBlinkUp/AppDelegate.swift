@@ -88,13 +88,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
 
         // Check for a previous 3D touch
-        guard let shortcut = launchedShortcutItem else { return }
+        guard let shortcut = self.launchedShortcutItem else { return }
 
         // Handle the saved shortcut...
         _ = handleShortcut(shortcut)
 
         // ...then clear it
-        launchedShortcutItem = nil
+        self.launchedShortcutItem = nil
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -124,13 +124,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case "hsshare":
             // Handle Share shortcut
             handled = true
+            if let rvc = self.window?.rootViewController as? DevicesTableViewController {
+                rvc.startScan()
+            }
             break
         default:
             break
-        }
-
-        if handled {
-            // https://www.raywenderlich.com/133825/uiactivityviewcontroller-tutorial
         }
 
         return handled

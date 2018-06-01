@@ -30,9 +30,9 @@
 			<key>UIApplicationShortcutItemType</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER).hsshare</string>
 			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeShare</string>
+			<string>UIApplicationShortcutIconTypeSearch</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>Share BluetoothBlinkUp</string>
+			<string>Start Device Scan</string>
 		</dict>
 	</array>
 	<key>UILaunchStoryboardName</key>
