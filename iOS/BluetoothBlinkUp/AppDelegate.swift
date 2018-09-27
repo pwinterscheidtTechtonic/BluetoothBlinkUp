@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: App Lifecycle Functions
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
         // Override point for customization after application launch.
         // Set window's standard control tint colour
@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If a shortcut was launched, display its information and take the appropriate action.
         var shouldPerformAdditionalDelegateHandling = true
 
-        if let shortcut = launchOptions?[UIApplicationLaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
+        if let shortcut = launchOptions?[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
 
             self.launchedShortcutItem = shortcut
 

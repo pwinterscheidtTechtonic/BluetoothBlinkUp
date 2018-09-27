@@ -77,19 +77,19 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         super.viewDidLoad()
 
         // Set up the 'show password' button within the password entry field
-        let overlayButton: UIButton = UIButton.init(type: UIButtonType.custom)
-        overlayButton.setImage(UIImage.init(named: "button_eye"), for: UIControlState.normal)
-        overlayButton.addTarget(self, action: #selector(self.showPassword(_:)), for: UIControlEvents.touchUpInside)
+        let overlayButton: UIButton = UIButton.init(type: UIButton.ButtonType.custom)
+        overlayButton.setImage(UIImage.init(named: "button_eye"), for: UIControl.State.normal)
+        overlayButton.addTarget(self, action: #selector(self.showPassword(_:)), for: UIControl.Event.touchUpInside)
         overlayButton.frame = CGRect.init(x: 0, y: 6, width: 20, height: 16)
 
         // Assign the overlay button to a stored text field
         self.passwordField.leftView = overlayButton
-        self.passwordField.leftViewMode = UITextFieldViewMode.always
+        self.passwordField.leftViewMode = UITextField.ViewMode.always
 
         // Watch for app returning to foreground from the ImpDetailViewController
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.connectToDevice),
-                                               name: NSNotification.Name.UIApplicationWillEnterForeground,
+                                               name: UIApplication.willEnterForegroundNotification,
                                                object: nil)
     }
 
@@ -307,12 +307,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 awvc.agentURL = aDevice.agent
 
                                 // Set up the left-hand nav bar button with an icon and text
-                                let button = UIButton(type: UIButtonType.system)
-                                button.setImage(UIImage(named: "icon_back"), for: UIControlState.normal)
-                                button.setTitle("Back", for: UIControlState.normal)
+                                let button = UIButton(type: UIButton.ButtonType.system)
+                                button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
+                                button.setTitle("Back", for: UIControl.State.normal)
                                 button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                                 button.sizeToFit()
-                                button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControlEvents.touchUpInside)
+                                button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControl.Event.touchUpInside)
                                 awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
                                 self.navigationController!.pushViewController(awvc, animated: true)
                             } else {
@@ -360,12 +360,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                         awvc.agentURL = us
 
                                         // Set up the left-hand nav bar button with an icon and text
-                                        let button = UIButton(type: UIButtonType.system)
-                                        button.setImage(UIImage(named: "icon_back"), for: UIControlState.normal)
-                                        button.setTitle("Back", for: UIControlState.normal)
+                                        let button = UIButton(type: UIButton.ButtonType.system)
+                                        button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
+                                        button.setTitle("Back", for: UIControl.State.normal)
                                         button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                                         button.sizeToFit()
-                                        button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControlEvents.touchUpInside)
+                                        button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControl.Event.touchUpInside)
                                         awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
                                         self.navigationController!.pushViewController(awvc, animated: true)
                                     } else {
@@ -603,7 +603,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     func showAlert(_ title: String, _ message: String) {
         let alert = UIAlertController.init(title: title,
                                            message: message,
-                                           preferredStyle: UIAlertControllerStyle.alert)
+                                           preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
                                       style: .`default`,
                                       handler: nil))
@@ -615,7 +615,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     func showDisconnectAlert(_ title: String, _ message: String) {
         let alert = UIAlertController.init(title: title,
                                            message: message,
-                                           preferredStyle: UIAlertControllerStyle.alert)
+                                           preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
                                       style: .`default`,
                                       handler: nil))
