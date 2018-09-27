@@ -32,7 +32,7 @@
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>Start Device Scan</string>
 			<key>UIApplicationShortcutItemType</key>
-			<string>$(PRODUCT_BUNDLE_IDENTIFIER).hsshare</string>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).startscan</string>
 		</dict>
 	</array>
 	<key>UILaunchStoryboardName</key>

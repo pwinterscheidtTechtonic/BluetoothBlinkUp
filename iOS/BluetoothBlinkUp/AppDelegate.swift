@@ -121,15 +121,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let last = shortCutType.components(separatedBy: ".").last else { return false }
 
         switch last {
-        case "hsshare":
-            // Handle Share shortcut
-            handled = true
-            if let rvc = self.window?.rootViewController as? DevicesTableViewController {
-                rvc.startScan()
-            }
-            break
-        default:
-            break
+            case "startscan":
+                // Handle Share shortcut: send a notification to the requisite view controller
+                handled = true
+                NotificationCenter.default.post(name: NSNotification.Name.init("com.bps.bluetoothblinkup.startscan"), object: self)
+                break
+            default:
+                break
         }
 
         return handled

@@ -42,7 +42,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
     var bluetoothManager: CBCentralManager!
     var devices: [Device] = []
-    var ddvc: DeviceDetailViewController!
+    var ddvc: DeviceDetailViewController? = nil
     var keyEntryController: UIAlertController!
     var alert: UIAlertController? = nil
     var harvey: String = ""
@@ -92,6 +92,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                                                selector: #selector(self.closeUp),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
+        
+        // Watch for notification to start a scan
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.startScan),
+                                               name: NSNotification.Name(rawValue: "com.bps.bluetoothblinkup.startscan"),
+                                               object: nil)
 
         // Add a long-press gesture to the UITableView to pop up the Info panel
         infoGesture.addTarget(self, action: #selector(showInfo))
@@ -114,7 +120,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         if self.ddvc != nil {
             // Coming back from the Device Details View Controller
-            if self.ddvc.clearList {
+            if self.ddvc!.clearList {
                 // We could not connect at some point, so clear the device
                 // list to prepare for a new scan
                 initTable()
@@ -399,10 +405,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
             let adc = storyboard.instantiateViewController(withIdentifier:"devicedetailview") as! DeviceDetailViewController
             self.ddvc = adc
-            self.ddvc.bluetoothManager = self.bluetoothManager
-            self.ddvc.navigationItem.title = aDevice.devID
-            self.ddvc.harvey = self.harvey
-            self.ddvc.agentURL = aDevice.agent
+            self.ddvc!.bluetoothManager = self.bluetoothManager
+            self.ddvc!.navigationItem.title = aDevice.devID
+            self.ddvc!.harvey = self.harvey
+            self.ddvc!.agentURL = aDevice.agent
 
             // Set up the left-hand nav bar button with an icon and text
             let button = UIButton(type: UIButton.ButtonType.system)
@@ -410,15 +416,15 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             button.setTitle("Devices", for: UIControl.State.normal)
             button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
             button.sizeToFit()
-            button.addTarget(self.ddvc, action: #selector(self.ddvc.goBack), for: UIControl.Event.touchUpInside)
-            self.ddvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+            button.addTarget(self.ddvc, action: #selector(self.ddvc!.goBack), for: UIControl.Event.touchUpInside)
+            self.ddvc!.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         }
 
         // Set DeviceDetailViewController's current device
-        self.ddvc.device = aDevice
+        self.ddvc!.device = aDevice
 
         // Present the device detail view controller
-        self.navigationController!.pushViewController(self.ddvc, animated: true)
+        self.navigationController!.pushViewController(self.ddvc!, animated: true)
     }
 
 
