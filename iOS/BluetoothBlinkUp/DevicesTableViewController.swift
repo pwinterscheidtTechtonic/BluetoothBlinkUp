@@ -95,7 +95,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         
         // Watch for notification to start a scan
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.startScan),
+                                               selector: #selector(self.actionScan),
                                                name: NSNotification.Name(rawValue: "com.bps.bluetoothblinkup.startscan"),
                                                object: nil)
 
@@ -154,6 +154,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
 
     // MARK: - Device scanning functions
+
+    @objc func actionScan() {
+
+        // Scan entry point for menu actions and Home Page Quick Actions
+        self.refreshControl!.beginRefreshing()
+        self.startScan()
+    }
 
     @objc func startScan() {
 
@@ -269,8 +276,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         } else {
             // We are not scanning, so present the Start Scan button
             action = UIAlertAction.init(title: "Start Scan", style: UIAlertAction.Style.default) { (alertAction) in
-                self.refreshControl!.beginRefreshing()
-                self.startScan()
+                self.actionScan()
             }
         }
 
