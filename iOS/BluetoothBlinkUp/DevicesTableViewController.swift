@@ -93,7 +93,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
         
-        // Watch for notification to start a scan
+        // Watch for a Quick Action-triggered notification to start a scan
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.actionScan),
                                                name: NSNotification.Name(rawValue: "com.bps.bluetoothblinkup.startscan"),

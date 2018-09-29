@@ -122,9 +122,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         switch last {
             case "startscan":
-                // Handle Share shortcut: send a notification to the requisite view controller
+                // Handle Start Scan Quick Action: send a notification to the main view controller
                 handled = true
                 NotificationCenter.default.post(name: NSNotification.Name.init("com.bps.bluetoothblinkup.startscan"), object: self)
+                break
+            case "visitshop":
+                // Handle Visit Store Quick Action: send a notification to the requisite view controller
+                handled = true
+                //NotificationCenter.default.post(name: NSNotification.Name.init("com.bps.bluetoothblinkup.visitshop"), object: self)
+                // Open the EI shop in Safari
+                let uiapp = UIApplication.shared
+                let url: URL = URL.init(string: "https://store.electricimp.com/")!
+                uiapp.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
                 break
             default:
                 break
@@ -134,3 +143,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+    return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

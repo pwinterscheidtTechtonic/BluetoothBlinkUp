@@ -27,14 +27,24 @@
 	<key>UIApplicationShortcutItems</key>
 	<array>
 		<dict>
+			<key>New item</key>
+			<string></string>
 			<key>UIApplicationShortcutItemIconFile</key>
 			<string>quick_action_scan</string>
-			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeSearch</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>Start Device Scan</string>
 			<key>UIApplicationShortcutItemType</key>
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER).startscan</string>
+		</dict>
+		<dict>
+			<key>New item</key>
+			<string></string>
+			<key>UIApplicationShortcutItemIconFile</key>
+			<string>quick_action_shop</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Visit Electric Imp’s Store</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).visitshop</string>
 		</dict>
 	</array>
 	<key>UILaunchStoryboardName</key>
