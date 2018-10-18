@@ -386,7 +386,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             // Dequeue a cell and populate it with the data we have on the discovered device
             let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath)
             cell.textLabel?.text = aDevice.name
-            cell.imageView?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : nil
+            cell.imageView?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
             cell.detailTextLabel?.text = aDevice.devID + (aDevice.type.count > 0 ? " (\(aDevice.type))" : "")
             return cell
         }
