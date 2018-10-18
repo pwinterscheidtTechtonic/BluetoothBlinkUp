@@ -1,7 +1,7 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
 //
-//  Version: 1.1.1
+//  Version: 1.0.1
 //
 //  Copyright 2017-18 Electric Imp
 //
@@ -32,7 +32,7 @@ const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
 
 class BTLEBlinkUp {
 
-    static VERSION = "0.0.2";
+    static VERSION = "1.0.0";
 
     // Public instance properties
     ble = null;
