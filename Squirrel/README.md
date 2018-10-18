@@ -1,6 +1,6 @@
-# BTLEBlinkUp #
+# BTLEBlinkUp Library 1.0.0 #
 
-This library provides a foundation for activating end-user devices via Bluetooth LE on imp modules that support this wireless technology (currently imp004m only) using BlinkUp™.
+This library provides a foundation for activating end-user devices via Bluetooth LE on imp modules that support this wireless technology (currently imp004m only) using BlinkUp™. It is included in the accompanying Squirrel device code &mdash; see the repo’s main [Read](../README.md) Me for details.
 
 The BTLEBlinkUp library is intended for Electric Imp customers **only**. It contains device-side Squirrel code which enables BlinkUp device activation using enrollment and WiFi credentials transmitted by a companion app running on a mobile device. The companion app must contain the [Electric Imp BlinkUp SDK](https://developer.electricimp.com/manufacturing/sdkdocs), use of which is authorized by API key. Only Electric Imp customers can be provided with a suitable BlinkUp API key. Code for the companion app is not part of this library, but iOS example code is [available separately](https://github.com/electricimp/BluetoothBlinkUp).
 
@@ -134,7 +134,7 @@ bt.listenForBlinkUp(advert, function(data) {
 
 ### serve(*[otherServices]*) ###
 
-This method sets up and begins serving BlinkUp and standard Device Information GATT services. The BlinkUp service uses the UUIDs supplied to the class construtor (or the defaults, if no UUIDs were specified). The latter uses the following UUIDs, as per the Bluetooth LE standard:
+This method sets up and begins serving BlinkUp and standard Device Information GATT services. The BlinkUp service uses the UUIDs supplied to the class constructor (or the defaults, if no UUIDs were specified). The latter uses the following UUIDs, as per the Bluetooth LE standard:
 
 ```squirrel
 service = { "uuid": 0x180A,
@@ -161,7 +161,7 @@ Nothing.
 #### Example ####
 
 ```squirrel
-// Add Battery Level sevice
+// Add Battery Level service
 local bls = { "uuid": 0x180F,
               "chars": [
                 { "uuid": 0x2A19,
