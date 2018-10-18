@@ -35,25 +35,45 @@ import UIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    // MARK: App Properties
+
     var window: UIWindow?
+    var launchedShortcutItem: UIApplicationShortcutItem?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    // MARK: App Lifecycle Functions
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
         // Override point for customization after application launch.
         // Set window's standard control tint colour
         self.window!.tintColor = UIColor.init(red: 0.03, green: 0.66, blue: 0.66, alpha: 1.0)
         let defaults: UserDefaults = UserDefaults.standard
         defaults.set(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String, forKey: "com.bps.bleblinkup.app.version")
         defaults.set(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String, forKey: "com.bps.bleblinkup.app.build")
-        return true
+
+        // If a shortcut was launched, display its information and take the appropriate action.
+        var shouldPerformAdditionalDelegateHandling = true
+
+        if let shortcut = launchOptions?[UIApplication.LaunchOptionsKey.shortcutItem] as? UIApplicationShortcutItem {
+
+            self.launchedShortcutItem = shortcut
+
+            // This will block "performActionForShortcutItem:completionHandler" from being called.
+            shouldPerformAdditionalDelegateHandling = false
+        }
+
+        return shouldPerformAdditionalDelegateHandling
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
+
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
+
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
@@ -66,13 +86,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
+        // Check for a previous 3D touch
+        guard let shortcut = self.launchedShortcutItem else { return }
+
+        // Handle the saved shortcut...
+        _ = handleShortcut(shortcut)
+
+        // ...then clear it
+        self.launchedShortcutItem = nil
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
+
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
 
+        // Called when the user 3D taps the app icon on the home screen while the app is backgrounded
+        let handledShortcut = handleShortcut(shortcutItem)
+        completionHandler(handledShortcut)
+    }
+
+
+    // MARK: 3D Touch Handler Function
+
+    func handleShortcut(_ shortcutItem: UIApplicationShortcutItem) -> Bool {
+
+        var handled = false
+
+        // Verify that the provided `shortcutItem`'s `type` is one handled by the application.
+        guard let shortCutType = shortcutItem.type as String? else { return false }
+        guard let last = shortCutType.components(separatedBy: ".").last else { return false }
+
+        switch last {
+            case "startscan":
+                // Handle Start Scan Quick Action: send a notification to the main view controller
+                handled = true
+                NotificationCenter.default.post(name: NSNotification.Name.init("com.bps.bluetoothblinkup.startscan"), object: self)
+                break
+            case "visitshop":
+                // Handle Visit Store Quick Action: send a notification to the requisite view controller
+                handled = true
+                //NotificationCenter.default.post(name: NSNotification.Name.init("com.bps.bluetoothblinkup.visitshop"), object: self)
+                // Open the EI shop in Safari
+                let uiapp = UIApplication.shared
+                let url: URL = URL.init(string: "https://store.electricimp.com/")!
+                uiapp.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+                break
+            default:
+                break
+        }
+
+        return handled
+    }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+    return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
+}

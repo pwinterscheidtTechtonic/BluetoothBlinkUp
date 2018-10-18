@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B106970215F726900F4007D /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B10696F215F726900F4007D /* BlinkUp.framework */; };
 		3B1DC726201B768200369C00 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3B1DC725201B768200369C00 /* Settings.bundle */; };
 		3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B8F1FE2980F0004D87E /* AppDelegate.swift */; };
 		3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */; };
@@ -17,27 +16,34 @@
 		3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */; };
 		3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAA1FE2A1910004D87E /* BUConfigId.swift */; };
 		3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */; };
+		3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */; };
+		3B42BC0D20A360900031FA97 /* default.html in Resources */ = {isa = PBXBuildFile; fileRef = 3B42BC0C20A3608F0031FA97 /* default.html */; };
 		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
+		3B7A4737215CFA3D00FE8447 /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */; };
 		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
 		3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */; };
+		3BFF6BA220A5AC1F00F08ABD /* back.html in Resources */ = {isa = PBXBuildFile; fileRef = 3BFF6BA120A5AC1E00F08ABD /* back.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3B10696F215F726900F4007D /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BlinkUp.framework; path = BlinkUp.embeddedframework/BlinkUp.framework; sourceTree = "<group>"; };
 		3B1DC725201B768200369C00 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothBlinkUp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B232B8F1FE2980F0004D87E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailViewController.swift; sourceTree = "<group>"; };
+		3B232B8F1FE2980F0004D87E /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; };
+		3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DeviceDetailViewController.swift; sourceTree = "<group>"; };
 		3B232B941FE2980F0004D87E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3B232B961FE2980F0004D87E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3B232B991FE2980F0004D87E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3B232B9B1FE2980F0004D87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
-		3B232BAA1FE2A1910004D87E /* BUConfigId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUConfigId.swift; path = /Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUpSwiftExtensions/BUConfigId.swift; sourceTree = "<absolute>"; };
-		3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BUDevicePoller.swift; path = /Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUpSwiftExtensions/BUDevicePoller.swift; sourceTree = "<absolute>"; };
-		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
-		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItem.swift; sourceTree = "<group>"; };
-		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
+		3B232BAA1FE2A1910004D87E /* BUConfigId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = BUConfigId.swift; path = ../../../../OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUpSwiftExtensions/BUConfigId.swift; sourceTree = SOURCE_ROOT; };
+		3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = BUDevicePoller.swift; path = ../../../../OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUpSwiftExtensions/BUDevicePoller.swift; sourceTree = SOURCE_ROOT; };
+		3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AgentWebViewController.swift; sourceTree = "<group>"; };
+		3B42BC0C20A3608F0031FA97 /* default.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = default.html; sourceTree = "<group>"; };
+		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Device.swift; sourceTree = "<group>"; };
+		3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BlinkUp.framework; path = BlinkUp.embeddedframework/BlinkUp.framework; sourceTree = "<group>"; };
+		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = KeychainItem.swift; sourceTree = "<group>"; };
+		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
+		3BFF6BA120A5AC1E00F08ABD /* back.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = back.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B106970215F726900F4007D /* BlinkUp.framework in Frameworks */,
+				3B7A4737215CFA3D00FE8447 /* BlinkUp.framework in Frameworks */,
 				3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,6 +82,7 @@
 				3B232B8F1FE2980F0004D87E /* AppDelegate.swift */,
 				3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */,
 				3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */,
+				3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */,
 				3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */,
 				3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */,
 				3B232BAA1FE2A1910004D87E /* BUConfigId.swift */,
@@ -83,6 +90,8 @@
 				3B232B931FE2980F0004D87E /* Main.storyboard */,
 				3B232B981FE2980F0004D87E /* LaunchScreen.storyboard */,
 				3B232B961FE2980F0004D87E /* Assets.xcassets */,
+				3B42BC0C20A3608F0031FA97 /* default.html */,
+				3BFF6BA120A5AC1E00F08ABD /* back.html */,
 				3B1DC725201B768200369C00 /* Settings.bundle */,
 				3B232B9B1FE2980F0004D87E /* Info.plist */,
 			);
@@ -92,7 +101,7 @@
 		3B232BA71FE298980004D87E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				3B10696F215F726900F4007D /* BlinkUp.framework */,
+        3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */,
 				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
@@ -126,11 +135,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Electric Imp";
 				TargetAttributes = {
 					3B232B8B1FE2980F0004D87E = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1000;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -158,8 +168,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B42BC0D20A360900031FA97 /* default.html in Resources */,
 				3B1DC726201B768200369C00 /* Settings.bundle in Resources */,
 				3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */,
+				3BFF6BA220A5AC1F00F08ABD /* back.html in Resources */,
 				3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */,
 				3B232B951FE2980F0004D87E /* Main.storyboard in Resources */,
 			);
@@ -173,11 +185,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */,
-				3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */,
 				3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */,
+				3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */,
 				3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */,
 				3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */,
 				3B232BAC1FE2A1920004D87E /* BUConfigId.swift in Sources */,
+				3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */,
 				3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -218,6 +231,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -225,6 +239,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -252,7 +267,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -275,6 +290,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -282,6 +298,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -303,7 +320,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -327,7 +344,7 @@
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bps.BluetoothBlinkUp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -348,7 +365,7 @@
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bps.BluetoothBlinkUp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
