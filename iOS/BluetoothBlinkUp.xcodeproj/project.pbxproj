@@ -101,7 +101,7 @@
 		3B232BA71FE298980004D87E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-        3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */,
+				3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */,
 				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
