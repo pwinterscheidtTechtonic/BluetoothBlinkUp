@@ -42,6 +42,7 @@ class Device: NSObject {
 
     var name: String = ""
     var type: String = ""
+    var agent: String = ""
     var devID: String = "Loading..."
     var peripheral: CBPeripheral!
     var characteristics: [CBCharacteristic] = []

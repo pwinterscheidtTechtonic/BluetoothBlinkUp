@@ -53,6 +53,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     var isSending: Bool = false
     var isClearing: Bool = false
     var harvey: String!
+    var agentURL: String!
     var scanTimer: Timer!
     var cheatTimer: Timer!
     
@@ -76,19 +77,19 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         super.viewDidLoad()
 
         // Set up the 'show password' button within the password entry field
-        let overlayButton: UIButton = UIButton.init(type: UIButtonType.custom)
-        overlayButton.setImage(UIImage.init(named: "button_eye"), for: UIControlState.normal)
-        overlayButton.addTarget(self, action: #selector(self.showPassword(_:)), for: UIControlEvents.touchUpInside)
+        let overlayButton: UIButton = UIButton.init(type: UIButton.ButtonType.custom)
+        overlayButton.setImage(UIImage.init(named: "button_eye"), for: UIControl.State.normal)
+        overlayButton.addTarget(self, action: #selector(self.showPassword(_:)), for: UIControl.Event.touchUpInside)
         overlayButton.frame = CGRect.init(x: 0, y: 6, width: 20, height: 16)
 
         // Assign the overlay button to a stored text field
         self.passwordField.leftView = overlayButton
-        self.passwordField.leftViewMode = UITextFieldViewMode.always
+        self.passwordField.leftViewMode = UITextField.ViewMode.always
 
         // Watch for app returning to foreground from the ImpDetailViewController
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.connectToDevice),
-                                               name: NSNotification.Name.UIApplicationWillEnterForeground,
+                                               name: UIApplication.willEnterForegroundNotification,
                                                object: nil)
     }
 
@@ -269,8 +270,49 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             sendLabel.text = "Sending BlinkUp data"
 
             if self.harvey.count == 0 {
-                self.showAlert("BlinkUp™ Requires an API key", "Please go back to the device list, tap ‘Actions’ and select ‘Enter Your BlinkUp API Key’")
-                return
+                // The user HAS NOT input a BlinkUp API key, so just send across WiFi credentials,
+                // ie. do not perform a device enrolment too
+                if let aDevice = self.device {
+                    // Transmit the WiFi data
+                    sendWiFiData(aDevice)
+
+                    // Since we can't poll the server for this instance (we have no API key), we
+                    // just warn the user via an alert to expect the device to connect
+                    // Close the connection in CANCEL_TIME seconds' time
+                    self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
+                        if let aDevice = self.device {
+                            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                            self.connected = false
+                            NSLog("Closing WiFi transmission connection")
+                            
+                            // Clean up the UI
+                            self.sendLabel.text = ""
+                            self.isSending = false
+                            self.blinkUpProgressBar.stopAnimating()
+                            
+                            // Instantiate and show a webview containing the agent-served UI
+                            // TODO Incorporate a check to load the agent-served string and check that
+                            //      it is valid HTML before loading
+                            if (aDevice.agent.count > 0) {
+                                let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
+                                let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
+                                awvc.agentURL = aDevice.agent
+
+                                // Set up the left-hand nav bar button with an icon and text
+                                let button = UIButton(type: UIButton.ButtonType.system)
+                                button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
+                                button.setTitle("Back", for: UIControl.State.normal)
+                                button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                                button.sizeToFit()
+                                button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControl.Event.touchUpInside)
+                                awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+                                self.navigationController!.pushViewController(awvc, animated: true)
+                            } else {
+                                self.showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
+                            }
+                        }
+                    })
+                }
             } else {
                 // The user HAS input a BlinkUp API key, so perform a full activation
                 // (enrol the deviceand transmit WiFi credentials).
@@ -301,31 +343,26 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 switch(response) {
                                 case .responded(let info):
                                     // The server indicates that the device has enrolled successfully, so we're done
-                                    let na: String = "N/A"
-                                    let actionMenu = UIAlertController.init(title: "Device \(info.deviceId ?? na)\nHas Connected", message: "Your device has enrolled into the Electric Imp impCloud™. Its agent is accessible at\n\(info.agentURL?.absoluteString ?? na)", preferredStyle: UIAlertControllerStyle.actionSheet)
-                                    
-                                    var action: UIAlertAction = UIAlertAction.init(title: "Open Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                        if let us = info.agentURL?.absoluteString {
-                                            // Open the agent URL in Safari
-                                            let uiapp = UIApplication.shared
-                                            let url: URL = URL.init(string: us)!
-                                            uiapp.open(url, options: [:], completionHandler: nil)
-                                        }
-                                    }
-                                    actionMenu.addAction(action)
-                                    
-                                    action = UIAlertAction.init(title: "Copy Agent URL", style: UIAlertActionStyle.default) { (alertAction) in
-                                        if let us = info.agentURL?.absoluteString {
-                                            let pb: UIPasteboard = UIPasteboard.general
-                                            pb.setValue(us, forPasteboardType: "public.text")
-                                        }
-                                    }
-                                    actionMenu.addAction(action)
-                                    action = UIAlertAction.init(title: "OK", style: UIAlertActionStyle.cancel, handler:nil)
-                                    actionMenu.addAction(action)
-                                    self.present(actionMenu, animated: true, completion: nil)
                                     self.sendLabel.text = ""
                                     self.blinkUpProgressBar.stopAnimating()
+
+                                    if let us = info.agentURL?.absoluteString {
+                                        let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
+                                        let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
+                                        awvc.agentURL = us
+
+                                        // Set up the left-hand nav bar button with an icon and text
+                                        let button = UIButton(type: UIButton.ButtonType.system)
+                                        button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
+                                        button.setTitle("Back", for: UIControl.State.normal)
+                                        button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                                        button.sizeToFit()
+                                        button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControl.Event.touchUpInside)
+                                        awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+                                        self.navigationController!.pushViewController(awvc, animated: true)
+                                    } else {
+                                        self.showAlert("Device Enrolled", "Your device has connected to the Electric Imp impCloud™.")
+                                    }
                                 case .error(let error):
                                     // Something went wrong, so dump the error and perform the timed out flow
                                     NSLog(error.description)
@@ -558,7 +595,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     func showAlert(_ title: String, _ message: String) {
         let alert = UIAlertController.init(title: title,
                                            message: message,
-                                           preferredStyle: UIAlertControllerStyle.alert)
+                                           preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
                                       style: .`default`,
                                       handler: nil))
@@ -570,7 +607,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     func showDisconnectAlert(_ title: String, _ message: String) {
         let alert = UIAlertController.init(title: title,
                                            message: message,
-                                           preferredStyle: UIAlertControllerStyle.alert)
+                                           preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
                                       style: .`default`,
                                       handler: nil))
