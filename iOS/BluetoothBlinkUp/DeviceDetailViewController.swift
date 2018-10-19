@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-18 Electric Imp
 //
-//  Version 1.0.1
+//  Version 1.0.2
 //
 //  SPDX-License-Identifier: MIT
 //

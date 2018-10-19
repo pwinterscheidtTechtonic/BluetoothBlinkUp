@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-18 Electric Imp
 //
-//  Version 1.0.1
+//  Version 1.0.2
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -693,7 +693,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func getRawkey() {
 
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
-        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key\n(Optional)",
+        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key",
                                                     message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.",
                                                     preferredStyle: UIAlertController.Style.alert)
 
