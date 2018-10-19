@@ -1,5 +1,5 @@
-
-//  Device.swift
+//
+//  LoadingTableViewCell.swift
 //  BluetoothBlinkUp
 //
 //  Created by Tony Smith on 12/14/17.
@@ -31,25 +31,13 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 
 
+import UIKit
 
-import Foundation
-import CoreBluetooth
+class LoadingTableViewCell: UITableViewCell {
 
-
-class Device: NSObject {
-
-    // This is a simple class that's use to record the details of a discovered
-    // imp-based device. We use a class rather than an enum so that we
-    // can access it by reference rather than the item itself
-
-    var name: String = ""
-    var type: String = ""
-    var agent: String = ""
-    var devID: String = "TBD"
-    var peripheral: CBPeripheral!
-    var characteristics: [String:[CBCharacteristic]] = [:]
-    var networks: String = ""
-    var isConnected: Bool = false
-    var state: Int = -1
+    @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var myTitle: UILabel!
+    @IBOutlet weak var mySubtitle: UILabel!
+    @IBOutlet weak var myImage: UIImageView!
 
 }

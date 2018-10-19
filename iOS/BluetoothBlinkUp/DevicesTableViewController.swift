@@ -50,16 +50,26 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     var harvey: String = ""
     var keyWindowUp: Bool = false
     var scanTimer: Timer!
+    var pinTimer: Timer!
     var scanning: Bool = false
     var gotBluetooth: Bool = false
 
     // Constants
+    // Constants: Device State
     let DEVICE_SCAN_TIMEOUT = 15.0
+    let PERIPHERAL_STATE_UNKNOWN = -1
+    let PERIPHERAL_STATE_INITIAL = 0
+    let PERIPHERAL_STATE_GETTING = 1
+    let PERIPHERAL_STATE_GOT = 2
+    
+    // Constants: BLE Services
     let BLINKUP_SERVICE_UUID = "FADA47BE-C455-48C9-A5F2-AF7CF368D719"
+    let BLINKUP_WIFIGET_CHARACTERISTIC_UUID = "57A9ED95-ADD5-4913-8494-57759B79A46C"
     let DEVICE_INFO_SERVICE_UUID = "180A"
     let DEVICE_INFO_MODEL_CHARACTERISTIC_UUID = "2A24"
     let DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID = "2A25"
     let DEVICE_INFO_AGENT_CHARACTERISTIC_UUID = "2A23"
+    let DEVICE_INFO_MANUF_CHARACTERISTIC_UUID = "2A29"
 
 
     // MARK: - View Lifecycle Functions
@@ -148,11 +158,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         if let key = getHarvey() {
             self.harvey = key
         } else {
-            // There is no saved API key so get one by presenting
-            // the key request panel
-            // UPDATE 1/24/18 Make it optional, ie. not run at startup
-            // UPDATE 3/22/18 Make it mandatory for sample code usage
-            getRawkey()
+            // There is no saved API key so get one by presenting the key request panel
+            // ENABLE AFTER TESTING
+            // getRawkey()
         }
     }
 
@@ -196,6 +204,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 self.refreshControl!.endRefreshing()
                 self.devicesTable.reloadData()
             }
+            
+            // Warn the user there's no Bluetooth
             showAlert("Bluetooth LE Disabled", "Please ensure the Bluetooth is powered up on your iPhone")
         }
     }
@@ -213,6 +223,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         if self.scanning {
             // Deal with the timer - it will still be running if we are cancelling manualluy
             if self.scanTimer != nil && self.scanTimer.isValid { self.scanTimer.invalidate() }
+            if self.pinTimer != nil && self.pinTimer.isValid { self.pinTimer.invalidate() }
 
             // Cancel the scan
             self.scanning = false
@@ -220,11 +231,27 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
             // Hide the refresh control
             self.refreshControl!.endRefreshing()
-
+            
+            // Clear any discovereed devices from list that were not authorized by PIN
+            if self.devices.count > 0 {
+                var index = 0
+                repeat {
+                    let aDevice: Device = self.devices[index]
+                    if aDevice.state != PERIPHERAL_STATE_GOT {
+                        self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                        self.devices.remove(at: index)
+                    } else {
+                        index = index + 1
+                    }
+                } while index < self.devices.count && self.devices.count != 0
+            }
+            
             // Warn the user
             if self.devices.count == 0 && showAnAlert {
                 showAlert("No Bluetooth-enabled imp Devices Found", "")
                 initTable()
+            } else {
+                self.devicesTable.reloadData()
             }
         }
     }
@@ -330,7 +357,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         uiapp.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
     }
 
+    
+    // MARK: - Utility Functions
+
     func showAlert(_ title: String, _ message: String) {
+        
+        // Generic alert creation routine
         self.alert = UIAlertController.init(title: title,
                                             message: message,
                                             preferredStyle: UIAlertController.Style.alert)
@@ -341,17 +373,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.alert = nil
         }
     }
-
-
-    // MARK: - Utility Functions
-
+    
     func getDevice(_ peripheral: CBPeripheral) -> Device? {
 
         // Return the Device object for the specified peripheral - or nil
-
         if self.devices.count == 0 { return nil }
 
-        for i in 0..<devices.count {
+        for i in 0..<self.devices.count {
             let aDevice: Device = self.devices[i]
             if aDevice.peripheral == peripheral { return aDevice }
         }
@@ -373,6 +401,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Return the number of devices discovered so far
         return self.devices.count
     }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        // Return a standard size for now
+        return 52;
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
@@ -384,10 +418,18 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             return cell
         } else {
             // Dequeue a cell and populate it with the data we have on the discovered device
-            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath)
-            cell.textLabel?.text = aDevice.name
-            cell.imageView?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
-            cell.detailTextLabel?.text = aDevice.devID + (aDevice.type.count > 0 ? " (\(aDevice.type))" : "")
+            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath) as! LoadingTableViewCell
+            cell.myTitle?.text = aDevice.name
+            cell.myImage?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
+            
+            if aDevice.devID == "TBD" {
+                cell.mySubtitle?.text = "Retrieving... please enter the device PIN if requested"
+                cell.progressIndicator.startAnimating()
+            } else {
+                cell.mySubtitle?.text = aDevice.devID + (aDevice.type.count > 0 ? " (\(aDevice.type))" : "Unknown")
+                cell.progressIndicator.stopAnimating()
+            }
+            
             return cell
         }
     }
@@ -406,8 +448,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Check for an API key - we can't proceed without one
         if self.harvey.count == 0 {
             // Ask the user to enter a key
-            getRawkey()
-            return
+            // ENABLE AFTER TESTING
+            //getRawkey()
+            //return
         }
 
         // Now that a device has been selected, stop any scan currently taking place.
@@ -423,6 +466,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             self.ddvc!.navigationItem.title = aDevice.devID
             self.ddvc!.harvey = self.harvey
             self.ddvc!.agentURL = aDevice.agent
+            self.ddvc!.connected = aDevice.isConnected
 
             // Set up the left-hand nav bar button with an icon and text
             let button = UIButton(type: UIButton.ButtonType.system)
@@ -466,6 +510,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         device.peripheral = peripheral
         self.devices.append(device)
         self.devicesTable.reloadData()
+        
+        // Pick up the action at 'centralManager.didConnect()'
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -477,10 +523,24 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             aDevice.isConnected = true
         }
 
+        // Get a list of services
         peripheral.discoverServices(nil)
+        
         // Pick up the action at 'peripheral.didDiscoverServices()'
     }
 
+    func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        
+        // The app has disconnected from a peripheral
+        if let aDevice: Device = getDevice(peripheral) {
+            aDevice.isConnected = false
+        }
+        
+        if (error != nil) {
+            NSLog("didFailToConnect(): \(error!.localizedDescription)")
+        }
+    }
+    
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
 
         // The app has disconnected from a peripheral
@@ -489,7 +549,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
 
         if (error != nil) {
-            NSLog("\(error!.localizedDescription)")
+            NSLog("didDisconnectPeripheral(): \(error!.localizedDescription)")
         }
     }
 
@@ -497,7 +557,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // This is called to inform us whether Bluetooth LE is available on the device
         // If won't available if powered down, or not authorized
-
         let cbm = central as CBManager
         if cbm.state != CBManagerState.poweredOn {
             self.showAlert("Bluetooth LE Disabled", "Please ensure that Bluetooth is powered up on your iPhone")
@@ -517,6 +576,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         if error == nil {
             var got: Bool = false
             if let services = peripheral.services {
+                NSLog("Services found: \(services.count)")
                 for i in 0..<services.count {
                     let service: CBService = services[i]
                     if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
@@ -527,17 +587,23 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 }
 
                 if !got {
-                    // Device is not serving the BLINK_UP service
-                    if let aDevice: Device = getDevice(peripheral) {
-                        aDevice.devID = "Unknown"
-                        self.devicesTable.reloadData()
-                        self.bluetoothManager.cancelPeripheralConnection(peripheral)
+                    // Device is not serving the device info so disonnect from it
+                    self.bluetoothManager.cancelPeripheralConnection(peripheral)
+                    
+                    // And remove it from the table
+                    if let aDevice = getDevice(peripheral) {
+                        if let i = self.devices.firstIndex(of: aDevice) {
+                            self.devices.remove(at: i)
+                            self.devicesTable.reloadData()
+                        }
                     }
                 } else {
+                    // We know the device is serving BLINKUP, so now go and get some device info
+                    // via the DEVICE_INFO service. This will trigger the PIN request by iOS
                     for i in 0..<services.count {
                         let service: CBService = services[i]
                         if service.uuid.uuidString == DEVICE_INFO_SERVICE_UUID {
-                            // The device is offering the DEVICE_INFO service, so ask for a list of the all (hence 'nil')
+                            // The device is also offering the DEVICE_INFO service, so ask for a list of the all (hence 'nil')
                             // of the service's characteristics. This asynchronous call will be picked up by
                             // 'peripheral.didDiscoverCharacteristicsFor()'
                             peripheral.discoverCharacteristics(nil, for: service)
@@ -548,7 +614,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         } else {
             // Log the error
-            NSLog("\(error!.localizedDescription)")
+            NSLog("didDiscoverServices(): \(error!.localizedDescription)")
         }
     }
 
@@ -562,55 +628,82 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             // characteristics's known UUID
             if let list = service.characteristics {
                 if let aDevice: Device = getDevice(peripheral) {
-                    aDevice.characteristics = list
+                    // Store a reference to the service's characteristics:
+                    // within a dictionary whose keys are service UUIDs as strings, and
+                    // whose values are arrays for CBCharacteristic objects
+                    aDevice.characteristics[service.uuid.uuidString] = list
+                    NSLog("\(service.uuid.uuidString) has \(list.count) characteristics")
                 }
-
-                for i in 0..<list.count {
-                    let ch:CBCharacteristic? = list[i]
-                    if ch != nil {
-                        if ch!.uuid.uuidString == DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID {
-                            // The peripheral DOES contain the expected characteristic,
-                            // so read the characteristics value. When it has been read,
-                            // 'peripheral.didUpdateValueFor()' will be called
-                            peripheral.readValue(for: ch!)
-                            break
+                
+                if service.uuid.uuidString == DEVICE_INFO_SERVICE_UUID {
+                    for i in 0..<list.count {
+                        let ch:CBCharacteristic? = list[i]
+                        if ch != nil {
+                            if ch!.uuid.uuidString == DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID {
+                                // The peripheral DOES contain the expected characteristic,
+                                // so read the characteristic's value. When it has been read,
+                                // 'peripheral.didUpdateValueFor()' will be called
+                                // NOTE Trying to read the value causes
+                                //      the PIN entry request to be made by iOS
+                                peripheral.readValue(for: ch!)
+                                break
+                            }
                         }
                     }
                 }
             }
         } else {
             // Log the error
-            NSLog("\(error!.localizedDescription)")
+            NSLog("didDiscoverCharacteristicsFor(): \(error!.localizedDescription)")
         }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
-        // We have successfully read the imp004m application's device ID characteristic's value
+        if (error != nil) {
+            NSLog("didUpdateValueFor(): \(error!.localizedDescription)")
+        }
+        
+        // We have attempted to read the imp004m application's device ID characteristic's value
+        // This is the first characteristic we ask for, so it will trigger the PIN request
+        // ie. we only need monitor PIN-ing for this characteristic
         if characteristic.uuid.uuidString == DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID {
             if let data = characteristic.value {
                 if data.count > 0 {
                     if let aDevice = getDevice(peripheral) {
                         // Add the device ID to the device record
                         aDevice.devID = String.init(data: data, encoding: String.Encoding.utf8)!
+                        aDevice.state = PERIPHERAL_STATE_GOT
                         self.devicesTable.reloadData()
 
-                        // Now get the Model characteristic
-                        for i in 0..<aDevice.characteristics.count {
-                            let ch:CBCharacteristic? = aDevice.characteristics[i]
-                            if ch != nil {
-                                if ch!.uuid.uuidString == DEVICE_INFO_MODEL_CHARACTERISTIC_UUID {
-                                    // The peripheral DOES contain the expected characteristic,
-                                    // so read the characteristics value. When it has been read,
-                                    // 'peripheral.didUpdateValueFor()' will be called
-                                    peripheral.readValue(for: ch!)
-                                    break
-                                }
+                        // Get the rest of the characteristics we're interested in at this point
+                        var a = aDevice.characteristics[DEVICE_INFO_SERVICE_UUID]!
+                        for i in 0..<a.count {
+                            let cb:CBCharacteristic = a[i]
+                            if cb.uuid.uuidString == DEVICE_INFO_MODEL_CHARACTERISTIC_UUID || cb.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
+                                peripheral.readValue(for: cb)
+                            }
+                        }
+                        
+                        a = aDevice.characteristics[BLINKUP_SERVICE_UUID]!
+                        for i in 0..<a.count {
+                            let cb:CBCharacteristic = a[i]
+                            if cb.uuid.uuidString == BLINKUP_WIFIGET_CHARACTERISTIC_UUID {
+                                peripheral.readValue(for: cb)
+                                break
                             }
                         }
                     }
                 } else {
-                    peripheral.readValue(for: characteristic)
+                    // Access to the value has not yet been authorized by PIN, so
+                    // attempt to read the value again in three seconds' time (by
+                    // when the value might have neen unlocked, or blocked)
+                    let a: [Any] = [peripheral, characteristic]
+                    self.pinTimer = Timer.scheduledTimer(timeInterval: 2.0,
+                                                         target: self,
+                                                         selector: #selector(self.attemptRead),
+                                                         userInfo: a,
+                                                         repeats: false)
                 }
             }
         } else if characteristic.uuid.uuidString == DEVICE_INFO_MODEL_CHARACTERISTIC_UUID {
@@ -620,20 +713,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         // Add the imp model type to the device record
                         aDevice.type = String.init(data: data, encoding: String.Encoding.utf8)!
                         self.devicesTable.reloadData()
-
-                        // Now get the Agent URL characteristic
-                        for i in 0..<aDevice.characteristics.count {
-                            let ch:CBCharacteristic? = aDevice.characteristics[i]
-                            if ch != nil {
-                                if ch!.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
-                                    // The peripheral DOES contain the expected characteristic,
-                                    // so read the characteristics value. When it has been read,
-                                    // 'peripheral.didUpdateValueFor()' will be called
-                                    peripheral.readValue(for: ch!)
-                                    break
-                                }
-                            }
-                        }
                     }
                 } else {
                     peripheral.readValue(for: characteristic)
@@ -646,9 +725,19 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         // Add the agent URL to the device record
                         aDevice.agent = String.init(data: data, encoding: String.Encoding.utf8)!
                         if aDevice.agent == "null" { aDevice.agent = ""; }
-
-                        // Disconnect now that we have all the data we want at this point
-                        self.bluetoothManager.cancelPeripheralConnection(peripheral)
+                    }
+                } else {
+                    peripheral.readValue(for: characteristic)
+                }
+            }
+        } else if characteristic.uuid.uuidString == BLINKUP_WIFIGET_CHARACTERISTIC_UUID {
+            if let data = characteristic.value {
+                if data.count > 0 {
+                    if let networkList:String = String.init(data: data, encoding: String.Encoding.utf8) {
+                        if let aDevice = getDevice(peripheral) {
+                            // Add the imp model type to the device record
+                            aDevice.networks = networkList
+                        }
                     }
                 } else {
                     peripheral.readValue(for: characteristic)
@@ -657,7 +746,17 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
     }
 
-
+    @objc func attemptRead(_ timer: Timer) {
+        
+        // A callback triggered by 'pinTimer'. When it fires, get the current peripheral
+        // and characteristic (saved to 'userInfo') and attempt to read the value again
+        var a: [Any] = timer.userInfo as! [Any]
+        let p: CBPeripheral = a[0] as! CBPeripheral
+        let c: CBCharacteristic = a[1] as! CBCharacteristic
+        p.readValue(for: c)
+    }
+    
+    
     // MARK: - Keychain Functions
 
     func getHarvey() -> String? {

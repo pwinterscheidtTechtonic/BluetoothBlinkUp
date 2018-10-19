@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6Iw-WI-MxR">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6Iw-WI-MxR">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -272,6 +273,63 @@
                                         </imageView>
                                     </subviews>
                                 </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="devicetabledevicecellloading" rowHeight="52" id="gmM-GU-cKZ" customClass="LoadingTableViewCell" customModule="BluetoothBlinkUp" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="120" width="375" height="52"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gmM-GU-cKZ" id="TGq-E6-SNT">
+                                    <rect key="frame" x="0.0" y="0.0" width="341" height="51.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="04f-Qh-MZy">
+                                            <rect key="frame" x="16" y="10" width="32" height="32"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="32" id="5kT-g4-sck"/>
+                                                <constraint firstAttribute="width" constant="32" id="xTm-X2-YlZ"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lsv-XM-M8g">
+                                            <rect key="frame" x="56" y="6" width="42" height="24"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="24" id="ha0-md-8Dy"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M6h-cp-NOA">
+                                            <rect key="frame" x="56" y="27" width="31" height="15"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="15" id="b2X-5U-EXt"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" red="0.35686274509803922" green="0.69411764705882351" blue="0.73333333333333328" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="tg4-QX-KZu">
+                                            <rect key="frame" x="313" y="16" width="20" height="20"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="20" id="PEa-eQ-jNj"/>
+                                                <constraint firstAttribute="height" constant="20" id="Y1V-U9-PHo"/>
+                                            </constraints>
+                                        </activityIndicatorView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="04f-Qh-MZy" firstAttribute="leading" secondItem="TGq-E6-SNT" secondAttribute="leading" constant="16" id="CZx-Y1-TCK"/>
+                                        <constraint firstItem="lsv-XM-M8g" firstAttribute="leading" secondItem="04f-Qh-MZy" secondAttribute="trailing" constant="8" id="FNX-dH-NiF"/>
+                                        <constraint firstItem="04f-Qh-MZy" firstAttribute="centerY" secondItem="TGq-E6-SNT" secondAttribute="centerY" id="RDE-Mh-kde"/>
+                                        <constraint firstItem="lsv-XM-M8g" firstAttribute="top" secondItem="TGq-E6-SNT" secondAttribute="top" constant="6" id="TON-6t-qLA"/>
+                                        <constraint firstAttribute="bottom" secondItem="M6h-cp-NOA" secondAttribute="bottom" constant="9.5" id="b3N-II-AqZ"/>
+                                        <constraint firstItem="tg4-QX-KZu" firstAttribute="centerY" secondItem="TGq-E6-SNT" secondAttribute="centerY" id="dim-ky-BQM"/>
+                                        <constraint firstItem="tg4-QX-KZu" firstAttribute="trailing" secondItem="TGq-E6-SNT" secondAttribute="trailingMargin" id="gCV-Jy-lOH"/>
+                                        <constraint firstItem="M6h-cp-NOA" firstAttribute="leading" secondItem="04f-Qh-MZy" secondAttribute="trailing" constant="8" id="qTn-dD-7EV"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="myImage" destination="04f-Qh-MZy" id="2IV-nr-EUl"/>
+                                    <outlet property="mySubtitle" destination="M6h-cp-NOA" id="E01-LZ-ERX"/>
+                                    <outlet property="myTitle" destination="lsv-XM-M8g" id="pMU-Yd-Bx2"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

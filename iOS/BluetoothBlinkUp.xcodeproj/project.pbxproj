@@ -18,6 +18,7 @@
 		3B232BAD1FE2A1920004D87E /* BUDevicePoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */; };
 		3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */; };
 		3B42BC0D20A360900031FA97 /* default.html in Resources */ = {isa = PBXBuildFile; fileRef = 3B42BC0C20A3608F0031FA97 /* default.html */; };
+		3B4B0180217A33F8009D0670 /* LoadingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4B017F217A33F8009D0670 /* LoadingTableViewCell.swift */; };
 		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
 		3B7A4737215CFA3D00FE8447 /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */; };
 		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
@@ -39,6 +40,7 @@
 		3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = BUDevicePoller.swift; path = ../../../../OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUpSwiftExtensions/BUDevicePoller.swift; sourceTree = SOURCE_ROOT; };
 		3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AgentWebViewController.swift; sourceTree = "<group>"; };
 		3B42BC0C20A3608F0031FA97 /* default.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = default.html; sourceTree = "<group>"; };
+		3B4B017F217A33F8009D0670 /* LoadingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingTableViewCell.swift; sourceTree = "<group>"; };
 		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Device.swift; sourceTree = "<group>"; };
 		3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BlinkUp.framework; path = BlinkUp.embeddedframework/BlinkUp.framework; sourceTree = "<group>"; };
 		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = KeychainItem.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */,
 				3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */,
 				3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */,
+				3B4B017F217A33F8009D0670 /* LoadingTableViewCell.swift */,
 				3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */,
 				3B232BAA1FE2A1910004D87E /* BUConfigId.swift */,
 				3B232BAB1FE2A1920004D87E /* BUDevicePoller.swift */,
@@ -186,6 +189,7 @@
 			files = (
 				3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */,
 				3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */,
+				3B4B0180217A33F8009D0670 /* LoadingTableViewCell.swift in Sources */,
 				3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */,
 				3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */,
 				3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */,
