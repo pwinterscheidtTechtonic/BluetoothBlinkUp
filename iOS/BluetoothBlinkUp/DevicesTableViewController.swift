@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-18 Electric Imp
 //
-//  Version 1.0.2
+//  Version 1.0.3
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -418,7 +418,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             return cell
         } else {
             // Dequeue a cell and populate it with the data we have on the discovered device
-            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath) as! LoadingTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecellloading", for: indexPath) as! LoadingTableViewCell
             cell.myTitle?.text = aDevice.name
             cell.myImage?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
             
@@ -438,6 +438,15 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // Get the device details and check for the initial instruction row
         let aDevice: Device = self.devices[indexPath.row]
+
+        // Does the device use a PIN? If not, close the connection to save energy
+        // NOTE We could close the connection in either case, but we don't in the case
+        //      of secure connections to save re-requesting the PIN in the next phase
+        //      (see DeviceDetailViewController.swift)
+        if aDevice.requiresPin == false && aDevice.peripheral != nil {
+            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+            aDevice.isConnected = false
+        }
 
         // Don't allow the device to be selected if it's still being discovered
         if aDevice.devID == "TBD" {
@@ -577,37 +586,44 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             var got: Bool = false
             if let services = peripheral.services {
                 NSLog("Services found: \(services.count)")
-                for i in 0..<services.count {
-                    let service: CBService = services[i]
-                    if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
-                        // The device is offering the BLINK_UP service, so we're good to continue
-                        got = true
-                        break
-                    }
-                }
 
-                if !got {
-                    // Device is not serving the device info so disonnect from it
-                    self.bluetoothManager.cancelPeripheralConnection(peripheral)
-                    
-                    // And remove it from the table
-                    if let aDevice = getDevice(peripheral) {
+                // And remove it from the table
+                if let aDevice = getDevice(peripheral) {
+                    aDevice.services = services
+
+                    for i in 0..<services.count {
+                        let service: CBService = services[i]
+                        if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
+                            // The device is offering the BLINK_UP service, so we're good to continue
+                            got = true
+                            break
+                        }
+                    }
+
+                    if !got {
+                        // Device is not serving the device info so disonnect from it
+                        self.bluetoothManager.cancelPeripheralConnection(peripheral)
+
+                        // And remove it from the table
                         if let i = self.devices.firstIndex(of: aDevice) {
                             self.devices.remove(at: i)
                             self.devicesTable.reloadData()
                         }
-                    }
-                } else {
-                    // We know the device is serving BLINKUP, so now go and get some device info
-                    // via the DEVICE_INFO service. This will trigger the PIN request by iOS
-                    for i in 0..<services.count {
-                        let service: CBService = services[i]
-                        if service.uuid.uuidString == DEVICE_INFO_SERVICE_UUID {
-                            // The device is also offering the DEVICE_INFO service, so ask for a list of the all (hence 'nil')
-                            // of the service's characteristics. This asynchronous call will be picked up by
-                            // 'peripheral.didDiscoverCharacteristicsFor()'
-                            peripheral.discoverCharacteristics(nil, for: service)
-                            break
+                    } else {
+                        // We know the device is serving BLINKUP, so now go and get some device info
+                        // via the DEVICE_INFO service. This will trigger the PIN request by iOS
+                        for i in 0..<services.count {
+                            let service: CBService = services[i]
+                            if service.uuid.uuidString == DEVICE_INFO_SERVICE_UUID {
+                                // The device is also offering the DEVICE_INFO service, so ask for a list of the all (hence 'nil')
+                                // of the service's characteristics. This asynchronous call will be picked up by
+                                // 'peripheral.didDiscoverCharacteristicsFor()'
+                                peripheral.discoverCharacteristics(nil, for: service)
+                            }
+
+                            if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
+                                peripheral.discoverCharacteristics(nil, for: service)
+                            }
                         }
                     }
                 }
@@ -677,6 +693,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         self.devicesTable.reloadData()
 
                         // Get the rest of the characteristics we're interested in at this point
+                        // First, get the DEVICE_INFO > MODEL TYPE characteristic
                         var a = aDevice.characteristics[DEVICE_INFO_SERVICE_UUID]!
                         for i in 0..<a.count {
                             let cb:CBCharacteristic = a[i]
@@ -684,7 +701,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                                 peripheral.readValue(for: cb)
                             }
                         }
-                        
+
+                        // First, get the BLINKUP > WIFI_LIST characteristic
                         a = aDevice.characteristics[BLINKUP_SERVICE_UUID]!
                         for i in 0..<a.count {
                             let cb:CBCharacteristic = a[i]
@@ -698,12 +716,15 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     // Access to the value has not yet been authorized by PIN, so
                     // attempt to read the value again in three seconds' time (by
                     // when the value might have neen unlocked, or blocked)
-                    let a: [Any] = [peripheral, characteristic]
-                    self.pinTimer = Timer.scheduledTimer(timeInterval: 2.0,
-                                                         target: self,
-                                                         selector: #selector(self.attemptRead),
-                                                         userInfo: a,
-                                                         repeats: false)
+                    if let aDevice = getDevice(peripheral) {
+                        aDevice.requiresPin = true
+                        let a: [Any] = [peripheral, characteristic]
+                        self.pinTimer = Timer.scheduledTimer(timeInterval: 2.0,
+                                                             target: self,
+                                                             selector: #selector(self.attemptRead),
+                                                             userInfo: a,
+                                                             repeats: false)
+                    }
                 }
             }
         } else if characteristic.uuid.uuidString == DEVICE_INFO_MODEL_CHARACTERISTIC_UUID {

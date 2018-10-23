@@ -289,18 +289,18 @@
                                             </constraints>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lsv-XM-M8g">
-                                            <rect key="frame" x="56" y="6" width="42" height="24"/>
+                                            <rect key="frame" x="56" y="6" width="249" height="24"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="24" id="ha0-md-8Dy"/>
+                                                <constraint firstAttribute="height" constant="24" id="Aop-Po-EpQ"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="M6h-cp-NOA">
-                                            <rect key="frame" x="56" y="27" width="31" height="15"/>
+                                            <rect key="frame" x="56" y="27" width="249" height="15"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="15" id="b2X-5U-EXt"/>
+                                                <constraint firstAttribute="height" constant="15" id="54U-dU-2kE"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                             <color key="textColor" red="0.35686274509803922" green="0.69411764705882351" blue="0.73333333333333328" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -315,20 +315,23 @@
                                         </activityIndicatorView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="M6h-cp-NOA" secondAttribute="bottom" constant="9.5" id="0wG-7D-m9n"/>
+                                        <constraint firstItem="M6h-cp-NOA" firstAttribute="leading" secondItem="04f-Qh-MZy" secondAttribute="trailing" constant="8" id="9kg-SV-247"/>
                                         <constraint firstItem="04f-Qh-MZy" firstAttribute="leading" secondItem="TGq-E6-SNT" secondAttribute="leading" constant="16" id="CZx-Y1-TCK"/>
-                                        <constraint firstItem="lsv-XM-M8g" firstAttribute="leading" secondItem="04f-Qh-MZy" secondAttribute="trailing" constant="8" id="FNX-dH-NiF"/>
+                                        <constraint firstItem="lsv-XM-M8g" firstAttribute="leading" secondItem="04f-Qh-MZy" secondAttribute="trailing" constant="8" id="MnA-8U-URZ"/>
                                         <constraint firstItem="04f-Qh-MZy" firstAttribute="centerY" secondItem="TGq-E6-SNT" secondAttribute="centerY" id="RDE-Mh-kde"/>
-                                        <constraint firstItem="lsv-XM-M8g" firstAttribute="top" secondItem="TGq-E6-SNT" secondAttribute="top" constant="6" id="TON-6t-qLA"/>
-                                        <constraint firstAttribute="bottom" secondItem="M6h-cp-NOA" secondAttribute="bottom" constant="9.5" id="b3N-II-AqZ"/>
                                         <constraint firstItem="tg4-QX-KZu" firstAttribute="centerY" secondItem="TGq-E6-SNT" secondAttribute="centerY" id="dim-ky-BQM"/>
                                         <constraint firstItem="tg4-QX-KZu" firstAttribute="trailing" secondItem="TGq-E6-SNT" secondAttribute="trailingMargin" id="gCV-Jy-lOH"/>
-                                        <constraint firstItem="M6h-cp-NOA" firstAttribute="leading" secondItem="04f-Qh-MZy" secondAttribute="trailing" constant="8" id="qTn-dD-7EV"/>
+                                        <constraint firstItem="tg4-QX-KZu" firstAttribute="leading" secondItem="lsv-XM-M8g" secondAttribute="trailing" constant="8" id="gnB-Tt-VPV"/>
+                                        <constraint firstItem="lsv-XM-M8g" firstAttribute="top" secondItem="TGq-E6-SNT" secondAttribute="top" constant="6" id="mkw-0c-5mL"/>
+                                        <constraint firstItem="tg4-QX-KZu" firstAttribute="leading" secondItem="M6h-cp-NOA" secondAttribute="trailing" constant="8" id="wHZ-KJ-OeQ"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="myImage" destination="04f-Qh-MZy" id="2IV-nr-EUl"/>
                                     <outlet property="mySubtitle" destination="M6h-cp-NOA" id="E01-LZ-ERX"/>
                                     <outlet property="myTitle" destination="lsv-XM-M8g" id="pMU-Yd-Bx2"/>
+                                    <outlet property="progressIndicator" destination="tg4-QX-KZu" id="wz2-nG-eXQ"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
