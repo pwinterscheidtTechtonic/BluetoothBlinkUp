@@ -104,7 +104,13 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         super.viewWillAppear(animated)
 
-        initNetworks()
+        connectToDevice()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        
+        super.viewDidAppear(animated)
+        
         connectToDevice()
     }
     
@@ -124,14 +130,39 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 setNetworks(aDevice.networks)
 
                 if !self.connected && aDevice.peripheral != nil {
-                    //self.wifiPicker.isUserInteractionEnabled = false
                     self.blinkUpProgressBar.startAnimating()
-                    self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                    self.bluetoothManager.connect(aDevice.peripheral, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey : NSNumber.init(value: true)])
                     self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
                                                           target: self,
                                                           selector: #selector(self.endConnectWithAlert),
                                                           userInfo: nil,
                                                           repeats: false)
+                } else {
+                    if aDevice.requiresPin {
+                        var gotBlinkUp: Bool = false
+                        for i in 0..<aDevice.services.count {
+                            let service: CBService = aDevice.services[i]
+                            if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
+                                let a = aDevice.characteristics[BLINKUP_SERVICE_UUID]!
+                                for j in 0..<a.count {
+                                    let ch: CBCharacteristic? = a[j]
+                                    if ch != nil {
+                                        if ch!.uuid.uuidString == BLINKUP_WIFIGET_CHARACTERISTIC_UUID {
+                                            aDevice.peripheral.readValue(for: ch!)
+                                            gotBlinkUp = true
+                                            break
+                                        }
+                                    }
+                                }
+                                
+                                if gotBlinkUp { break }
+                            }
+                        }
+                        
+                        if !gotBlinkUp {
+                            endConnectWithAlert()
+                        }
+                    }
                 }
             }
         }
@@ -151,11 +182,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             if networks[0] == "!no_local_networks!" || networks[0] == "" {
                 // Reset 'availableNetworks' and the UIPickerView
                 initNetworks()
-
-                // Tell the user
                 self.sendLabel.text = "No nearby networks to connect to"
-                
-                // Disconnect if required
                 return
             }
         }
@@ -968,6 +995,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             }
                             
                             self.blinkUpProgressBar.stopAnimating()
+                            NSLog("BZZZ 1")
                         }
                     }
                 } else {

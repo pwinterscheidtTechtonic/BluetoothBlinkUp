@@ -57,12 +57,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
     // Constants
     // Constants: Device State
-    let DEVICE_SCAN_TIMEOUT      = 15.0
+    let DEVICE_SCAN_TIMEOUT      = 32.0
     let PERIPHERAL_STATE_UNKNOWN = -1
     let PERIPHERAL_STATE_INITIAL = 0
     let PERIPHERAL_STATE_GETTING = 1
     let PERIPHERAL_STATE_GOT     = 2
-    let PIN_COUNT_MAX            = 10
+    let PIN_COUNT_MAX            = 12
     
     // Constants: BLE Services
     let BLINKUP_SERVICE_UUID                   = "FADA47BE-C455-48C9-A5F2-AF7CF368D719"
@@ -369,15 +369,23 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func showAlert(_ title: String, _ message: String) {
         
         // Generic alert creation routine
+        
+        // Make sure we're not already presenting - if so update the text
+        if let currentAlert = self.presentedViewController as? UIAlertController {
+            currentAlert.message = message
+            currentAlert.title = title
+            return
+        }
+        
+        // Display a new alert
         self.alert = UIAlertController.init(title: title,
                                             message: message,
                                             preferredStyle: UIAlertController.Style.alert)
-        self.alert!.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
-                                            style: .`default`,
+        self.alert!.addAction(UIAlertAction(title: "OK",
+                                            style: UIAlertAction.Style.default,
                                             handler: nil))
-        self.present(self.alert!, animated: true) {
-            self.alert = nil
-        }
+        
+        self.present(self.alert!, animated: true, completion: nil)
     }
     
     func getDevice(_ peripheral: CBPeripheral) -> Device? {
@@ -719,11 +727,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     if let aDevice = getDevice(peripheral) {
                         aDevice.requiresPin = true
                         let a: [Any] = [peripheral, characteristic]
-                        self.pinTimer = Timer.scheduledTimer(timeInterval: 3.0,
-                                                             target: self,
-                                                             selector: #selector(self.attemptRead),
-                                                             userInfo: a,
-                                                             repeats: false)
+                        if self.pinTimer == nil || !self.pinTimer.isValid {
+                            self.pinTimer = Timer.scheduledTimer(timeInterval: 1.0,
+                                                                 target: self,
+                                                                 selector: #selector(self.attemptRead),
+                                                                 userInfo: a,
+                                                                 repeats: false)
+                        }
                     }
                 }
             }
@@ -781,7 +791,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         } else {
             pinCount = 0
             showAlert("Bluetooth LE PIN", "Please enter a valid Bluetooth LE PIN code")
-            
+            self.endScan(false)
+            initTable()
             if let aDevice = getDevice(p) {
                 self.bluetoothManager.cancelPeripheralConnection(p)
                 aDevice.isConnected = false
