@@ -62,7 +62,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     let PERIPHERAL_STATE_INITIAL = 0
     let PERIPHERAL_STATE_GETTING = 1
     let PERIPHERAL_STATE_GOT     = 2
-    let PIN_COUNT_MAX            = 12
+    let PIN_COUNT_MAX            = 6
     
     // Constants: BLE Services
     let BLINKUP_SERVICE_UUID                   = "FADA47BE-C455-48C9-A5F2-AF7CF368D719"
@@ -231,20 +231,26 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             if self.scanTimer != nil && self.scanTimer.isValid { self.scanTimer.invalidate() }
             if self.pinTimer != nil && self.pinTimer.isValid { self.pinTimer.invalidate() }
 
-            // Cancel the scan
-            self.scanning = false
-            self.bluetoothManager.stopScan()
-
             // Hide the refresh control
             self.refreshControl!.endRefreshing()
+            self.scanning = false
             
-            // Clear any discovereed devices from list that were not authorized by PIN
+            // Check that BLE is available - it might not be if it was disabled mid-scan
+            if self.bluetoothManager.state != CBManagerState.poweredOff {
+                // Cancel the scan
+                self.bluetoothManager.stopScan()
+            }
+                
+            // Clear any discovereed devices from list
             if self.devices.count > 0 {
                 var index = 0
                 repeat {
                     let aDevice: Device = self.devices[index]
-                    if aDevice.state != PERIPHERAL_STATE_GOT {
-                        self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                    if aDevice.state != PERIPHERAL_STATE_GOT && aDevice.peripheral != nil {
+                        if self.bluetoothManager.state != CBManagerState.poweredOff {
+                            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral!)
+                        }
+                        
                         self.devices.remove(at: index)
                     } else {
                         index = index + 1
@@ -288,7 +294,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             for i in 0..<self.devices.count {
                 let aDevice: Device = self.devices[i]
                 if aDevice.devID != "TBD" && aDevice.peripheral != nil {
-                    self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                    self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral!)
                 }
             }
         }
@@ -457,8 +463,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // NOTE We could close the connection in either case, but we don't in the case
         //      of secure connections to save re-requesting the PIN in the next phase
         //      (see DeviceDetailViewController.swift)
-        if !aDevice.requiresPin && aDevice.peripheral != nil {
-            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+        if aDevice.requiresPin == false && aDevice.peripheral != nil {
+            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral!)
             aDevice.isConnected = false
         }
 
@@ -577,6 +583,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // It won't available if powered down, or access is not authorized for the app
         let cbm = central as CBManager
         if cbm.state != CBManagerState.poweredOn {
+            endScan(false)
+            initTable()
+            
             self.showAlert("Bluetooth LE Disabled", "Please ensure that Bluetooth is powered up on your iPhone")
             self.gotBluetooth = false
         } else {
@@ -721,14 +730,17 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         }
                     }
                 } else {
-                    // Access to the value has not yet been authorized by PIN, so
-                    // attempt to read the value again in three seconds' time (by
-                    // when the value might have neen unlocked, or blocked)
+                    // If we're here, we have received a response from CoreBluetooth that the characteristic
+                    // was read, but no value was received - ie. we need to enter a PIN, which CoreBluetooth
+                    // is itself requesting.
                     if let aDevice = getDevice(peripheral) {
+                        // Record that the device uses a PIN
                         aDevice.requiresPin = true
+                        
+                        // Set up a timer to attempt to re-acquire the value in two second's time
                         let a: [Any] = [peripheral, characteristic]
                         if self.pinTimer == nil || !self.pinTimer.isValid {
-                            self.pinTimer = Timer.scheduledTimer(timeInterval: 1.0,
+                            self.pinTimer = Timer.scheduledTimer(timeInterval: 2.0,
                                                                  target: self,
                                                                  selector: #selector(self.attemptRead),
                                                                  userInfo: a,

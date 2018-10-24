@@ -46,7 +46,7 @@ class Device: NSObject {
     var type: String = ""
     var agent: String = ""
     var devID: String = "TBD"
-    var peripheral: CBPeripheral!
+    var peripheral: CBPeripheral?
     var characteristics: [String:[CBCharacteristic]] = [:]
     var services: [CBService] = []
     var networks: String = ""
