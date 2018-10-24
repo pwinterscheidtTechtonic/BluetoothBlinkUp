@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-18 Electric Imp
 //
-//  Version 1.0.2
+//  Version 1.0.3
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -216,15 +216,39 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
             // Cancel the scan
             self.scanning = false
-            self.bluetoothManager.stopScan()
+            
+            if self.bluetoothManager.state != CBManagerState.poweredOff {
+                // Stop the scan only if Bluetooth is powered up
+                // (it may have been disabled mid-scan)
+                self.bluetoothManager.stopScan()
+            }
 
             // Hide the refresh control
             self.refreshControl!.endRefreshing()
+            
+            // Remove devices from the list if their records have not yet been populated
+            if self.devices.count > 0 {
+                var index = 0
+                repeat {
+                    let aDevice: Device = self.devices[index]
+                    if aDevice.devID == "TBD" && aDevice.peripheral != nil {
+                        if self.bluetoothManager.state != CBManagerState.poweredOff {
+                            self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
+                        }
+                        
+                        self.devices.remove(at: index)
+                    } else {
+                        index = index + 1
+                    }
+                } while index < self.devices.count && self.devices.count != 0
+            }
 
-            // Warn the user
+            // Warn the user if required
             if self.devices.count == 0 && showAnAlert {
                 showAlert("No Bluetooth-enabled imp Devices Found", "")
                 initTable()
+            } else {
+                self.devicesTable.reloadData()
             }
         }
     }
@@ -500,7 +524,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         let cbm = central as CBManager
         if cbm.state != CBManagerState.poweredOn {
+            // In case we are scanning when Bluetooth is turned off
+            endScan(false)
+            
+            // Post a warning to the user...
             self.showAlert("Bluetooth LE Disabled", "Please ensure that Bluetooth is powered up on your iPhone")
+            
+            // ... and record that Bluetooth is down
             self.gotBluetooth = false
         } else {
             self.gotBluetooth = true
