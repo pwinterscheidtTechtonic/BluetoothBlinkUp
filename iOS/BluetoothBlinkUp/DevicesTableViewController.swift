@@ -443,7 +443,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             cell.myImage?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
             
             if aDevice.devID == "TBD" {
-                cell.mySubtitle?.text = "Retrieving... enter the device PIN if requested"
+                cell.mySubtitle?.text = "Enter Device PIN if Requested"
                 cell.progressIndicator.startAnimating()
             } else {
                 cell.mySubtitle?.text = aDevice.devID + (aDevice.type.count > 0 ? " (\(aDevice.type))" : "Unknown")
@@ -757,8 +757,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         aDevice.type = String.init(data: data, encoding: String.Encoding.utf8)!
                         self.devicesTable.reloadData()
                     }
-                } else {
-                    peripheral.readValue(for: characteristic)
                 }
             }
         } else if characteristic.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
@@ -769,8 +767,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         aDevice.agent = String.init(data: data, encoding: String.Encoding.utf8)!
                         if aDevice.agent == "null" { aDevice.agent = "" }
                     }
-                } else {
-                    peripheral.readValue(for: characteristic)
                 }
             }
         } else if characteristic.uuid.uuidString == BLINKUP_WIFIGET_CHARACTERISTIC_UUID {
@@ -782,8 +778,6 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                             aDevice.networks = networkList
                         }
                     }
-                } else {
-                    peripheral.readValue(for: characteristic)
                 }
             }
         }
