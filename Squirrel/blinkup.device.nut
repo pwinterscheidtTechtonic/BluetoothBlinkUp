@@ -1,7 +1,7 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
 //
-//  Version: 1.0.2
+//  Version: 1.0.4
 //
 //  Copyright 2017-18 Electric Imp
 //
@@ -566,7 +566,7 @@ function doBluetooth() {
     bt = BTLEBlinkUp();
 
     // Don't use security
-    bt.setSecurity(1);
+    bt.setSecurity(4, 111222);
 
     agent.on("set.agent.url", function(data) {
         bt.agentURL = data;

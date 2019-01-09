@@ -1,4 +1,4 @@
-# Bluetooth BlinkUp 1.0.2 #
+# Bluetooth BlinkUp 1.0.4 #
 
 This example comprises Squirrel code for you to run on an imp-based test device &mdash; this requires impOS™ 38 or above &mdash; and an Xcode project which you can use to build an iOS app (written in Swift 4) that is capable of finding and configuring test devices running the Squirrel code.
 
@@ -34,6 +34,10 @@ Log into [impCentral™](https://impcentral.electricimp.com/login) in a browser 
 
 Next, click **Assign devices**, toward the bottom the screen. Use the panel that appears to assign your Breakout Board to the new Development Device Group. Power up the Breakout Board if it is not powered up already. The Breakout Board will now receive and run the device code, and the agent will be instantiated in the cloud.
 
+**Security Note 1** The code makes use of public UUIDs for the BlinkUp service. You should used your own values if using this code as the basis of your own application.
+
+**Security Note 2** At this time the example code does not support the use of Bluetooth LE security (ie. PIN access and link encryption) We hope to add this in a future release.
+
 ## Using the iOS App ##
 
 When the iOS app has launched, you may be required to authorize the app to use Bluetooth &mdash; please do so. Please also enter your BlinkUp API key when prompted *(see above)*.
@@ -61,6 +65,17 @@ In addition to displaying device information &mdash; in the real world, an appli
 By default, iOS caches the attribute information it discovers from devices, as does Android. This ensures that future scans need not use the radio, conserving power. However, it also means if you change your Squirrel app’s served attributes during development, they will not be immediately detected by the app.
 
 The easiest approach to dealing with this is to disable then re-enable Bluetooth on your Apple device &mdash; try switching to Airplane mode and then back again. You may also need to power-cycle the device.
+
+## Release Notes ##
+
+- 1.0.4
+    - Add secure Bluetooth LE support
+- 1.0.3
+    - Better handling of mid-scan Bluetooth power-downs
+- 1.0.1/1.0.2
+    - Minor code improvements; expanded code comments; update to Swift 4.2
+- 1.0.0
+    - Initial release
 
 ## License ##
 

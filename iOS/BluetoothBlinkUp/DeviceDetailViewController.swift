@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-18 Electric Imp
 //
-//  Version 1.0.3
+//  Version 1.0.4
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -105,13 +105,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         super.viewWillAppear(animated)
 
-        initUI()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
-        super.viewDidAppear(animated)
-        
+        initNetworks()
         connectToDevice()
     }
     
@@ -121,29 +115,38 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // switched to a different app, so reset the UI - unless we're sending
         if !self.isSending {
             initUI()
+            
             var deviceName: String = "Unknown"
             
             // Get the networks from the device
             if let aDevice: Device = self.device {
                 deviceName = aDevice.name
                 
-                // NOTE We need to set the objects' delegates to 'self' so that the correct delegate functions are called
                 if aDevice.peripheral != nil {
+                    // NOTE We need to set the objects' delegates to 'self'
+                    //      so that the correct delegate functions are called
                     aDevice.peripheral!.delegate = self
                     self.bluetoothManager.delegate = self
                     self.connected = aDevice.isConnected
+                    
+                    // Display the list of networks we already have
                     setNetworks(aDevice.networks)
 
                     if !self.connected && aDevice.peripheral != nil {
+                        // If the device is not already connected (insecure connections) reconnect now
                         self.blinkUpProgressBar.startAnimating()
-                        self.bluetoothManager.connect(aDevice.peripheral!,
-                                                      options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey : NSNumber.init(value: true)])
+                        self.bluetoothManager.connect(aDevice.peripheral!, options: nil)
+                        
+                        // Set up a timeout for the connection attempt
                         self.scanTimer = Timer.scheduledTimer(timeInterval: DEVICE_SCAN_TIMEOUT,
                                                               target: self,
                                                               selector: #selector(self.endConnectWithAlert),
                                                               userInfo: nil,
                                                               repeats: false)
                     } else {
+                        // If the device requires a PIN, go and read a value
+                        // so that we can get this entered immediately, ie. not
+                        // when we write a value and can't trap the PIN request
                         if aDevice.requiresPin {
                             aDevice.peripheral!.discoverServices(nil)
                         }
@@ -158,14 +161,14 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             
             self.isClearing = false
             self.isSending = false
-            self.clearList = true
             self.connected = false
+            self.clearList = true
         }
     }
 
     func setNetworks(_ networkList: String) {
 
-        // Take a list of networks as atring and use it to populate the UI's picker view
+        // Take a list of networks as string and use it to populate the UI's picker view
         if networkList == "Z" || networkList.count == 0 { return }
 
         var nl: NSString = networkList as NSString
@@ -208,7 +211,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.blinkUpProgressBar.stopAnimating()
         
         if let aDevice: Device = self.device {
-            if aDevice.peripheral != nil {
+            if aDevice.peripheral != nil && aDevice.requiresPin == false {
                 self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral!)
                 self.connected = false
                 aDevice.isConnected = false
@@ -220,7 +223,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         
         self.isClearing = false
         self.isSending = false
-        self.clearList = true
     }
     
     func initUI() {
@@ -234,8 +236,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     func initNetworks() {
 
         // Initialize the UIPickerView which presents the network list
-        // NOTE The actual network data is gathered in the background
-        // ( see viewDidAppear() )
 
         // Add a placeholder network name
         self.availableNetworks.removeAll()
@@ -245,7 +245,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.wifiPicker.reloadAllComponents()
         self.wifiPicker.isUserInteractionEnabled = false
         self.wifiPicker.alpha = 0.5
-        self.wifiPicker.isUserInteractionEnabled = true
     }
 
     @objc func goBack() {
@@ -253,11 +252,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // Return to the device list - unless we are sending data ('isSending' is true),
         // in which case notify the user
         if self.isSending {
-            showAlert("BlinkUp™ in Progress", "Please wait until all the BlinkUp information has been sent to the device")
+            showAlert("BlinkUp™ in Progress",
+                      "Please wait until all the BlinkUp information has been sent to the device")
             return
         }
 
-        // If a device is connected, disconnect from it
+        // If a device is connected, disconnect from it (insecure devices only)
         if self.connected {
             if let aDevice: Device = self.device {
                 if aDevice.peripheral != nil && aDevice.requiresPin == false {
@@ -397,7 +397,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                         // Could not create the BUConfigID - maybe the API is wroing/invalid?
                         NSLog("BUConfigId(init) error: \(error.localizedDescription)")
 
-                        self.showAlert("BlinkUp™ Could Not Proceed", "Your BlinkUp API Key is not correct.\nPlease re-enter or clear it via the main Devices list on the previous screen (Actions > Enter API Key). An API key is only required for new device enrollment — updating WiFi details on an enrolled device does not require a BlinkUp API key.")
+                        self.showAlert("BlinkUp™ Could Not Proceed",
+                                       "Your BlinkUp API Key is not correct.\nPlease re-enter or clear it via the main Devices list on the previous screen (Actions > Enter API Key). An API key is only required for new device enrollment — updating WiFi details on an enrolled device does not require a BlinkUp API key.")
 
                         self.blinkUpProgressBar.stopAnimating()
                         self.isSending = false
@@ -407,7 +408,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         } else {
             // Should be connected at this point, but for some reason we're not so post a warning to the user
             self.isSending = false
-            showAlert("Please Connect to a Device", "You must be connected to an imp-enabled device with Bluetooth in order to perform BlinkUp. Return to the Device List and re-select the device")
+            showAlert("Please Connect to a Device",
+                      "You must be connected to an imp-enabled device with Bluetooth in order to perform BlinkUp. Return to the Device List and re-select the device")
         }
     }
 
@@ -486,15 +488,13 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // Auto-close the connection in CANCEL_TIME seconds' time,
         self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
             if let aDevice = self.device {
-                // Cancel the connection (best practice to save battery power)
-                // but only if the device is not protected by a PIN
-                /*
-                if aDevice.peripheral != nil && aDevice.requiresPin == false {
+                // We have to disconnect here because the device has restarted,
+                // and so the connection will be broken
+                if aDevice.peripheral != nil {
                     self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral!)
                     self.connected = false
                     aDevice.isConnected = false
                 }
-                */
                 
                 // Mark that we're done
                 self.isSending = false
@@ -800,9 +800,11 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
         // Update app state
         self.connected = true
+        
+        // Hide the activity indicator
+        self.blinkUpProgressBar.stopAnimating()
 
-        // We may have connected mid-operation, so take a path relevant to
-        // that operation
+        // We may have connected mid-operation, so take a path relevant to that operation
         if self.isSending {
             // We are are connecting after calling doBlinkUp()
             // so proceed to the next step
@@ -813,61 +815,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             clearWiFiStageTwo()
         } else {
             peripheral.discoverServices(nil)
-            
-            /*
-            // Just a generic reconnection, eg. after the app returns to the foreground
-            if let aDevice: Device = self.device {
-                if aDevice.services.count == 0 {
-                    // Get a list of services
-                    peripheral.discoverServices(nil)
-                } else {
-                    if aDevice.characteristics.count == 0 {
-                        // Get the characteristics from the services we know about
-                        for i in 0..<aDevice.services.count {
-                            let service: CBService = aDevice.services[i]
-                            if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
-                                peripheral.discoverCharacteristics(nil, for: service)
-                            }
-                        }
-                    } else {
-                        // We have services and characteristics saved (which we should)
-                        // so we'll be ready to read and write values
-                        
-                        // Get the SSID list in order to trigger a PIN entry request
-                        if aDevice.requiresPin {
-                            var gotBlinkUp: Bool = false
-                            for i in 0..<aDevice.services.count {
-                                let service: CBService = aDevice.services[i]
-                                if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
-                                    let a = aDevice.characteristics[BLINKUP_SERVICE_UUID]!
-                                    for j in 0..<a.count {
-                                        let ch: CBCharacteristic? = a[j]
-                                        if ch != nil {
-                                            if ch!.uuid.uuidString == BLINKUP_WIFIGET_CHARACTERISTIC_UUID {
-                                                aDevice.peripheral.readValue(for: ch!)
-                                                gotBlinkUp = true
-                                                break
-                                            }
-                                        }
-                                    }
-                                    
-                                    if gotBlinkUp { break }
-                                }
-                            }
-                            
-                            if !gotBlinkUp {
-                                endConnectWithAlert()
-                            }
-                        }
-                        
-                        self.blinkUpProgressBar.stopAnimating()
-                    }
-                }
-            } else {
-                // Got all we need, so just hide the activity indicator
-                self.blinkUpProgressBar.stopAnimating()
-            }
-            */
         }
     }
 
@@ -1052,24 +999,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             NSLog("peripheral(didWriteValueFor) error: \(error!.localizedDescription) for characteristic \(characteristic.uuid.uuidString)")
         } else {
             NSLog("peripheral(didWriteValueFor): wrote characteristic \(characteristic.uuid.uuidString)")
-        }
-        
-        if let data = characteristic.value {
-            if data.count > 0 {
-                NSLog("didWriteValueFor() called for characteristic \(characteristic.uuid.uuidString)")
-            } else {
-                // Access to the value has not yet been authorized by PIN, so
-                // attempt to read the value again in three seconds' time (by
-                // when the value might have neen unlocked, or blocked)
-                let a: [Any] = [peripheral, characteristic]
-                /*
-                self.pinTimer = Timer.scheduledTimer(timeInterval: 1.0,
-                                                     target: self,
-                                                     selector: #selector(self.attemptWrite),
-                                                     userInfo: a,
-                                                     repeats: false)
-                */
-            }
         }
     }
 
