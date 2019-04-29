@@ -6,9 +6,9 @@
 //
 //  MIT License
 //
-//  Copyright 2017-18 Electric Imp
+//  Copyright 2017-19 Electric Imp
 //
-//  Version 1.0.3
+//  Version 1.0.4
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -126,8 +126,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             if self.ddvc!.clearList {
                 // We could not connect at some point, so clear the device
                 // list to prepare for a new scan
-                initTable()
-                self.devicesTable.reloadData();
+                //initTable()
+                //self.devicesTable.reloadData();
             }
             
             // Zap the Device Details View Controller
@@ -361,6 +361,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         self.alert!.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
                                             style: .`default`,
                                             handler: nil))
+        print(message)
         self.present(self.alert!, animated: true) {
             self.alert = nil
         }

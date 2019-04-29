@@ -6,9 +6,9 @@
 //
 //  MIT License
 //
-//  Copyright 2017-18 Electric Imp
+//  Copyright 2017-19 Electric Imp
 //
-//  Version 1.0.3
+//  Version 1.0.4
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -296,7 +296,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             //      it is valid HTML before loading
                             if (aDevice.agent.count > 0) {
                                 let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
-                                let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
+                                let awvc = storyboard.instantiateViewController(withIdentifier:"thewebview") as! AgentWebViewController
                                 awvc.agentURL = aDevice.agent
 
                                 // Set up the left-hand nav bar button with an icon and text
@@ -349,7 +349,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
                                     if let us = info.agentURL?.absoluteString {
                                         let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
-                                        let awvc = storyboard.instantiateViewController(withIdentifier:"webview") as! AgentWebViewController
+                                        let awvc = storyboard.instantiateViewController(withIdentifier:"thewebview") as! AgentWebViewController
                                         awvc.agentURL = us
 
                                         // Set up the left-hand nav bar button with an icon and text
