@@ -1,9 +1,9 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
 //
-//  Version: 1.0.3
+//  Version: 1.0.4
 //
-//  Copyright 2017-18 Electric Imp
+//  Copyright 2017-19 Electric Imp
 //
 //  SPDX-License-Identifier: MIT
 //

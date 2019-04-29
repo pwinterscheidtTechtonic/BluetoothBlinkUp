@@ -1,10 +1,9 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.agent.nut
 //
-//  Version: 1.0.3
+//  Version: 1.0.4
 //
-//
-//  Copyright 2017-18 Electric Imp
+//  Copyright 2017-19 Electric Imp
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -34,7 +33,7 @@
 // the device into its pre-activation state, ie. ready for BlinkUp.
 
 // IMPORTS
-#require "Rocky.class.nut:2.0.1"
+#require "Rocky.class.nut:2.0.2"
 
 // CONSTANTS
 const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
@@ -87,7 +86,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                     <button type='submit' id='resetter' style='height:32px;width:200px'>Clear BlinkUp Signature</button>
                 </div>
                 <p>&nbsp;</p>
-                <p class='colophon'>BlinkUp Demo &copy; Electric Imp, Inc. 2018</p>
+                <p class='colophon'>BlinkUp Demo &copy; Electric Imp, Inc. 2017-19</p>
             </div>
         </div>
 
