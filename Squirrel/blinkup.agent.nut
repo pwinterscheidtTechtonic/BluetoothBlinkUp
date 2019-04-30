@@ -39,7 +39,7 @@
 const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 <html>
     <head>
-        <title>Electric Imp BlinkUp™</title>
+        <title>Electric Imp BlinkUp™ Demo</title>
         <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
         <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
         <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-imp.ico'>
@@ -82,8 +82,12 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                     <h4 class='readout-state'>Agent Status: online</h4>
                 </div>
                 <p>&nbsp;</p>
+                <div class='clear-button' align='center'>
+                    <button type='button' class='btn btn-secondary' id='clearer' style='height:48px;width:200px'>Clear BlinkUp Signature</button>
+                </div>
+                &nbsp;
                 <div class='reset-button' align='center'>
-                    <button type='button' class='btn btn-secondary' id='resetter' style='height:48px;width:200px'>Clear BlinkUp Signature</button>
+                    <button type='button' class='btn btn-secondary' id='restarter' style='height:48px;width:200px'>Restart Device</button>
                 </div>
                 <p>&nbsp;</p>
                 <p class='colophon'>BlinkUp Demo &copy; Electric Imp, Inc. 2017-19</p>
@@ -97,7 +101,8 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
             var isMobile = false;
 
             // Set up actions
-            $('#resetter').click(reset);
+            $('#clearer').click(clear);
+            $('#restarter').click(restart);
 
             // Get initial readings
             getState(updateReadout);
@@ -123,12 +128,22 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                 });
             }
 
-            function reset() {
+            function clear() {
+                // Clear a device's flash
+                sendAction('clear');
+            }
+
+            function restart() {
+                // Trigger a device reset
+                sendAction('restart');
+            }
+
+            function sendAction(action) {
                 // Trigger a device reset
                 $.ajax({
                     url : agenturl + '/action',
                     type: 'POST',
-                    data: JSON.stringify({ 'action' : 'reset' }),
+                    data: JSON.stringify({ 'action' : action }),
                     success : function(response) {
                         getState(updateReadout);
                     }
@@ -169,9 +184,16 @@ api.post("/action", function(context) {
     try {
         local data = http.jsondecode(context.req.rawbody);
         if ("action" in data) {
-            if (data.action == "reset") {
+            if (data.action == "clear") {
                 device.send("clear.spiflash", true);
                 server.log("Device instructed to clear its SPI flash activation flag");
+                context.send(200, "OK");
+                return;
+            }
+
+            if (data.action == "restart") {
+                device.send("do.restart", true);
+                server.log("Device instructed to restart");
                 context.send(200, "OK");
                 return;
             }

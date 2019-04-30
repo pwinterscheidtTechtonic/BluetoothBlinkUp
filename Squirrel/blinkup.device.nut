@@ -549,6 +549,15 @@ agent.on("clear.spiflash", function(data) {
     server.log("Spiflash cleared");
 });
 
+// Register a handler that will restart the device
+agent.on("do.restart", function(data) {
+    if ("reset" in imp) {
+        imp.reset();
+    } else {
+        server.restart();
+    }
+});
+
 // This is a dummy function representing the application code flow.
 // In real-world code, this would deliver the product’s day-to-day
 // functionality, connection management and error handling code
