@@ -40,16 +40,16 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
 <html>
     <head>
         <title>Electric Imp BlinkUp™</title>
-        <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='https://netdna.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'>
         <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
         <link rel='shortcut icon' href='https://smittytone.github.io/images/ico-imp.ico'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <style>
-            body { background-color: #25ABDC; }
+            body {background-color: #25ABDC;}
             p {color: white; font-family: Abel, sans-serif; font-size: 18px}
             p.error-message {color:#ffcc00; font-size: 16px}
             p.colophon {font-size: 14px; text-align: center}
-            h2 {color: white; font-family: Abel, sans-serif; font-size: 36px}
+            h2 {color: white; font-family: Abel, sans-serif; font-size: 36px;padding-top:18px;}
             h4 {color: white; font-family: Abel, sans-serif; font-size: 18px}
             td {color: white; font-family: Abel, sans-serif}
             hr {border-color: #ffcc00}
@@ -82,22 +82,22 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
                     <h4 class='readout-state'>Agent Status: online</h4>
                 </div>
                 <p>&nbsp;</p>
-                <div class='reset-button' style='color:dimGrey;font-family:Abel,sans-serif' align='center'>
-                    <button type='submit' id='resetter' style='height:32px;width:200px'>Clear BlinkUp Signature</button>
+                <div class='reset-button' align='center'>
+                    <button type='button' class='btn btn-secondary' id='resetter' style='height:48px;width:200px'>Clear BlinkUp Signature</button>
                 </div>
                 <p>&nbsp;</p>
                 <p class='colophon'>BlinkUp Demo &copy; Electric Imp, Inc. 2017-19</p>
             </div>
         </div>
 
-        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js'></script>
         <script>
             // Variables
             var agenturl = '%s';
             var isMobile = false;
 
             // Set up actions
-            $('.reset-button button').click(reset);
+            $('#resetter').click(reset);
 
             // Get initial readings
             getState(updateReadout);
