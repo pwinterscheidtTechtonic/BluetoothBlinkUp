@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-19 Electric Imp
 //
-//  Version 1.0.4
+//  Version 1.1.0
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -52,6 +52,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     var scanTimer: Timer!
     var scanning: Bool = false
     var gotBluetooth: Bool = false
+    var showDeviceIDs: Bool = true
 
     // Constants
     let DEVICE_SCAN_TIMEOUT = 15.0
@@ -290,7 +291,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
     @objc func showActions() {
 
-        let actionMenu = UIAlertController.init(title: "Select an Action from the List Below", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let actionMenu = UIAlertController.init(title: "Select an Action from the List Below",
+                                                message: nil,
+                                                preferredStyle: UIAlertController.Style.actionSheet)
         var action: UIAlertAction!
 
         // Add the 'start scan' or 'cancel scan' action button
@@ -307,18 +310,25 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
 
         actionMenu.addAction(action)
-
+        
         // Construct and add the other buttons
+        action = UIAlertAction.init(title: (self.showDeviceIDs ? "Show Agent URLs" : "Show Device IDs"), style: UIAlertAction.Style.default) { (alertAction) in
+            self.showDeviceIDs = !self.showDeviceIDs
+            self.devicesTable.reloadData()
+        }
+        
+        actionMenu.addAction(action)
+
         action = UIAlertAction.init(title: "Show App Info", style: UIAlertAction.Style.default) { (alertAction) in
             self.showInfo()
         }
 
         actionMenu.addAction(action)
-
+        
         action = UIAlertAction.init(title: "Visit the Electric Imp Store", style: UIAlertAction.Style.default) { (alertAction) in
             self.goToShop()
         }
-
+        
         actionMenu.addAction(action)
 
         action = UIAlertAction.init(title: "Enter Your BlinkUp™ API Key", style: UIAlertAction.Style.default) { (alertAction) in
@@ -412,7 +422,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath)
             cell.textLabel?.text = aDevice.name
             cell.imageView?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
-            cell.detailTextLabel?.text = aDevice.devID + (aDevice.type.count > 0 ? " (\(aDevice.type))" : "")
+            cell.detailTextLabel?.text = (self.showDeviceIDs ? aDevice.devID : (aDevice.agent.count > 0 ? aDevice.agent : ""))
             return cell
         }
     }

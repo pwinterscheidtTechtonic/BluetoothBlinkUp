@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-19 Electric Imp
 //
-//  Version 1.0.4
+//  Version 1.1.0
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -267,7 +267,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // NOTE The progress indicator is already active at this point
         if self.connected {
             // We're good to proceed so begin BlinkUp
-            sendLabel.text = "Sending BlinkUp data"
+            sendLabel.text = "Sending WiFi data"
 
             if self.harvey.count == 0 {
                 // The user HAS NOT input a BlinkUp API key, so just send across WiFi credentials,
