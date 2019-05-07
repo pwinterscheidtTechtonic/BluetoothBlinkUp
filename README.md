@@ -1,4 +1,4 @@
-# Bluetooth BlinkUp 1.0.4 #
+# Bluetooth BlinkUp 1.1.0 #
 
 This example comprises Squirrel code for you to run on an imp-based test device &mdash; this requires impOS™ 38 or above &mdash; and an Xcode project which you can use to build an iOS app (written in Swift 4) that is capable of finding and configuring test devices running the Squirrel code.
 
@@ -68,8 +68,9 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 
 ## Release Notes ##
 
-- 1.0.4
+- 1.1.0
     - Update iOS code to Swift 5
+    - Add option to show device ID or agent URL in the device list
 - 1.0.3
     - Better handling of mid-scan Bluetooth power-downs
 - 1.0.1/1.0.2
