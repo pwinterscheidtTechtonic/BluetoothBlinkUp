@@ -734,18 +734,18 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func getRawkey() {
 
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
-        keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key",
-                                                    message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.",
-                                                    preferredStyle: UIAlertController.Style.alert)
+        self.keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key",
+                                                         message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.",
+                                                         preferredStyle: UIAlertController.Style.alert)
 
-        keyEntryController.addTextField(configurationHandler: { (textField) in
+        self.keyEntryController.addTextField(configurationHandler: { (textField) in
             textField.isSecureTextEntry = true
             textField.placeholder = "BlinkUp API key"
         })
 
-        keyEntryController.addAction(UIAlertAction.init(title: "Submit",
-                                                        style: UIAlertAction.Style.default,
-                                                        handler: { (alertAction) in
+        self.keyEntryController.addAction(UIAlertAction.init(title: "Submit",
+                                                             style: UIAlertAction.Style.default,
+                                                             handler: { (alertAction) in
             // When the user taps 'Submit', we get the text field contents and pass
             // it to 'setHarvey()' to save it in the keychain
             if let fields = self.keyEntryController.textFields {
@@ -765,7 +765,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                                 self.harvey = ""
                                 NSLog("Key Deleted")
                             } catch {
-                                NSLog("Key Deleted")
+                                NSLog("Key Not Entered")
                             }
                         }
                     }
@@ -773,10 +773,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         }))
 
-        keyEntryController.addAction(UIAlertAction.init(title: "Cancel",
-                                                        style: UIAlertAction.Style.cancel,
-                                                        handler: nil))
-        keyWindowUp = true
+        self.keyEntryController.addAction(UIAlertAction.init(title: "Cancel",
+                                                             style: UIAlertAction.Style.cancel,
+                                                             handler: nil))
+        self.keyWindowUp = true
         self.present(keyEntryController,
                      animated: true,
                      completion: { () in
