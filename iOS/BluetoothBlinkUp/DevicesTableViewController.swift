@@ -99,7 +99,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                                                selector: #selector(self.closeUp),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
-        
+
         // Watch for a Quick Action-triggered notification to start a scan
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.actionScan),
@@ -109,7 +109,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Add a long-press gesture to the UITableView to pop up the Info panel
         self.infoGesture.addTarget(self, action: #selector(showInfo))
         self.devicesTable.addGestureRecognizer(infoGesture)
-        
+
         // Set up the refresh control - the searching indicator
         self.refreshControl = UIRefreshControl.init()
         self.refreshControl!.backgroundColor = UIColor.init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
@@ -127,10 +127,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             if self.ddvc!.clearList {
                 // We could not connect at some point, so clear the device
                 // list to prepare for a new scan
-                //initTable()
-                //self.devicesTable.reloadData();
+                initTable()
+                self.devicesTable.reloadData();
             }
-            
+
             // Zap the Device Details View Controller
             self.ddvc = nil
         } else {
@@ -217,7 +217,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
             // Cancel the scan
             self.scanning = false
-            
+
             if self.bluetoothManager.state != CBManagerState.poweredOff {
                 // Stop the scan only if Bluetooth is powered up
                 // (it may have been disabled mid-scan)
@@ -226,7 +226,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
             // Hide the refresh control
             self.refreshControl!.endRefreshing()
-            
+
             // Remove devices from the list if their records have not yet been populated
             if self.devices.count > 0 {
                 var index = 0
@@ -236,7 +236,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         if self.bluetoothManager.state != CBManagerState.poweredOff {
                             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
                         }
-                        
+
                         self.devices.remove(at: index)
                     } else {
                         index = index + 1
@@ -253,9 +253,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             }
         }
     }
-    
+
     func initTable() {
-        
+
         // Add an instruction line to the table.
         // This used deviceID = NO to indicte its type to the app, eg. to prevent the
         // row being selected. This line will be clear when the user scans for devices
@@ -310,13 +310,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
 
         actionMenu.addAction(action)
-        
+
         // Construct and add the other buttons
         action = UIAlertAction.init(title: (self.showDeviceIDs ? "Show Agent URLs" : "Show Device IDs"), style: UIAlertAction.Style.default) { (alertAction) in
             self.showDeviceIDs = !self.showDeviceIDs
             self.devicesTable.reloadData()
         }
-        
+
         actionMenu.addAction(action)
 
         action = UIAlertAction.init(title: "Show App Info", style: UIAlertAction.Style.default) { (alertAction) in
@@ -324,11 +324,11 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         }
 
         actionMenu.addAction(action)
-        
+
         action = UIAlertAction.init(title: "Visit the Electric Imp Store", style: UIAlertAction.Style.default) { (alertAction) in
             self.goToShop()
         }
-        
+
         actionMenu.addAction(action)
 
         action = UIAlertAction.init(title: "Enter Your BlinkUp™ API Key", style: UIAlertAction.Style.default) { (alertAction) in
@@ -414,6 +414,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         let aDevice: Device = self.devices[indexPath.row]
 
         if aDevice.devID == "NONE" {
+            // Dequeue the cell we use to provide scan instructions
             let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecellalt", for: indexPath)
             cell.textLabel?.text = aDevice.name
             return cell
@@ -441,8 +442,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Check for an API key - we can't proceed without one
         if self.harvey.count == 0 {
             // Ask the user to enter a key
-            getRawkey()
-            return
+            //getRawkey()
+            //return
         }
 
         // Now that a device has been selected, stop any scan currently taking place.
@@ -537,10 +538,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         if cbm.state != CBManagerState.poweredOn {
             // In case we are scanning when Bluetooth is turned off
             endScan(false)
-            
+
             // Post a warning to the user...
             self.showAlert("Bluetooth LE Disabled", "Please ensure that Bluetooth is powered up on your iPhone")
-            
+
             // ... and record that Bluetooth is down
             self.gotBluetooth = false
         } else {
@@ -594,7 +595,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService,  error: Error?) {
-        
+
         // The app has discovered the characteristics offered by the peripheral (ie. the imp004m) for
         // specific service. This is the result of calling 'peripheral.discoverCharacteristics()'
         if error == nil {
