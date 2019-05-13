@@ -53,6 +53,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     var scanning: Bool = false
     var gotBluetooth: Bool = false
     var showDeviceIDs: Bool = true
+    var didCheckForKey: Bool = false
 
     // Constants
     let DEVICE_SCAN_TIMEOUT = 15.0
@@ -325,14 +326,15 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         actionMenu.addAction(action)
 
-        action = UIAlertAction.init(title: "Visit the Electric Imp Store", style: UIAlertAction.Style.default) { (alertAction) in
-            self.goToShop()
+        action = UIAlertAction.init(title: "Enter Your BlinkUp™ API Key", style: UIAlertAction.Style.default) { (alertAction) in
+            self.didCheckForKey = false
+            self.getRawkey()
         }
 
         actionMenu.addAction(action)
 
-        action = UIAlertAction.init(title: "Enter Your BlinkUp™ API Key", style: UIAlertAction.Style.default) { (alertAction) in
-            self.getRawkey()
+        action = UIAlertAction.init(title: "Visit the Electric Imp Store", style: UIAlertAction.Style.default) { (alertAction) in
+            self.goToShop()
         }
 
         actionMenu.addAction(action)
@@ -734,6 +736,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
     func getRawkey() {
 
+        // Have we already asked? If so, no need to ask again
+        if self.didCheckForKey { return; }
+
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
         self.keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key",
                                                          message: "BlinkUp API Keys are available to\nElectric Imp customers only.\nLeave the field blank to remove your key from this app.",
@@ -781,7 +786,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         self.present(keyEntryController,
                      animated: true,
                      completion: { () in
-                        self.keyWindowUp = true })
+                        self.keyWindowUp = true
+                        self.didCheckForKey = true })
     }
 }
 
