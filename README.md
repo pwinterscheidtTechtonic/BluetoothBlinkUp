@@ -68,6 +68,8 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 
 ## Release Notes ##
 
+- 1.1.1
+    - Don't always ask for an API key if one wasn't entered at the start
 - 1.1.0
     - Update iOS code to Swift 5
     - Add option to show device ID or agent URL in the device list
