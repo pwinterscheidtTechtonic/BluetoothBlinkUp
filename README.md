@@ -1,4 +1,4 @@
-# Bluetooth BlinkUp 1.1.0 #
+# Bluetooth BlinkUp 1.1.1 #
 
 This example comprises Squirrel code for you to run on an imp-based test device &mdash; this requires impOS™ 38 or above &mdash; and an Xcode project which you can use to build an iOS app (written in Swift 4) that is capable of finding and configuring test devices running the Squirrel code.
 
