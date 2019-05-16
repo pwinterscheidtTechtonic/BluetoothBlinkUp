@@ -265,7 +265,7 @@ class BTLEBlinkUp {
                       { "uuid": 0x2A29, "value": "Electric Imp" },                          // manufacturer name
                       { "uuid": 0x2A25, "value": hardware.getdeviceid() },                  // serial number (device ID)
                       { "uuid": 0x2A24, "value": imp.info().type },                         // model number (imp type)
-                      { "uuid": 0x2A23, "value": (agentURL != null ? agentURL : "null") },  // system ID (agent ID)
+                      { "uuid": 0x2A23, "value": (agentURL != null ? agentURL : "TBD") },   // system ID (agent ID)
                       { "uuid": 0x2A26, "value": imp.getsoftwareversion() }]                // firmware version
                     };
 
