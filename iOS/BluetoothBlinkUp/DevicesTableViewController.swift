@@ -48,11 +48,11 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     var keyEntryController: UIAlertController!
     var alert: UIAlertController? = nil
     var harvey: String = ""
-    var keyWindowUp: Bool = false
     var scanTimer: Timer!
+    var showDeviceIDs: Bool = true
+    var keyWindowUp: Bool = false
     var scanning: Bool = false
     var gotBluetooth: Bool = false
-    var showDeviceIDs: Bool = true
     var didCheckForKey: Bool = false
 
     // Constants
@@ -78,7 +78,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         self.ddvc = nil
 
         // Instantiate the CoreBluetooth manager
-        self.bluetoothManager = CBCentralManager.init(delegate: self, queue: nil, options: nil)
+        self.bluetoothManager = CBCentralManager.init(delegate: self,
+                                                      queue: nil,
+                                                      options: nil)
 
         // Set up the Navigation Bar with an Edit button
         self.navigationItem.rightBarButtonItem = UIBarButtonItem.init(title: "Actions",
@@ -114,10 +116,16 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // Set up the refresh control - the searching indicator
         self.refreshControl = UIRefreshControl.init()
-        self.refreshControl!.backgroundColor = UIColor.init(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
+        self.refreshControl!.backgroundColor = UIColor.init(red: 0.9,
+                                                            green: 0.9,
+                                                            blue: 0.9,
+                                                            alpha: 1.0)
         self.refreshControl!.tintColor = UIColor.black
-        self.refreshControl!.attributedTitle = NSAttributedString.init(string: "Searching for Bluetooth-enabled imps...", attributes: [ NSAttributedString.Key.foregroundColor : UIColor.black ])
-        self.refreshControl!.addTarget(self, action: #selector(self.startScan), for: UIControl.Event.valueChanged)
+        self.refreshControl!.attributedTitle = NSAttributedString.init(string: "Searching for Bluetooth-enabled imps...",
+                                                                       attributes: [ NSAttributedString.Key.foregroundColor : UIColor.black ])
+        self.refreshControl!.addTarget(self,
+                                       action: #selector(self.startScan),
+                                       for: UIControl.Event.valueChanged)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -181,7 +189,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 // Start scanning for the imp004m GATT server by using its key GATT service UUID
                 let s:CBUUID = CBUUID(string: BLINKUP_SERVICE_UUID)
                 self.bluetoothManager.delegate = self
-                self.bluetoothManager.scanForPeripherals(withServices:[s], options:nil)
+                self.bluetoothManager.scanForPeripherals(withServices:[s],
+                                                         options:nil)
                 self.scanning = true
 
                 // Set up a timer to cancel the scan automatically after DEVICE_SCAN_TIMEOUT seconds
@@ -301,12 +310,14 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Add the 'start scan' or 'cancel scan' action button
         if self.scanning {
             // We're currently scanning, so present the Cancel Scan option
-            action = UIAlertAction.init(title: "Cancel Scan", style: UIAlertAction.Style.default) { (alertAction) in
+            action = UIAlertAction.init(title: "Cancel Scan",
+                                        style: UIAlertAction.Style.default) { (alertAction) in
                 self.endScan(true)
             }
         } else {
             // We are not scanning, so present the Start Scan button
-            action = UIAlertAction.init(title: "Start Scan", style: UIAlertAction.Style.default) { (alertAction) in
+            action = UIAlertAction.init(title: "Start Scan",
+                                        style: UIAlertAction.Style.default) { (alertAction) in
                 self.actionScan()
             }
         }
@@ -314,47 +325,58 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         actionMenu.addAction(action)
 
         // Construct and add the other buttons
-        action = UIAlertAction.init(title: (self.showDeviceIDs ? "Show Device impOS™ Version" : "Show Device IDs"), style: UIAlertAction.Style.default) { (alertAction) in
+        action = UIAlertAction.init(title: (self.showDeviceIDs ? "Show Device impOS™ Version" : "Show Device IDs"),
+                                    style: UIAlertAction.Style.default) { (alertAction) in
             self.showDeviceIDs = !self.showDeviceIDs
             self.devicesTable.reloadData()
         }
 
         actionMenu.addAction(action)
 
-        action = UIAlertAction.init(title: "Show App Info", style: UIAlertAction.Style.default) { (alertAction) in
+        action = UIAlertAction.init(title: "Show App Info",
+                                    style: UIAlertAction.Style.default) { (alertAction) in
             self.showInfo()
         }
 
         actionMenu.addAction(action)
 
-        action = UIAlertAction.init(title: "Enter Your BlinkUp™ API Key", style: UIAlertAction.Style.default) { (alertAction) in
+        action = UIAlertAction.init(title: "Enter Your BlinkUp™ API Key",
+                                    style: UIAlertAction.Style.default) { (alertAction) in
             self.didCheckForKey = false
             self.getRawkey()
         }
 
         actionMenu.addAction(action)
 
-        action = UIAlertAction.init(title: "Visit the Electric Imp Store", style: UIAlertAction.Style.default) { (alertAction) in
+        action = UIAlertAction.init(title: "Visit the Electric Imp Store",
+                                    style: UIAlertAction.Style.default) { (alertAction) in
             self.goToShop()
         }
 
         actionMenu.addAction(action)
 
-        action = UIAlertAction.init(title: "Cancel", style: UIAlertAction.Style.cancel, handler:nil)
+        action = UIAlertAction.init(title: "Cancel",
+                                    style: UIAlertAction.Style.cancel,
+                                    handler:nil)
 
         actionMenu.addAction(action)
 
-        self.present(actionMenu, animated: true, completion: nil)
+        self.present(actionMenu,
+                     animated: true,
+                     completion: nil)
     }
 
     @objc func showInfo() {
 
         self.devicesTable.removeGestureRecognizer(self.infoGesture)
-        let alert = UIAlertController.init(title: "App\nInformation", message: "This sample app can be used to activate Bluetooth-enabled Electric Imp devices, such as the imp004m. Tap ‘Scan’ to find local devices (these must be running the accompanying Squirrel device code) and then select a device to set its WiFi credentials. The selected device will automatically provide a list of compatible networks — just select one from the list and enter its password (or leave the field blank if it has no password). Tap ‘Send BlinkUp’ to configure the device. The app will inform you when the device has successfully connected to the Electric Imp impCloud™", preferredStyle: UIAlertController.Style.alert)
+        let alert = UIAlertController.init(title: "App\nInformation",
+                                           message: "This sample app can be used to activate Bluetooth-enabled Electric Imp devices, such as the imp004m. Tap ‘Scan’ to find local devices (these must be running the accompanying Squirrel device code) and then select a device to set its WiFi credentials. The selected device will automatically provide a list of compatible networks — just select one from the list and enter its password (or leave the field blank if it has no password). Tap ‘Send BlinkUp’ to configure the device. The app will inform you when the device has successfully connected to the Electric Imp impCloud™",
+                                           preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"),
                                       style: UIAlertAction.Style.default,
                                       handler: nil))
-        self.present(alert, animated: true) {
+        self.present(alert,
+                     animated: true) {
             self.devicesTable.addGestureRecognizer(self.infoGesture)
         }
     }
@@ -364,7 +386,9 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Open the EI shop in Safari
         let uiapp = UIApplication.shared
         let url: URL = URL.init(string: "https://store.electricimp.com/")!
-        uiapp.open(url, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
+        uiapp.open(url,
+                   options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]),
+                   completionHandler: nil)
     }
 
     func showAlert(_ title: String, _ message: String) {
@@ -418,15 +442,17 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         if aDevice.devID == "NONE" {
             // Dequeue the cell we use to provide scan instructions
-            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecellalt", for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecellalt",
+                                                     for: indexPath)
             cell.textLabel?.text = aDevice.name
             return cell
         } else {
             // Dequeue a cell and populate it with the data we have on the discovered device
-            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell",
+                                                     for: indexPath)
             cell.textLabel?.text = aDevice.name
             cell.imageView?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
-            cell.detailTextLabel?.text = (self.showDeviceIDs ? aDevice.devID : (aDevice.version.count > 0 ? aDevice.version : ""))
+            cell.detailTextLabel?.text = (self.showDeviceIDs ? aDevice.devID : (aDevice.version.count > 0 ? "impOS \(aDevice.version)" : "Unknown impOS version"))
             return cell
         }
     }
@@ -438,7 +464,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
         // Don't allow the device to be selected if it's still being discovered
         if aDevice.devID == "TBD" {
-            tableView.deselectRow(at: indexPath, animated: false)
+            tableView.deselectRow(at: indexPath,
+                                  animated: false)
             return
         }
 
@@ -465,11 +492,18 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
 
             // Set up the left-hand nav bar button with an icon and text
             let button = UIButton(type: UIButton.ButtonType.system)
-            button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
-            button.setTitle("Devices", for: UIControl.State.normal)
-            button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            button.setImage(UIImage(named: "icon_back"),
+                            for: UIControl.State.normal)
+            button.setTitle("Devices",
+                            for: UIControl.State.normal)
+            button.tintColor = UIColor.init(red: 1.0,
+                                            green: 1.0,
+                                            blue: 1.0,
+                                            alpha: 1.0)
             button.sizeToFit()
-            button.addTarget(self.ddvc, action: #selector(self.ddvc!.goBack), for: UIControl.Event.touchUpInside)
+            button.addTarget(self.ddvc,
+                             action: #selector(self.ddvc!.goBack),
+                             for: UIControl.Event.touchUpInside)
             self.ddvc!.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
         }
 
@@ -637,7 +671,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 if data.count > 0 {
                     if let aDevice = getDevice(peripheral) {
                         // Add the device ID to the device record
-                        aDevice.devID = String.init(data: data, encoding: String.Encoding.utf8)!
+                        aDevice.devID = String.init(data: data,
+                                                    encoding: String.Encoding.utf8)!
                         self.devicesTable.reloadData()
 
                         // Now get the Model characteristic
@@ -663,10 +698,39 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                 if data.count > 0 {
                     if let aDevice = getDevice(peripheral) {
                         // Add the imp model type to the device record
-                        aDevice.type = String.init(data: data, encoding: String.Encoding.utf8)!
+                        aDevice.type = String.init(data: data,
+                                                   encoding: String.Encoding.utf8)!
                         self.devicesTable.reloadData()
 
                         // Now get the Agent URL characteristic
+                        for i in 0..<aDevice.characteristics.count {
+                            let ch:CBCharacteristic? = aDevice.characteristics[i]
+                            if ch != nil {
+                                if ch!.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
+                                    // The peripheral DOES contain the expected characteristic,
+                                    // so read the characteristics value. When it has been read,
+                                    // 'peripheral.didUpdateValueFor()' will be called
+                                    peripheral.readValue(for: ch!)
+                                    break
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    peripheral.readValue(for: characteristic)
+                }
+            }
+        } else if characteristic.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
+            if let data = characteristic.value {
+                if data.count > 0 {
+                    if let aDevice = getDevice(peripheral) {
+                        // Add the imp model type to the device record
+                        aDevice.agent = String.init(data: data,
+                                                    encoding: String.Encoding.utf8)!
+                        if aDevice.agent == "TBD" { aDevice.agent = "Agent not yet initialized"; }
+                        self.devicesTable.reloadData()
+                        
+                        // Now get the OS VERSION characteristic
                         for i in 0..<aDevice.characteristics.count {
                             let ch:CBCharacteristic? = aDevice.characteristics[i]
                             if ch != nil {
@@ -684,13 +748,20 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     peripheral.readValue(for: characteristic)
                 }
             }
+            
         } else if characteristic.uuid.uuidString == DEVICE_INFO_OSVER_CHARACTERISTIC_UUID {
             if let data = characteristic.value {
                 if data.count > 0 {
                     if let aDevice = getDevice(peripheral) {
                         // Add OS version to the device record
-                        aDevice.version = String.init(data: data, encoding: String.Encoding.utf8)!
-                        if aDevice.version == "null" { aDevice.version = "Unknown impOS version"; }
+                        aDevice.version = String.init(data: data,
+                                                      encoding: String.Encoding.utf8)!
+                        if aDevice.version == "null" {
+                            aDevice.version = ""
+                        } else {
+                            let parts = aDevice.version.split(separator: "-")
+                            aDevice.version = String(parts[2])
+                        }
 
                         // Disconnect now that we have all the data we want at this point
                         self.bluetoothManager.cancelPeripheralConnection(peripheral)

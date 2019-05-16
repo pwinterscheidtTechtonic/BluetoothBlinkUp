@@ -238,7 +238,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             // App is not connected to the device, so connect now
             if let aDevice = self.device {
                 self.isSending = true
-                self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                self.bluetoothManager.connect(aDevice.peripheral,
+                                              options: nil)
                 // Pick up the action at didConnect(), which is called when the
                 // iDevice has connected to the imp004m
                 
@@ -301,13 +302,21 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
                                 // Set up the left-hand nav bar button with an icon and text
                                 let button = UIButton(type: UIButton.ButtonType.system)
-                                button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
-                                button.setTitle("Back", for: UIControl.State.normal)
-                                button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                                button.setImage(UIImage(named: "icon_back"),
+                                                for: UIControl.State.normal)
+                                button.setTitle("Back",
+                                                for: UIControl.State.normal)
+                                button.tintColor = UIColor.init(red: 1.0,
+                                                                green: 1.0,
+                                                                blue: 1.0,
+                                                                alpha: 1.0)
                                 button.sizeToFit()
-                                button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControl.Event.touchUpInside)
+                                button.addTarget(awvc,
+                                                 action: #selector(awvc.goBack),
+                                                 for: UIControl.Event.touchUpInside)
                                 awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-                                self.navigationController!.pushViewController(awvc, animated: true)
+                                self.navigationController!.pushViewController(awvc,
+                                                                              animated: true)
                             } else {
                                 self.showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
                             }
@@ -348,19 +357,28 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                     self.blinkUpProgressBar.stopAnimating()
 
                                     if let us = info.agentURL?.absoluteString {
-                                        let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
+                                        let storyboard = UIStoryboard.init(name:"Main",
+                                                                           bundle:nil)
                                         let awvc = storyboard.instantiateViewController(withIdentifier:"thewebview") as! AgentWebViewController
                                         awvc.agentURL = us
+                                        self.device!.agent = us
 
                                         // Set up the left-hand nav bar button with an icon and text
                                         let button = UIButton(type: UIButton.ButtonType.system)
-                                        button.setImage(UIImage(named: "icon_back"), for: UIControl.State.normal)
+                                        button.setImage(UIImage(named: "icon_back"),
+                                                        for: UIControl.State.normal)
                                         button.setTitle("Back", for: UIControl.State.normal)
-                                        button.tintColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                                        button.tintColor = UIColor.init(red: 1.0,
+                                                                        green: 1.0,
+                                                                        blue: 1.0,
+                                                                        alpha: 1.0)
                                         button.sizeToFit()
-                                        button.addTarget(awvc, action: #selector(awvc.goBack), for: UIControl.Event.touchUpInside)
+                                        button.addTarget(awvc,
+                                                         action: #selector(awvc.goBack),
+                                                         for: UIControl.Event.touchUpInside)
                                         awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-                                        self.navigationController!.pushViewController(awvc, animated: true)
+                                        self.navigationController!.pushViewController(awvc,
+                                                                                      animated: true)
                                     } else {
                                         self.showAlert("Device Enrolled", "Your device has connected to the Electric Imp impCloud™.")
                                     }
@@ -411,8 +429,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // Package up the enrolment data and send it to the device
         // NOTE This function only sends the data, it does not tell the device
         // to update its setttings — use sendWiFiData() for that
-        let tdata:Data? = config.token.data(using: String.Encoding.utf8)
-        let pdata:Data? = config.planId!.data(using: String.Encoding.utf8)
+        let tokenData:Data? = config.token.data(using: String.Encoding.utf8)
+        let planData:Data? = config.planId!.data(using: String.Encoding.utf8)
         NSLog("Sending token (\(config.token)) and plan ID (\(config.planId!))")
 
         // Work through the characteristic list for the service, to match them
@@ -423,11 +441,13 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
                 if ch!.uuid.uuidString == TOKEN_SETTER_UUID {
-                    if let s = tdata {
+                    if let td = tokenData {
                         // At the first GATT write (or read) iOS will handle pairing.
                         // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
                         // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
-                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        device.peripheral.writeValue(td,
+                                                     for:ch!,
+                                                     type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing enrol token characteristic \(ch!.uuid.uuidString)")
                     }
                     break
@@ -440,8 +460,10 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
                 if ch!.uuid.uuidString == PLANID_SETTER_UUID {
-                    if let s = pdata {
-                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    if let pd = planData {
+                        device.peripheral.writeValue(pd,
+                                                     for:ch!,
+                                                     type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing plan ID characteristic \(ch!.uuid.uuidString)")
                     }
                     break
@@ -457,8 +479,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // NOTE This function also tells the device to update its setttings
         let index = self.wifiPicker.selectedRow(inComponent: 0)
         let network = self.availableNetworks[index]
-        let sdata:Data? = network[0].data(using: String.Encoding.utf8)
-        let pdata:Data? = self.passwordField.text!.data(using: String.Encoding.utf8)
+        let ssidData:Data? = network[0].data(using: String.Encoding.utf8)
+        let pwdData:Data? = self.passwordField.text!.data(using: String.Encoding.utf8)
         NSLog("Sending SSID (\(network[0])) and password (\(self.passwordField.text!))")
         
         // Work through the characteristic list for the service, to match them
@@ -469,19 +491,23 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             if ch != nil {
                 // Write the SSID to the SSID_SETTER characteristic
                 if ch!.uuid.uuidString == SSID_SETTER_UUID {
-                    if let s = sdata {
+                    if let sd = ssidData {
                         // At the first GATT write (or read) iOS will handle pairing.
                         // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
                         // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
-                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                        device.peripheral.writeValue(sd,
+                                                     for:ch!,
+                                                     type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing SSID characteristic \(ch!.uuid.uuidString)")
                     }
                 }
 
                 // Write the password to the PASSWORD_SETTER characteristic
                 if ch!.uuid.uuidString == PASSWORD_SETTER_UUID {
-                    if let s = pdata {
-                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    if let pd = pwdData {
+                        device.peripheral.writeValue(pd,
+                                                     for:ch!,
+                                                     type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing password characteristic \(ch!.uuid.uuidString)")
                     }
                 }
@@ -495,8 +521,10 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             let ch:CBCharacteristic? = device.characteristics[i];
             if ch != nil {
                 if ch!.uuid.uuidString == BLINKUP_TRIGGER_UUID {
-                    if let s = sdata {
-                        device.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                    if let sd = ssidData {
+                        device.peripheral.writeValue(sd,
+                                                     for:ch!,
+                                                     type:CBCharacteristicWriteType.withResponse)
                         NSLog("Writing 'set network' trigger characteristic \(ch!.uuid.uuidString)")
                     }
                 }
@@ -519,7 +547,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             if let aDevice = self.device {
                 self.isClearing = true
 
-                self.bluetoothManager.connect(aDevice.peripheral, options: nil)
+                self.bluetoothManager.connect(aDevice.peripheral,
+                                              options: nil)
                 // Pick up the action at didConnect(), which is called when the
                 // iDevice has connected to the imp
                 
@@ -549,11 +578,13 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                 let ch:CBCharacteristic? = aDevice.characteristics[i]
                 if ch != nil {
                     if ch!.uuid.uuidString == WIFI_CLEAR_TRIGGER_UUID {
-                        if let s = "clear".data(using: String.Encoding.utf8) {
+                        if let cd = "clear".data(using: String.Encoding.utf8) {
                             // At the first GATT write (or read) iOS will handle pairing.
                             // If the user hits cancel, we will not be allowed to write, but if pairing succeeds,
                             // the following write will be made, and 'peripheral(_, didWriteValueFor, error)' called
-                            aDevice.peripheral.writeValue(s, for:ch!, type:CBCharacteristicWriteType.withResponse)
+                            aDevice.peripheral.writeValue(cd,
+                                                          for:ch!,
+                                                          type:CBCharacteristicWriteType.withResponse)
                             NSLog("Writing 'Clear WiFi' trigger")
 
                             // Since we can't poll the server for this instance (we have no API key), we
@@ -561,7 +592,9 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             showAlert("imp WiFi Cleared", "Your imp’s WiFi credentials have been cleared")
                             
                             // Close the connection in CANCEL_TIME seconds' time
-                            self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME, repeats: false, block: { (_) in
+                            self.cheatTimer = Timer.scheduledTimer(withTimeInterval: self.CANCEL_TIME,
+                                                                   repeats: false,
+                                                                   block: { (_) in
                                 if let aDevice = self.device {
                                     self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
                                     self.connected = false
@@ -690,7 +723,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                     if service.uuid.uuidString == BLINKUP_SERVICE_UUID {
                         // Ask the peripheral for a list of the all (hence 'nil') of the service's characteristics.
                         // This asynchronous call will be picked up by 'peripheral.didDiscoverCharacteristicsFor()'
-                        peripheral.discoverCharacteristics(nil, for: service)
+                        peripheral.discoverCharacteristics(nil,
+                                                           for: service)
                         got = true
                         break
                     }
@@ -767,7 +801,8 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         if characteristic.uuid.uuidString == WIFI_GETTER_UUID {
             if let data = characteristic.value {
                 if data.count > 0 {
-                    let networkList:String? = String.init(data: data, encoding: String.Encoding.utf8)
+                    let networkList:String? = String.init(data: data,
+                                                          encoding: String.Encoding.utf8)
                     if networkList != nil {
                         // Convert to NSString from Swift's String so we can create an
                         // array from the comma-separated network names in the string
@@ -860,13 +895,22 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         // Return the element from 'availableNetworks' whose index matches 'row'
         let network = self.availableNetworks[row]
 
-        let rowView = UIView(frame: CGRect.init(x: 0, y: 0, width: pickerView.bounds.width, height: 28))
+        let rowView = UIView(frame: CGRect.init(x: 0,
+                                                y: 0,
+                                                width: pickerView.bounds.width,
+                                                height: 28))
 
-        let rowLabel = UILabel(frame: CGRect.init(x: 20, y: 2, width: pickerView.bounds.width - 60, height: 26))
+        let rowLabel = UILabel(frame: CGRect.init(x: 20,
+                                                  y: 2,
+                                                  width: pickerView.bounds.width - 60,
+                                                  height: 26))
         rowLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
         rowLabel.text = network[0]
 
-        let rowImageView = UIImageView(frame: CGRect.init(x: pickerView.bounds.width - 40, y: 4, width: 20, height: 20))
+        let rowImageView = UIImageView(frame: CGRect.init(x: pickerView.bounds.width - 40,
+                                                          y: 4,
+                                                          width: 20,
+                                                          height: 20))
         if network[1] == "locked" { rowImageView.image = UIImage(named:"lock") }
 
         rowView.addSubview(rowLabel)

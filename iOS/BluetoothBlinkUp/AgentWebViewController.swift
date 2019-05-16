@@ -62,7 +62,8 @@ class AgentWebViewController: UIViewController, WKNavigationDelegate {
         // Get the 'loading...' page from the app's bundle and load it into the web view
         let page = getPage("back")
         if page.count > 0 {
-            self.webView.loadHTMLString(page, baseURL: Bundle.main.bundleURL)
+            self.webView.loadHTMLString(page,
+                                        baseURL: Bundle.main.bundleURL)
         }
     }
 
@@ -86,7 +87,8 @@ class AgentWebViewController: UIViewController, WKNavigationDelegate {
                 // We've been given no agent URL, so load the default display page instead
                 let page = getPage("default")
                 if page.count > 0 {
-                    self.webView.loadHTMLString(page, baseURL: Bundle.main.bundleURL)
+                    self.webView.loadHTMLString(page,
+                                                baseURL: Bundle.main.bundleURL)
                 }
             }
         }
@@ -116,7 +118,8 @@ class AgentWebViewController: UIViewController, WKNavigationDelegate {
             // ... and present the default page instead
             let page = getPage("default")
             if page.count > 0 {
-                self.webView.loadHTMLString(page, baseURL: Bundle.main.bundleURL)
+                self.webView.loadHTMLString(page,
+                                            baseURL: Bundle.main.bundleURL)
             }
         }
     }
@@ -138,9 +141,11 @@ class AgentWebViewController: UIViewController, WKNavigationDelegate {
 
         // Load in the named web page as a string from the app bundle and return it
         // If the load fails, just return an empty string (calling functions should check this)
-        if let docPath = Bundle.main.path(forResource: name, ofType: "html") {
+        if let docPath = Bundle.main.path(forResource: name,
+                                          ofType: "html") {
             if let data = FileManager.default.contents(atPath: docPath) {
-                if let dataString = String.init(data: data, encoding: String.Encoding.utf8) {
+                if let dataString = String.init(data: data,
+                                                encoding: String.Encoding.utf8) {
                     return dataString
                 }
             }
