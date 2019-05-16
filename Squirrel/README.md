@@ -1,4 +1,4 @@
-# BTLEBlinkUp Library 1.0.0 #
+# BTLEBlinkUp Library 2.0.0 #
 
 This library provides a foundation for activating end-user devices via Bluetooth LE on imp modules that support this wireless technology (currently imp004m only) using BlinkUp™. It is included in the accompanying Squirrel device code &mdash; see the repo’s main [Read](../README.md) Me for details.
 
@@ -8,17 +8,19 @@ At this time, BTLEBlinkUp is still in development and not yet part of the Electr
 
 ## Class Usage ##
 
-### Constructor: BTLEBlinkUp(*[lpoPin][, regonPin][, uart][, uuids]*) ###
+### Constructor: BTLEBlinkUp(*uuids[, lpoPin][, regonPin][, uart]*) ###
 
 #### Parameters ####
 
-| Parameter | Type | Required | Description |
+| Parameter | Type | Required? | Description |
 | --- | --- | --- | --- |
-| *lpoPin* | imp **pin** object | No | The imp GPIO pin connected to the Bluetooth LE radio’s LPO_IN pin (Default: **hardware.pinE**) |
-| *regonPin* | imp **pin** object | No | The imp GPIO pin connected to the Bluetooth LE radio’s BT_REG_ON pin (Default: **hardware.pinJ**) |
-| *uart* | imp **uart** object | No | The imp UART on which the imp’s Bluetooth radio is connected (Default: **hardware.uartFGJH**) |
-| *uuids* | Array of strings | No | Used to specify alternative UUIDs for the BlinkUp service delivered by the library *(see below)* |
+| *uuids* | Array of strings | Yes | Specify your application’s UUIDs for the BlinkUp service delivered by the library (see [‘BLE UUIDs’, below](#ble-uuids)) |
+| *lpoPin* | imp **pin** object | No | The imp GPIO pin connected to the Bluetooth LE radio’s LPO_IN pin. Default: **hardware.pinE** |
+| *regonPin* | imp **pin** object | No | The imp GPIO pin connected to the Bluetooth LE radio’s BT_REG_ON pin. Default: **hardware.pinJ** |
+| *uart* | imp **uart** object | No | The imp UART on which the imp’s Bluetooth radio is connected. Default: **hardware.uartFGJH** |
 
+
+#### BLE UUIDs ####
 The *uuids* parameter can be used to specify alternative UUIDs for the BlinkUp service delivered by the library. The UUIDs are supplied as a table with the following keys:
 
 | Key | UUID Role |
@@ -231,7 +233,13 @@ The *callback* function has a single parameter of its own into which a table is 
 
 Nothing.
 
+## Release Notes ##
+
+- 2.0.0
+    - Make *uuids* a mandatory parameter of the [constructor](#constructor-btleblinkup-uuids-lpopin-regonpin-uart) and move *uuids* to the start of the constructor parameter list
+- 1.0.0
+    - Initial release
+
 ## License ##
 
 BTLEBlinkUp is licensed under the terms and conditions of the MIT License.
-

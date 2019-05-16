@@ -1,7 +1,7 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
 //
-//  Version: 1.0.4
+//  Version: 1.1.2
 //
 //  Copyright 2017-19 Electric Imp
 //
@@ -32,7 +32,7 @@ const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
 
 class BTLEBlinkUp {
 
-    static VERSION = "1.0.0";
+    static VERSION = "2.0.0";
 
     // Public instance properties
     ble = null;
@@ -52,10 +52,11 @@ class BTLEBlinkUp {
 
     // ********** CONSTRUCTOR **********
 
-    constructor(lpoPin = null, regonPin = null, uart = null, uuids = null) {
+    constructor(uuids = null, lpoPin = null, regonPin = null, uart = null) {
         // Apply the BlinkUp service's UUIDs, or the defaults if none are provided
-        if (uuids != null && (typeof uuids != "table" || uuids.len() != 8)) throw "BTLEBlinkUp requires service UUIDs to be provided as a table";
-        _uuids = uuids != null ? uuids : _initUUIDs();
+        if (uuids == null || typeof uuids != "table" || uuids.len() != 8) throw "BTLEBlinkUp requires service UUIDs to be provided as an 8-key table";
+        if (!_checkUUIDs(uuids)) throw "BTLEBlinkUp requires the service UUID table to contain specific key names";
+        _uuids = uuids;
 
         // Set the BLE radio pins, either to the passed in values, or the defaults
         // Defaults to the imp004m Breakout Board
@@ -261,11 +262,11 @@ class BTLEBlinkUp {
         // Device information service
         service = { "uuid": 0x180A,
                     "chars": [
-                      { "uuid": 0x2A29, "value": "Electric Imp" },           // manufacturer name
-                      { "uuid": 0x2A25, "value": hardware.getdeviceid() },   // serial number
-                      { "uuid": 0x2A24, "value": imp.info().type },          // model number
-                      { "uuid": 0x2A23, "value": (agentURL != null ? agentURL : "null") },   // system ID (agent ID)
-                      { "uuid": 0x2A26, "value": imp.getsoftwareversion() }] // firmware version
+                      { "uuid": 0x2A29, "value": "Electric Imp" },                          // manufacturer name
+                      { "uuid": 0x2A25, "value": hardware.getdeviceid() },                  // serial number (device ID)
+                      { "uuid": 0x2A24, "value": imp.info().type },                         // model number (imp type)
+                      { "uuid": 0x2A23, "value": (agentURL != null ? agentURL : "null") },  // system ID (agent ID)
+                      { "uuid": 0x2A26, "value": imp.getsoftwareversion() }]                // firmware version
                     };
 
         services.append(service);
@@ -439,22 +440,6 @@ class BTLEBlinkUp {
         }
     }
 
-    function _initUUIDs() {
-        // Define the library's default BlinkUp service 128-bit UUIDs
-        // The user can specify their own UUIDs by passing a table like this
-        // one into the class constructor
-        local uuids = {};
-        uuids.blinkup_service_uuid    <- "FADA47BEC45548C9A5F2AF7CF368D719";
-        uuids.ssid_setter_uuid        <- "5EBA195632D347C681A6A7E59F18DAC0";
-        uuids.password_setter_uuid    <- "ED694AB947564528AA3A799A4FD11117";
-        uuids.planid_setter_uuid      <- "A90AB0DC7B5C439A9AB52107E0BD816E";
-        uuids.token_setter_uuid       <- "BD107D3E48784F6DAF3DDA3B234FF584";
-        uuids.blinkup_trigger_uuid    <- "F299C3428A8A4544AC4208C841737B1B";
-        uuids.wifi_getter_uuid        <- "57A9ED95ADD54913849457759B79A46C";
-        uuids.wifi_clear_trigger_uuid <- "2BE5DDBA32864D09A652F24FAA514AF5";
-        return uuids;
-    }
-
     function _connectHandler(conn) {
         // This is the library's own handler for incoming connections.
         // It calls the host app as required upon connection
@@ -501,6 +486,19 @@ class BTLEBlinkUp {
         return i;
     }
 
+    function _checkUUIDs(uuids) {
+        // Make sure the UUIDs table contains the correct keys
+        // Set the GATT service UUIDs we wil use
+        local keyList = ["blinkup_service_uuid", "ssid_setter_uuid", "password_setter_uuid",
+                         "planid_setter_uuid", "token_setter_uuid", "blinkup_trigger_uuid",
+                         "wifi_getter_uuid", "wifi_clear_trigger_uuid"];
+        local got = 0;
+        foreach (key in keyList) {
+            if (uuids[key].len() != null) got++;
+        }
+        return got == 8 ? true : false;
+    }
+
     function _scan(shouldLoop = false) {
         // Scan for nearby WiFi networks compatible with the host imp
         if (!_blinking) {
@@ -533,10 +531,25 @@ class BTLEBlinkUp {
     }
 }
 
+// Set the GATT service UUIDs we wil use
+function initUUIDs() {
+    local uuids = {};
+    uuids.blinkup_service_uuid    <- "FADA47BEC45548C9A5F2AF7CF368D719";
+    uuids.ssid_setter_uuid        <- "5EBA195632D347C681A6A7E59F18DAC0";
+    uuids.password_setter_uuid    <- "ED694AB947564528AA3A799A4FD11117";
+    uuids.planid_setter_uuid      <- "A90AB0DC7B5C439A9AB52107E0BD816E";
+    uuids.token_setter_uuid       <- "BD107D3E48784F6DAF3DDA3B234FF584";
+    uuids.blinkup_trigger_uuid    <- "F299C3428A8A4544AC4208C841737B1B";
+    uuids.wifi_getter_uuid        <- "57A9ED95ADD54913849457759B79A46C";
+    uuids.wifi_clear_trigger_uuid <- "2BE5DDBA32864D09A652F24FAA514AF5";
+    return uuids;
+}
+
 // Prevent the imp004m sleeping on connection error
 server.setsendtimeoutpolicy(RETURN_ON_ERROR, WAIT_TIL_SENT, 10);
 
 local bt = null;
+local agentTimer = null;
 
 // Register a handler that will clear the configuration marker
 // in the imp004m SPI flash in response to a message from the agent.
@@ -561,7 +574,7 @@ agent.on("do.restart", function(data) {
 // This is a dummy function representing the application code flow.
 // In real-world code, this would deliver the product’s day-to-day
 // functionality, connection management and error handling code
-function start() {
+function startApplication() {
     // Application code starts here
     server.log("Application starting...");
     server.log("Use the agent to reset device state");
@@ -570,33 +583,55 @@ function start() {
 // This function defines this app's activation flow: preparing the device
 // for enrollment into the Electric Imp impCloud and applying the end-user's
 // local WiFi network settings.
-function doBluetooth() {
+function startBluetooth() {
     // Instantiate the BTLEBlinkUp library
-    bt = BTLEBlinkUp();
+    bt = BTLEBlinkUp(initUUIDs());
 
     // Don't use security
     bt.setSecurity(1);
 
     agent.on("set.agent.url", function(data) {
-        bt.agentURL = data;
-        // Set the device up to listen for BlinkUp data
-        bt.listenForBlinkUp(null, function(data) {
-            // This is the callback through which the BLE sub-system communicates
-            // with the host app, eg. to inform it activation has taken place
-            if ("address" in data) server.log("Device " + data.address + " has " + data.state);
-            if ("security" in data) server.log("Connection security mode: " + data.security);
-            if ("activated" in data && "spiflash" in hardware && imp.info().type == "imp004m") {
-                // Write BlinkUp signature post-configuration
-                hardware.spiflash.enable();
-                local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
-                if (ok != 0) server.error("SPIflash write failed");
-            }
-        });
-
-        server.log("Bluetooth LE listening for BlinkUp...");
+        // Agent URL received (from test device only; see below),
+        // so run the Bluetooth LE code
+        doBluetooth(data);
     }.bindenv(this));
 
+    // Try and get the agent's URL from the agent
     agent.send("get.agent.url", true);
+
+    agentTimer = imp.wakeup(10, function() {
+        // Set up a timer to check for an un-ACK'd agent.send(),
+        // which will be the case with an unactivated production device
+        // (agent not instantiated until after activation)
+        agentTimer = null;
+
+        // Run the Bluetooth LE code without the agent URL
+        doBluetooth();
+    }.bindenv(this));
+}
+
+function doBluetooth(agentURL = null) {
+    // If we didn't call this from the timer, clear the timer
+    if (agentTimer != null) imp.cancelwakeup(agentTimer);
+
+    // Store the agent URL if present
+    if (agentURL != null) bt.agentURL = agentURL;
+
+    // Set the device up to listen for BlinkUp data
+    bt.listenForBlinkUp(null, function(data) {
+        // This is the callback through which the BLE sub-system communicates
+        // with the host app, eg. to inform it activation has taken place
+        if ("address" in data) server.log("Device " + data.address + " has " + data.state);
+        if ("security" in data) server.log("Connection security mode: " + data.security);
+        if ("activated" in data && "spiflash" in hardware && imp.info().type == "imp004m") {
+            // Write BlinkUp signature post-configuration
+            hardware.spiflash.enable();
+            local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
+            if (ok != 0) server.error("SPIflash write failed");
+        }
+    }.bindenv(this));
+
+    server.log("Bluetooth LE listening for BlinkUp...");
 }
 
 // RUNTIME START
@@ -615,12 +650,12 @@ if ("spiflash" in hardware && imp.info().type == "imp004m") {
 
     if (check >= 4) {
         // Device is activated so go to application code
-        start();
+        startApplication();
     } else {
         // Device is not activated so bring up Bluetooth LE
-        doBluetooth();
+        startBluetooth();
     }
 } else {
     // Just start the app anyway and ignore Bluetooth
-    start();
+    startApplication();
 }
