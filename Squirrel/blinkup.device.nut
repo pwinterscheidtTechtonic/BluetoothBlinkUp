@@ -590,29 +590,34 @@ function startBluetooth() {
     // Don't use security
     bt.setSecurity(1);
 
+    // Register a handler to receive the agent's URL
     agent.on("set.agent.url", function(data) {
         // Agent URL received (from test device only; see below),
         // so run the Bluetooth LE code
         doBluetooth(data);
     }.bindenv(this));
 
-    // Try and get the agent's URL from the agent
+    // Now try and get the agent's URL from the agent
     agent.send("get.agent.url", true);
 
+    // Set up a timer to check if the agent.send() above was un-ACK'd
+    // This will be the case with an **unactivated production device**
+    // because the agent is not instantiated until after activation
     agentTimer = imp.wakeup(10, function() {
         // Set up a timer to check for an un-ACK'd agent.send(),
         // which will be the case with an unactivated production device
         // (agent not instantiated until after activation)
         agentTimer = null;
-
-        // Run the Bluetooth LE code without the agent URL
         doBluetooth();
     }.bindenv(this));
 }
 
 function doBluetooth(agentURL = null) {
     // If we didn't call this from the timer, clear the timer
-    if (agentTimer != null) imp.cancelwakeup(agentTimer);
+    if (agentTimer != null) {
+        imp.cancelwakeup(agentTimer);
+        agentTimer = null;
+    }
 
     // Store the agent URL if present
     if (agentURL != null) bt.agentURL = agentURL;
@@ -641,9 +646,12 @@ function doBluetooth(agentURL = null) {
 // jumps to the application flow; otherwise we run the activation
 // flow, ie. set up and run Bluetooth LE
 if ("spiflash" in hardware && imp.info().type == "imp004m") {
+    // Read the first four bytes of the SPI flash
     hardware.spiflash.enable();
     local bytes = hardware.spiflash.read(0x0000, 4);
     local check = 0;
+
+    // Are the bytes all 0xC3?
     foreach (byte in bytes) {
         if (byte == 0xC3) check++;
     }
@@ -656,6 +664,6 @@ if ("spiflash" in hardware && imp.info().type == "imp004m") {
         startBluetooth();
     }
 } else {
-    // Just start the app anyway and ignore Bluetooth
+    // Unsupported imp: just start the app anyway to ignore Bluetooth
     startApplication();
 }
