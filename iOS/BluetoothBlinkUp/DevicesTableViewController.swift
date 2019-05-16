@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-19 Electric Imp
 //
-//  Version 1.1.1
+//  Version 1.1.2
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -59,9 +59,10 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     let DEVICE_SCAN_TIMEOUT = 15.0
     let BLINKUP_SERVICE_UUID = "FADA47BE-C455-48C9-A5F2-AF7CF368D719"
     let DEVICE_INFO_SERVICE_UUID = "180A"
+    let DEVICE_INFO_AGENT_CHARACTERISTIC_UUID = "2A23"
     let DEVICE_INFO_MODEL_CHARACTERISTIC_UUID = "2A24"
     let DEVICE_INFO_SERIAL_CHARACTERISTIC_UUID = "2A25"
-    let DEVICE_INFO_AGENT_CHARACTERISTIC_UUID = "2A23"
+    let DEVICE_INFO_OSVER_CHARACTERISTIC_UUID = "2A26"
 
 
     // MARK: - View Lifecycle Functions
@@ -313,7 +314,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         actionMenu.addAction(action)
 
         // Construct and add the other buttons
-        action = UIAlertAction.init(title: (self.showDeviceIDs ? "Show Agent URLs" : "Show Device IDs"), style: UIAlertAction.Style.default) { (alertAction) in
+        action = UIAlertAction.init(title: (self.showDeviceIDs ? "Show Device impOS™ Version" : "Show Device IDs"), style: UIAlertAction.Style.default) { (alertAction) in
             self.showDeviceIDs = !self.showDeviceIDs
             self.devicesTable.reloadData()
         }
@@ -425,7 +426,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
             let cell = tableView.dequeueReusableCell(withIdentifier: "devicetabledevicecell", for: indexPath)
             cell.textLabel?.text = aDevice.name
             cell.imageView?.image = aDevice.type.count > 0 ? UIImage.init(named: aDevice.type) : UIImage.init(named: "unknown")
-            cell.detailTextLabel?.text = (self.showDeviceIDs ? aDevice.devID : (aDevice.agent.count > 0 ? aDevice.agent : ""))
+            cell.detailTextLabel?.text = (self.showDeviceIDs ? aDevice.devID : (aDevice.version.count > 0 ? aDevice.version : ""))
             return cell
         }
     }
@@ -669,7 +670,7 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                         for i in 0..<aDevice.characteristics.count {
                             let ch:CBCharacteristic? = aDevice.characteristics[i]
                             if ch != nil {
-                                if ch!.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
+                                if ch!.uuid.uuidString == DEVICE_INFO_OSVER_CHARACTERISTIC_UUID {
                                     // The peripheral DOES contain the expected characteristic,
                                     // so read the characteristics value. When it has been read,
                                     // 'peripheral.didUpdateValueFor()' will be called
@@ -683,13 +684,13 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
                     peripheral.readValue(for: characteristic)
                 }
             }
-        } else if characteristic.uuid.uuidString == DEVICE_INFO_AGENT_CHARACTERISTIC_UUID {
+        } else if characteristic.uuid.uuidString == DEVICE_INFO_OSVER_CHARACTERISTIC_UUID {
             if let data = characteristic.value {
                 if data.count > 0 {
                     if let aDevice = getDevice(peripheral) {
-                        // Add the agent URL to the device record
-                        aDevice.agent = String.init(data: data, encoding: String.Encoding.utf8)!
-                        if aDevice.agent == "null" { aDevice.agent = ""; }
+                        // Add OS version to the device record
+                        aDevice.version = String.init(data: data, encoding: String.Encoding.utf8)!
+                        if aDevice.version == "null" { aDevice.version = "Unknown impOS version"; }
 
                         // Disconnect now that we have all the data we want at this point
                         self.bluetoothManager.cancelPeripheralConnection(peripheral)

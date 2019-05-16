@@ -8,7 +8,7 @@
 //
 //  Copyright 2017-19 Electric Imp
 //
-//  Version 1.1.1
+//  Version 1.1.2
 //
 //  SPDX-License-Identifier: MIT
 //
@@ -46,6 +46,7 @@ class Device: NSObject {
     var type: String = ""
     var agent: String = ""
     var devID: String = "TBD"
+    var version: String = ""
     var peripheral: CBPeripheral!
     var characteristics: [CBCharacteristic] = []
     var isConnected: Bool = false
