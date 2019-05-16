@@ -142,7 +142,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         if let aDevice: Device = device {
             self.bluetoothManager.cancelPeripheralConnection(aDevice.peripheral)
             self.connected = false
-            showDisconnectAlert("Could not connect to \"\(aDevice.name)\"", "Please go back to the devices list and re-select \"\(aDevice.name)\", if necessary performing a new scan")
+            showDisconnectAlert("Could not connect to \"\(aDevice.name)\"", "Please go back to the devices list and re-select \"\(aDevice.name)\", if necessary performing a new scan, or clear its SPI flash signature using the Web UI to re-enable Bluetooth BlinkUp")
         }
         
         self.isClearing = false
@@ -225,14 +225,42 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             return
         }
         
-        // The user has not entered an API key
+        // Check whether the user has entered a BlinkUp API Key
         if self.harvey.count == 0 {
-            self.showAlert("BlinkUp™ Requires an API key", "Please go back to the device list, tap ‘Actions’ and select ‘Enter Your BlinkUp API Key’")
-            return
+            // No API key has been entered so post a warning, and give the user
+            // the opportunity to go back and enter one
+            let alert = UIAlertController.init(title: "Device Activation Requires A BlinkUp™ API key",
+                                               message: "Without entering a BlinkUp API Key, you will only be able to send WiFi credentials to an already activated device. To activate devices, please tap ‘Cancel’, go back to the device list, tap ‘Actions’ and select ‘Enter Your BlinkUp API Key’",
+                                               preferredStyle: UIAlertController.Style.alert)
+            
+            alert.addAction(UIAlertAction(title: "OK",
+                                          style: UIAlertAction.Style.default,
+                                          handler: { (action) in
+                                            // User has clicked OK, so go to step two
+                                            self.blinkupStageTwo()
+            }))
+            
+            alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""),
+                                          style: UIAlertAction.Style.cancel,
+                                          handler: nil))
+            
+            self.present(alert,
+                         animated: true,
+                         completion: nil)
+        } else {
+            // Go direct to step two
+            blinkupStageTwo()
         }
-
+    }
+    
+    func blinkupStageTwo() {
+        
+        // Step two of the pre-BlinkUp process
+        // NOTE This is a separate function because it may be called from multple code paths
+        
+        // Start the indicator
         self.blinkUpProgressBar.startAnimating()
-
+        
         // Are we already connected to the device?
         if !self.connected {
             // App is not connected to the device, so connect now
@@ -251,16 +279,18 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                                       repeats: false)
             }
         } else {
-            // App is already connected to the peripheral so do BlinkUp
-            blinkupStageTwo()
+            // App is already connected to the peripheral so go direct
+            // to step three to do the BlinkUp
+            blinkupStageThree()
         }
     }
-
-    func blinkupStageTwo() {
+    
+    func blinkupStageThree() {
 
         // Use the BlinkUp SDK to retrieve an enrollment token and a plan ID from the user's API Key
         // You will need to be an Electric Imp customer with a BlinkUp API Key to make this work
         // If no API key is known to the app, it will just transmit WiFi data
+        // NOTE This is a separate function because it may be called from multple code paths
 
         self.isSending = true
         if self.scanTimer.isValid { self.scanTimer.invalidate() }
@@ -302,18 +332,23 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
 
                                 // Set up the left-hand nav bar button with an icon and text
                                 let button = UIButton(type: UIButton.ButtonType.system)
+                                
                                 button.setImage(UIImage(named: "icon_back"),
                                                 for: UIControl.State.normal)
+                                
                                 button.setTitle("Back",
                                                 for: UIControl.State.normal)
+                                
                                 button.tintColor = UIColor.init(red: 1.0,
                                                                 green: 1.0,
                                                                 blue: 1.0,
                                                                 alpha: 1.0)
                                 button.sizeToFit()
+                                
                                 button.addTarget(awvc,
                                                  action: #selector(awvc.goBack),
                                                  for: UIControl.Event.touchUpInside)
+                                
                                 awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
                                 self.navigationController!.pushViewController(awvc,
                                                                               animated: true)
@@ -403,7 +438,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             })
                         }
 
-                        // We exit here, but will pick up writing in blinkupStageTwo() called from within
+                        // We exit here, but will pick up writing in blinkupStageThree() called from within
                         // the above delegate function in respomse to a successful pairing and write
 
                     case .error(let error):
@@ -665,7 +700,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         if self.isSending {
             // We are are connecting after calling doBlinkUp()
             // so proceed to the next step
-            blinkupStageTwo()
+            blinkupStageThree()
         } else if self.isClearing {
             // We are are connecting after calling clearWiFi()
             // so proceed to the next step

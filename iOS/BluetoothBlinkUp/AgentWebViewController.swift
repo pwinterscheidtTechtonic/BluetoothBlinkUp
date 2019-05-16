@@ -130,6 +130,7 @@ class AgentWebViewController: UIViewController, WKNavigationDelegate {
     @objc func goBack() {
 
         // Jump back to the previous screen
+        self.webView.stopLoading()
         self.loadInitialPage = true
         self.navigationController!.popViewController(animated: true)
     }
