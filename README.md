@@ -71,6 +71,9 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 - 1.1.2
     - Update Squirrel BLEBlinkUp library to 2.0.0
         - Remove service UUIDs from the library; make them a mandatory constructor parameter
+    - Update Squirrel device code to operate correctly if the agent has not been instantiated
+    - Rename some Squirrel device code functions for better clarity
+    - Better iOS app messaging when a BlinkUp API key has not been entered
 - 1.1.1
     - Don't always ask for an API key if one wasn't entered at the start
 - 1.1.0
