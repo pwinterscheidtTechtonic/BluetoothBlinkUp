@@ -27,7 +27,7 @@
 //  ------------------------------------------------------------------------------
 
 #require "bt_firmware.lib.nut:1.0.0"
-#import "~/documents/github/btleblinkup.device.lib.nut"
+#import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
 
 const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
 
@@ -85,7 +85,7 @@ function startApplication() {
 // local WiFi network settings.
 function startBluetooth() {
     // Instantiate the BTLEBlinkUp library
-    bt = BTLEBlinkUp(initUUIDs());
+    bt = BTLEBlinkUp(initUUIDs(), BT_FIRMWARE.CYW_43438);
 
     // Don't use security
     bt.setSecurity(1);
