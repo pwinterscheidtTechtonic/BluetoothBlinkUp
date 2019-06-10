@@ -27,6 +27,7 @@
 //  ------------------------------------------------------------------------------
 
 #require "bt_firmware.lib.nut:1.0.0"
+//#require "btleblinkup.device.lib.nut:1.0.0"
 #import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
 
 const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
@@ -87,7 +88,7 @@ function startBluetooth() {
     // Instantiate the BTLEBlinkUp library
     bt = BTLEBlinkUp(initUUIDs(), BT_FIRMWARE.CYW_43438);
 
-    // Don't use security
+    // Set security level for demo
     bt.setSecurity(1);
 
     // Register a handler to receive the agent's URL
