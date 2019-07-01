@@ -462,6 +462,15 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         // Get the device details and check for the initial instruction row
         let aDevice: Device = self.devices[indexPath.row]
 
+        // FROM 1.2.0
+        // Don't allow the usage guidance row to be selected
+        let cell = tableView.cellForRow(at: indexPath)
+        if cell?.reuseIdentifier == "devicetabledevicecellalt" {
+            tableView.deselectRow(at: indexPath,
+                                  animated: false)
+            return
+        }
+
         // Don't allow the device to be selected if it's still being discovered
         if aDevice.devID == "TBD" {
             tableView.deselectRow(at: indexPath,
