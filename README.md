@@ -71,6 +71,7 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 - 1.2.0
     - Update Squirrel code to use new [BTLEBlinkUp](https://github.com/electricimp/BTLEBlinkUp) library.
     - Update Squirrel code to use new [Bluetooth Firmware](https://developer.electricimp.com/libraries/hardware/bt-firmware) library.
+    - Update to [BlinkUp SDK 19.9.0](https://developer.electricimp.com/manufacturing/sdkdocs).
     - Bug fix: don't allow the usage guidance row in the iOS app to be selected.
 - 1.1.2
     - Remove service UUIDs from the library; make them a mandatory constructor parameter
