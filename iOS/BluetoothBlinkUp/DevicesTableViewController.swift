@@ -463,11 +463,12 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
         let aDevice: Device = self.devices[indexPath.row]
 
         // FROM 1.2.0
-        // Don't allow the usage guidance row to be selected
+        // Don't allow the usage guidance row to be selected, but to trigger a scan
         let cell = tableView.cellForRow(at: indexPath)
         if cell?.reuseIdentifier == "devicetabledevicecellalt" {
             tableView.deselectRow(at: indexPath,
                                   animated: false)
+            self.actionScan()
             return
         }
 
