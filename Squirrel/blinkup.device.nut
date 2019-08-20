@@ -26,11 +26,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //  ------------------------------------------------------------------------------
 
+// IMPORTS
 #require "bt_firmware.lib.nut:1.0.0"
-//#require "btleblinkup.device.lib.nut:1.0.0"
-#import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
+#require "btleblinkup.device.lib.nut:1.0.0"
 
-const BTLE_BLINKUP_WIFI_SCAN_INTERVAL = 120;
 
 // Set the GATT service UUIDs we wil use
 function initUUIDs() {
