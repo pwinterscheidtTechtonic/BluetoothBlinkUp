@@ -819,7 +819,8 @@ class DevicesTableViewController: UITableViewController, CBCentralManagerDelegat
     func getRawkey() {
 
         // Have we already asked? If so, no need to ask again
-        if self.didCheckForKey { return; }
+        // FROM 1.1.3 check also that Bluetooth has been enabled
+        if self.didCheckForKey || !self.gotBluetooth { return; }
 
         // Show an alert requesting the user's BlinkUp API Key - which will be stored in the keychain
         self.keyEntryController = UIAlertController.init(title: "Please Enter Your\nBlinkUp API Key",
