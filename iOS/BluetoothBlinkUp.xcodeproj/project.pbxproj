@@ -173,11 +173,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B42BC0D20A360900031FA97 /* default.html in Resources */,
-				3B1DC726201B768200369C00 /* Settings.bundle in Resources */,
-				3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */,
 				3BFF6BA220A5AC1F00F08ABD /* back.html in Resources */,
-				3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */,
 				3B232B951FE2980F0004D87E /* Main.storyboard in Resources */,
+				3B232B9A1FE2980F0004D87E /* LaunchScreen.storyboard in Resources */,
+				3B1DC726201B768200369C00 /* Settings.bundle in Resources */,
+				3B232B971FE2980F0004D87E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,6 +337,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_TEAM = Y5J3K52DNA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -345,6 +346,7 @@
 				INFOPLIST_FILE = BluetoothBlinkUp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.2.1;
 				OTHER_LDFLAGS = "-ObjC";
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bps.BluetoothBlinkUp;
@@ -359,6 +361,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 34;
 				DEVELOPMENT_TEAM = Y5J3K52DNA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -367,6 +370,7 @@
 				INFOPLIST_FILE = BluetoothBlinkUp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.2.1;
 				OTHER_LDFLAGS = "-ObjC";
 				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.bps.BluetoothBlinkUp;
