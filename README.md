@@ -1,4 +1,4 @@
-# Bluetooth BlinkUp 1.2.0 #
+# Bluetooth BlinkUp 1.2.1 #
 
 This example comprises Squirrel code for you to run on an imp-based test device &mdash; this requires impOS™ 38 or above &mdash; and an Xcode project which you can use to build an iOS app (written in Swift 4) that is capable of finding and configuring test devices running the Squirrel code.
 
@@ -68,10 +68,13 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 
 ## Release Notes ##
 
+- 1.2.1
+    - Support iOS 13 Dark Mode.
+    - Update to [BlinkUp SDK 20.0.0](https://developer.electricimp.com/manufacturing/sdkdocs).
 - 1.2.0
     - Update Squirrel code to use new [BTLEBlinkUp](https://github.com/electricimp/BTLEBlinkUp) library.
     - Update Squirrel code to use new [Bluetooth Firmware](https://developer.electricimp.com/libraries/hardware/bt-firmware) library.
-    - Update to [BlinkUp SDK 19.9.0](https://developer.electricimp.com/manufacturing/sdkdocs).
+    - Update to BlinkUp SDK 19.9.0.
     - Bug fix: don't allow the usage guidance row in the iOS app to be selected.
 - 1.1.2
     - Remove service UUIDs from the library; make them a mandatory constructor parameter
