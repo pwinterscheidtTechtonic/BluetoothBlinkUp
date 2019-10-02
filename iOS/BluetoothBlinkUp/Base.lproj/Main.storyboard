@@ -223,6 +223,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="separatorColor" red="0.35686274509999999" green="0.69411764710000001" blue="0.73333333329999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="devicetabledevicecell" textLabel="VAb-xP-pgo" detailTextLabel="Hs5-SX-99n" imageView="wam-w6-BVm" style="IBUITableViewCellStyleSubtitle" id="6B5-l3-H6g">
                                 <rect key="frame" x="0.0" y="28" width="375" height="55.5"/>
