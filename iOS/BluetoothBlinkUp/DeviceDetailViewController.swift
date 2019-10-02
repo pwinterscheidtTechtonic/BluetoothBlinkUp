@@ -54,6 +54,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
     var clearList: Bool = false
     var isSending: Bool = false
     var isClearing: Bool = false
+    var isShowingWebview: Bool = false
     var harvey: String!
     var agentURL: String!
     var scanTimer: Timer!
@@ -95,13 +96,23 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                                object: nil)
     }
 
+    
     override func viewWillAppear(_ animated: Bool) {
 
         super.viewWillAppear(animated)
-
+        
+        // FROM 1.2.1
+        // If we're returning from the web view, go direct to the device list
+        if self.isShowingWebview {
+            self.isShowingWebview = false
+            goBack()
+            return
+        }
+        
         initNetworks()
         connectToDevice()
     }
+    
     
     @objc func connectToDevice() {
         
@@ -130,10 +141,12 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     override func viewDidAppear(_ animated: Bool) {
 
         super.viewDidAppear(animated)
     }
+    
     
     @objc func endConnectWithAlert() {
         
@@ -150,6 +163,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.blinkUpProgressBar.stopAnimating()
     }
     
+    
     func initUI() {
 
         // Initialise the UI
@@ -158,6 +172,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.sendLabel.text = ""
     }
 
+    
     func initNetworks() {
 
         // Initialize the UIPickerView which presents the network list
@@ -174,6 +189,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.wifiPicker.isUserInteractionEnabled = true
     }
 
+    
     @objc func goBack() {
 
         // Return to the device list - unless we are sending data ('isSending' is true),
@@ -253,6 +269,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
     
+    
     func blinkupStageTwo() {
         
         // Step two of the pre-BlinkUp process
@@ -284,6 +301,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
             blinkupStageThree()
         }
     }
+    
     
     func blinkupStageThree() {
 
@@ -326,32 +344,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             // TODO Incorporate a check to load the agent-served string and check that
                             //      it is valid HTML before loading
                             if (aDevice.agent.count > 0) {
-                                let storyboard = UIStoryboard.init(name:"Main", bundle:nil)
-                                let awvc = storyboard.instantiateViewController(withIdentifier:"thewebview") as! AgentWebViewController
-                                awvc.agentURL = aDevice.agent
-
-                                // Set up the left-hand nav bar button with an icon and text
-                                let button = UIButton(type: UIButton.ButtonType.system)
-                                
-                                button.setImage(UIImage(named: "icon_back"),
-                                                for: UIControl.State.normal)
-                                
-                                button.setTitle("Back",
-                                                for: UIControl.State.normal)
-                                
-                                button.tintColor = UIColor.init(red: 1.0,
-                                                                green: 1.0,
-                                                                blue: 1.0,
-                                                                alpha: 1.0)
-                                button.sizeToFit()
-                                
-                                button.addTarget(awvc,
-                                                 action: #selector(awvc.goBack),
-                                                 for: UIControl.Event.touchUpInside)
-                                
-                                awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-                                self.navigationController!.pushViewController(awvc,
-                                                                              animated: true)
+                                self.showWebview(aDevice.agent)
                             } else {
                                 self.showAlert("Device Connecting", "Your device has received WiFi credentials and is connecting to the Electric Imp impCloud™.")
                             }
@@ -385,35 +378,14 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                             // has connected and been enrolled
                             let poller = BUDevicePoller.init(configId: activeConfig)
                             poller.startPollingWithHandler({ (response) in
+                                self.sendLabel.text = ""
+                                self.blinkUpProgressBar.stopAnimating()
+                                
                                 switch(response) {
                                 case .responded(let info):
                                     // The server indicates that the device has enrolled successfully, so we're done
-                                    self.sendLabel.text = ""
-                                    self.blinkUpProgressBar.stopAnimating()
-
                                     if let us = info.agentURL?.absoluteString {
-                                        let storyboard = UIStoryboard.init(name:"Main",
-                                                                           bundle:nil)
-                                        let awvc = storyboard.instantiateViewController(withIdentifier:"thewebview") as! AgentWebViewController
-                                        awvc.agentURL = us
-                                        self.device!.agent = us
-
-                                        // Set up the left-hand nav bar button with an icon and text
-                                        let button = UIButton(type: UIButton.ButtonType.system)
-                                        button.setImage(UIImage(named: "icon_back"),
-                                                        for: UIControl.State.normal)
-                                        button.setTitle("Back", for: UIControl.State.normal)
-                                        button.tintColor = UIColor.init(red: 1.0,
-                                                                        green: 1.0,
-                                                                        blue: 1.0,
-                                                                        alpha: 1.0)
-                                        button.sizeToFit()
-                                        button.addTarget(awvc,
-                                                         action: #selector(awvc.goBack),
-                                                         for: UIControl.Event.touchUpInside)
-                                        awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
-                                        self.navigationController!.pushViewController(awvc,
-                                                                                      animated: true)
+                                        self.showWebview(us)
                                     } else {
                                         self.showAlert("Device Enrolled", "Your device has connected to the Electric Imp impCloud™.")
                                     }
@@ -424,8 +396,6 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                                 case .timedOut:
                                     // The server took too long to respond, so assume enrollment did not take place
                                     self.showAlert("Device Failed to Connect", "Your device has not enrolled in the impCloud")
-                                    self.sendLabel.text = ""
-                                    self.blinkUpProgressBar.stopAnimating()
                                 }
 
                                 // Done isSending, so cancel the connection (best practice to save battery power)
@@ -459,6 +429,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func sendEnrolData(_ device: Device, _ config: BUConfigId) {
 
         // Package up the enrolment data and send it to the device
@@ -507,6 +478,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func sendWiFiData(_ device: Device) {
 
         // Package up the WiFi configuration information and send it to the device
@@ -567,6 +539,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     @IBAction func clearWiFi(_ sender: Any) {
 
         // Already sending or connecting in order to clear? Then bail
@@ -600,6 +573,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func clearWiFiStageTwo() {
 
         self.isClearing = false
@@ -647,7 +621,39 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         self.blinkUpProgressBar.stopAnimating()
     }
 
+    
+    func showWebview(_ agentURL: String) {
+        
+        // FROM 1.2.1
+        // Refactor this code into a function
+        let storyboard = UIStoryboard.init(name:"Main",
+                                           bundle:nil)
+        let awvc = storyboard.instantiateViewController(withIdentifier:"thewebview") as! AgentWebViewController
+        awvc.agentURL = agentURL
+        self.device!.agent = agentURL
 
+        // Set up the left-hand nav bar button with an icon and text
+        let button = UIButton(type: UIButton.ButtonType.system)
+        button.setImage(UIImage(named: "icon_back"),
+                        for: UIControl.State.normal)
+        button.setTitle("Back", for: UIControl.State.normal)
+        button.tintColor = UIColor.init(red: 1.0,
+                                        green: 1.0,
+                                        blue: 1.0,
+                                        alpha: 1.0)
+        button.sizeToFit()
+        button.addTarget(awvc,
+                         action: #selector(awvc.goBack),
+                         for: UIControl.Event.touchUpInside)
+        awvc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+        
+        // Show the web view
+        self.isShowingWebview = true
+        self.navigationController!.pushViewController(awvc,
+                                                      animated: true)
+    }
+    
+    
     // MARK: - Utility Functions
 
     func showAlert(_ title: String, _ message: String) {
@@ -661,6 +667,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                      animated: true,
                      completion: nil)
     }
+    
     
     func showDisconnectAlert(_ title: String, _ message: String) {
         let alert = UIAlertController.init(title: title,
@@ -676,6 +683,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
                         self.clearList = true }
     }
 
+    
     @objc @IBAction func showPassword(_ sender: Any) {
 
         // Show or hide the password characters by flipping this flag
@@ -712,6 +720,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func centralManager(_ central: CBCentralManager, didFailToConnect: CBPeripheral, error: Error?) {
 
         self.connected = false
@@ -726,6 +735,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func centralManager(_ central: CBCentralManager, didDisconnect: CBPeripheral, error: Error?) {
 
         self.connected = false
@@ -739,6 +749,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         // NOP
     }
@@ -790,6 +801,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService,  error: Error?) {
 
         // The app has discovered the characteristics offered by the peripheral (ie. the imp004m) for
@@ -828,6 +840,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
 
         // We have successfully read the imp application's networks list characteristic, so use
@@ -892,6 +905,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
 
         // This will be called when a value is written to the peripheral via GATT
@@ -914,17 +928,20 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         return 1;
     }
 
+    
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
 
         // Return the number of entries in the 'availableNetworks' array
         return self.availableNetworks.count;
     }
 
+    
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
 
         return 28
     }
 
+    
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
 
         // Return the element from 'availableNetworks' whose index matches 'row'
@@ -965,6 +982,7 @@ class DeviceDetailViewController: UIViewController, CBCentralManagerDelegate, CB
         }
     }
 
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 
         textField.resignFirstResponder()
