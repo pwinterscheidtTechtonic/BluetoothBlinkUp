@@ -1,7 +1,7 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
 //
-//  Version: 1.2.1
+//  Version: 1.3.0
 //
 //  Copyright 2017-19 Electric Imp
 //
@@ -28,8 +28,8 @@
 
 // IMPORTS
 #require "bt_firmware.lib.nut:1.0.0"
-#require "btleblinkup.device.lib.nut:1.0.0"
-
+//#require "btleblinkup.device.lib.nut:2.0.0"
+#import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
 
 // Set the GATT service UUIDs we wil use
 function initUUIDs() {
@@ -85,7 +85,7 @@ function startApplication() {
 // local WiFi network settings.
 function startBluetooth() {
     // Instantiate the BTLEBlinkUp library
-    bt = BTLEBlinkUp(initUUIDs(), BT_FIRMWARE.CYW_43438);
+    bt = BTLEBlinkUp(initUUIDs(), (iType == "imp004m" ? BT_FIRMWARE.CYW_43438 : BT_FIRMWARE.CYW_43455));
 
     // Set security level for demo
     bt.setSecurity(1);
@@ -145,7 +145,8 @@ function doBluetooth(agentURL = null) {
 // If it is present (it is four bytes of 0xC3 each), the code
 // jumps to the application flow; otherwise we run the activation
 // flow, ie. set up and run Bluetooth LE
-if ("spiflash" in hardware && imp.info().type == "imp004m") {
+iType <- imp.info().type;
+if ("spiflash" in hardware && (iType == "imp004m" || iType == "imp006" || iType == "impC001")) {
     // Read the first four bytes of the SPI flash
     hardware.spiflash.enable();
     local bytes = hardware.spiflash.read(0x0000, 4);
