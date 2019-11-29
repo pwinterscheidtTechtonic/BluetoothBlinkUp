@@ -1,7 +1,7 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.agent.nut
 //
-//  Version: 1.3.0
+//  Version: 1.3.1
 //
 //  Copyright 2017-19 Electric Imp
 //
@@ -33,7 +33,8 @@
 // the device into its pre-activation state, ie. ready for BlinkUp.
 
 // IMPORTS
-#require "Rocky.class.nut:2.0.2"
+// #require "Rocky.class.nut:2.0.2"
+#import "/Users/smitty/Documents/GitHub/Rocky/Rocky.agent.lib.nut"
 
 // CONSTANTS
 const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
@@ -94,7 +95,7 @@ const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
             </div>
         </div>
 
-        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js'></script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'></script>
         <script>
             // Variables
             var agenturl = '%s';
@@ -164,7 +165,7 @@ device.on("get.agent.url", function(dummy) {
 });
 
 // Set up the Web API
-api = Rocky();
+api = Rocky.init();
 
 api.get("/", function(context) {
     // Deliver the UI page

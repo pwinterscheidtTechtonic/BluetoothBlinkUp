@@ -1,4 +1,4 @@
-# Bluetooth BlinkUp 1.3.0 #
+# Bluetooth BlinkUp 1.3.1 #
 
 This example comprises Squirrel code for you to run on an imp-based test device &mdash; this requires impOS™ 38 or above &mdash; and an Xcode project which you can use to build an iOS app (written in Swift 4) that is capable of finding and configuring test devices running the Squirrel code.
 
@@ -68,6 +68,11 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
 
 ## Release Notes ##
 
+- 1.3.1
+    - Update dependencies:
+        - JQuery -> 3.4.1
+        - Rocky -> 3.0.0
+        - BTLEBlinkUp -> 3.0.0 (required for imp006 on impOS 41.28 and up)
 - 1.3.0
     - Support imp006.
 - 1.2.1

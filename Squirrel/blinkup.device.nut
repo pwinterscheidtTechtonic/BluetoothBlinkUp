@@ -1,7 +1,7 @@
 //  ------------------------------------------------------------------------------
 //  File: blinkup.device.nut
 //
-//  Version: 1.3.0
+//  Version: 1.3.1
 //
 //  Copyright 2017-19 Electric Imp
 //
@@ -28,7 +28,8 @@
 
 // IMPORTS
 #require "bt_firmware.lib.nut:1.0.0"
-#require "btleblinkup.device.lib.nut:2.0.0"
+//#require "btleblinkup.device.lib.nut:3.0.0"
+#import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
 
 // Set the GATT service UUIDs we wil use
 function initUUIDs() {
