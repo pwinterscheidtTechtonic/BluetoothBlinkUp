@@ -28,7 +28,7 @@
 
 // IMPORTS
 #require "bt_firmware.lib.nut:1.0.0"
-//#require "btleblinkup.device.lib.nut:3.0.0"
+//#require "btleblinkup.device.lib.nut:2.1.0"
 #import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
 
 // Set the GATT service UUIDs we wil use
@@ -45,14 +45,14 @@ function initUUIDs() {
     return uuids;
 }
 
-// Prevent the imp004m sleeping on connection error
+// Prevent the imp sleeping on connection error
 server.setsendtimeoutpolicy(RETURN_ON_ERROR, WAIT_TIL_SENT, 10);
 
 local bt = null;
 local agentTimer = null;
 
 // Register a handler that will clear the configuration marker
-// in the imp004m SPI flash in response to a message from the agent.
+// in the imp SPI flash in response to a message from the agent.
 // This is present to aid testing: by clearing the signature and rebooting,
 // you put the imp back into its pre-activation state
 agent.on("clear.spiflash", function(data) {
@@ -128,7 +128,7 @@ function doBluetooth(agentURL = null) {
         // with the host app, eg. to inform it activation has taken place
         if ("address" in data) server.log("Device " + data.address + " has " + data.state);
         if ("security" in data) server.log("Connection security mode: " + data.security);
-        if ("activated" in data && "spiflash" in hardware && imp.info().type == "imp004m") {
+        if ("activated" in data && "spiflash" in hardware && (iType == "imp004m" || iType == "imp006" || iType == "impC001")) {
             // Write BlinkUp signature post-configuration
             hardware.spiflash.enable();
             local ok = hardware.spiflash.write(0x0000, "\xC3\xC3\xC3\xC3", SPIFLASH_PREVERIFY);
@@ -141,7 +141,7 @@ function doBluetooth(agentURL = null) {
 
 // RUNTIME START
 
-// Start by checking the imp004m SPI flash for a signature
+// Start by checking the imp SPI flash for a signature
 // If it is present (it is four bytes of 0xC3 each), the code
 // jumps to the application flow; otherwise we run the activation
 // flow, ie. set up and run Bluetooth LE

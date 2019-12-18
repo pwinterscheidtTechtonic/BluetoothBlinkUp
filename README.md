@@ -22,7 +22,7 @@ When the iOS app makes use of the Electric Imp BlinkUp SDK, it performs producti
 
 Simply setting and clearing the WiFi settings can be performed on any device running the provided Squirrel code.
 
-Currently, Bluetooth LE is supported only on the [imp004m module](https://developer.electricimp.com/hardware/imp/datasheets#imp004m). You can use the [imp004m Breakout Board](https://developer.electricimp.com/gettingstarted/devkits) to try out Bluetooth and this example code.
+Currently, Bluetooth LE is supported natively only on the [imp004m module](https://developer.electricimp.com/hardware/imp/datasheets#imp004m) and the [imp006](https://developer.electricimp.com/hardware/imp/datasheets#imp006). You can use the [imp004m Breakout Board](https://developer.electricimp.com/gettingstarted/devkits) or the [imp006 Breakout Board](https://developer.electricimp.com/hardware/resources/reference-designs/imp006breakout) to try out Bluetooth and this example code.
 
 ## Building the iOS App ##
 
@@ -72,7 +72,7 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
     - Update dependencies:
         - JQuery -> 3.4.1
         - Rocky -> 3.0.0
-        - BTLEBlinkUp -> 3.0.0 (required for imp006 on impOS 41.28 and up)
+        - BTLEBlinkUp -> 2.1.0 (required for imp006 on impOS 41.28 and up)
 - 1.3.0
     - Support imp006.
 - 1.2.1
