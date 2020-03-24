@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B050973242A12D00011026C /* BlinkUp.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3B05096F242A10D40011026C /* BlinkUp.bundle */; };
+		3B050975242A13F90011026C /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B05096D242A10D40011026C /* BlinkUp.framework */; };
 		3B1DC726201B768200369C00 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3B1DC725201B768200369C00 /* Settings.bundle */; };
 		3B232B901FE2980F0004D87E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B8F1FE2980F0004D87E /* AppDelegate.swift */; };
 		3B232B921FE2980F0004D87E /* DeviceDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B232B911FE2980F0004D87E /* DeviceDetailViewController.swift */; };
@@ -19,7 +21,6 @@
 		3B42BC0B20A359C50031FA97 /* AgentWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */; };
 		3B42BC0D20A360900031FA97 /* default.html in Resources */ = {isa = PBXBuildFile; fileRef = 3B42BC0C20A3608F0031FA97 /* default.html */; };
 		3B52DA6B1FEBC1AA0041CFB4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */; };
-		3B7A4737215CFA3D00FE8447 /* BlinkUp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */; };
 		3BB8EBCA1FED1ACA0057ED5B /* KeychainItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */; };
 		3BBD1EEC1FEBBE2600369463 /* DevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */; };
 		3BD86C3822770D4E0019F8CA /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BD86C3722770D4E0019F8CA /* WebKit.framework */; };
@@ -27,6 +28,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B05096D242A10D40011026C /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BlinkUp.framework; path = /Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUp.embeddedframework/BlinkUp.framework; sourceTree = "<absolute>"; };
+		3B05096F242A10D40011026C /* BlinkUp.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = BlinkUp.bundle; path = /Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUp.embeddedframework/Resources/BlinkUp.bundle; sourceTree = "<absolute>"; };
 		3B1DC725201B768200369C00 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		3B232B8C1FE2980F0004D87E /* BluetoothBlinkUp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BluetoothBlinkUp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B232B8F1FE2980F0004D87E /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -41,7 +44,6 @@
 		3B42BC0A20A359C50031FA97 /* AgentWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = AgentWebViewController.swift; sourceTree = "<group>"; };
 		3B42BC0C20A3608F0031FA97 /* default.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = default.html; sourceTree = "<group>"; };
 		3B52DA6A1FEBC1AA0041CFB4 /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Device.swift; sourceTree = "<group>"; };
-		3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = BlinkUp.framework; path = BlinkUp.embeddedframework/BlinkUp.framework; sourceTree = "<group>"; };
 		3BB8EBC91FED1ACA0057ED5B /* KeychainItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = KeychainItem.swift; sourceTree = "<group>"; };
 		3BBD1EEB1FEBBE2600369463 /* DevicesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = DevicesTableViewController.swift; sourceTree = "<group>"; };
 		3BD86C3722770D4E0019F8CA /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -54,7 +56,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3BD86C3822770D4E0019F8CA /* WebKit.framework in Frameworks */,
-				3B7A4737215CFA3D00FE8447 /* BlinkUp.framework in Frameworks */,
+				3B050975242A13F90011026C /* BlinkUp.framework in Frameworks */,
 				3B232BA91FE2992E0004D87E /* CoreBluetooth.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -62,6 +64,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3B05096C242A10D40011026C /* BlinkUp.embeddedframework */ = {
+			isa = PBXGroup;
+			children = (
+				3B05096D242A10D40011026C /* BlinkUp.framework */,
+				3B05096E242A10D40011026C /* Resources */,
+			);
+			name = BlinkUp.embeddedframework;
+			path = /Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUp.embeddedframework;
+			sourceTree = "<absolute>";
+		};
+		3B05096E242A10D40011026C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3B05096F242A10D40011026C /* BlinkUp.bundle */,
+			);
+			name = Resources;
+			path = /Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUp.embeddedframework/Resources;
+			sourceTree = "<absolute>";
+		};
 		3B232B831FE2980F0004D87E = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +118,7 @@
 				3BFF6BA120A5AC1E00F08ABD /* back.html */,
 				3B1DC725201B768200369C00 /* Settings.bundle */,
 				3B232B9B1FE2980F0004D87E /* Info.plist */,
+				3B05096C242A10D40011026C /* BlinkUp.embeddedframework */,
 			);
 			path = BluetoothBlinkUp;
 			sourceTree = "<group>";
@@ -105,7 +127,6 @@
 			isa = PBXGroup;
 			children = (
 				3BD86C3722770D4E0019F8CA /* WebKit.framework */,
-				3B7A4736215CFA3D00FE8447 /* BlinkUp.framework */,
 				3B232BA81FE2992E0004D87E /* CoreBluetooth.framework */,
 			);
 			name = Frameworks;
@@ -172,6 +193,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3B050973242A12D00011026C /* BlinkUp.bundle in Resources */,
 				3B42BC0D20A360900031FA97 /* default.html in Resources */,
 				3BFF6BA220A5AC1F00F08ABD /* back.html in Resources */,
 				3B232B951FE2980F0004D87E /* Main.storyboard in Resources */,
@@ -341,10 +363,10 @@
 				DEVELOPMENT_TEAM = Y5J3K52DNA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks/BlinkUp.embeddedframework",
+					"/Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUp.embeddedframework/**",
 				);
 				INFOPLIST_FILE = BluetoothBlinkUp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.3.1;
 				OTHER_LDFLAGS = "-ObjC";
@@ -365,10 +387,10 @@
 				DEVELOPMENT_TEAM = Y5J3K52DNA;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks/BlinkUp.embeddedframework",
+					"/Users/smitty/OneDrive/Programming/BluetoothBlinkUp/SDK/BlinkUp.embeddedframework/**",
 				);
 				INFOPLIST_FILE = BluetoothBlinkUp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.3.1;
 				OTHER_LDFLAGS = "-ObjC";
