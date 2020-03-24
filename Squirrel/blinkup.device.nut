@@ -28,8 +28,7 @@
 
 // IMPORTS
 #require "bt_firmware.lib.nut:1.0.0"
-//#require "btleblinkup.device.lib.nut:2.1.0"
-#import "/Users/smitty/Documents/GitHub/BTLEBlinkUp/btleblinkup.device.lib.nut"
+#require "btleblinkup.device.lib.nut:2.0.0"
 
 // Set the GATT service UUIDs we wil use
 function initUUIDs() {

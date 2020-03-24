@@ -33,8 +33,7 @@
 // the device into its pre-activation state, ie. ready for BlinkUp.
 
 // IMPORTS
-// #require "Rocky.class.nut:2.0.2"
-#import "/Users/smitty/Documents/GitHub/Rocky/Rocky.agent.lib.nut"
+#require "Rocky.agent.lib.nut:3.0.0"
 
 // CONSTANTS
 const HTML_STRING = @"<!DOCTYPE html><html lang='en-US'><meta charset='UTF-8'>
