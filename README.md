@@ -52,6 +52,10 @@ Optionally, tap **Clear WiFi Settings** to erase your Breakout Board’s WiFi cr
 
 <p align="center"><img src="images/04.png" width="375" style="border: 1px solid #DDDDDD" >&nbsp;&nbsp;<img src="images/05.jpg" width="375" style="border: 1px solid #DDDDDD"></p>
 
+### Troubleshooting ###
+
+If you have issues building the iOS app, check that you have added the SDK files as per the SDK Read Me. You may need to update Xcode’s record of the location of the files `BUConfigId.swift` and `BUDevicePoller.swift`. Under *Build Settings*, make sure the **Search Paths > Framework Search Paths** field references the location of your installed (from the SDK) `BlinkUp.embeddedframework` folder.
+
 ## Post BlinkUp ##
 
 The sample Squirrel code provides a web UI which is served by the agent and can be visited by entering the agent URL into a desktop browser, or by selecting the **Open Agent URL** option presented by the app after the target device has activated.
@@ -72,7 +76,6 @@ The easiest approach to dealing with this is to disable then re-enable Bluetooth
     - Update dependencies:
         - JQuery -> 3.4.1
         - Rocky -> 3.0.0
-        - BTLEBlinkUp -> 2.1.0 (required for imp006 on impOS 41.28 and up)
 - 1.3.0
     - Support imp006.
 - 1.2.1
