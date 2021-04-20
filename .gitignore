@@ -1,3 +1,4 @@
+auth.info
 ## XCODE
 
 ## Build generated
@@ -87,3 +88,4 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+settings/imp.config

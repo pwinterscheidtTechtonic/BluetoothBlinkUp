@@ -1,0 +1,7 @@
+[submodule "iOS/BlinkUpSDK-iOS"]
+	path = iOS/BlinkUpSDK-iOS
+	url = https://github.com/electricimp/BlinkUpSDK-iOS.git
+[submodule "Squirrel/BTLEBlinkUp"]
+	path = Squirrel/BTLEBlinkUp
+	url = git@github.com:electricimp/BTLEBlinkUp.git
+	branch = develop

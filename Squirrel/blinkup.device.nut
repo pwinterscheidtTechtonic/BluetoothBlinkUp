@@ -28,7 +28,9 @@
 
 // IMPORTS
 #require "bt_firmware.lib.nut:1.0.0"
-#require "btleblinkup.device.lib.nut:2.0.0"
+@include "BTLEBlinkUp/btleblinkup.device.lib.nut"
+@include "led.device.lib.nut"
+
 
 // Set the GATT service UUIDs we wil use
 function initUUIDs() {
@@ -49,6 +51,7 @@ server.setsendtimeoutpolicy(RETURN_ON_ERROR, WAIT_TIL_SENT, 10);
 
 local bt = null;
 local agentTimer = null;
+local leds = DeviceLeds();
 
 // Register a handler that will clear the configuration marker
 // in the imp SPI flash in response to a message from the agent.
@@ -77,6 +80,7 @@ function startApplication() {
     // Application code starts here
     server.log("Application starting...");
     server.log("Use the agent to reset device state");
+    leds.breatheGreen();
 }
 
 // This function defines this app's activation flow: preparing the device
@@ -84,7 +88,16 @@ function startApplication() {
 // local WiFi network settings.
 function startBluetooth() {
     // Instantiate the BTLEBlinkUp library
-    bt = BTLEBlinkUp(initUUIDs(), (iType == "imp004m" ? BT_FIRMWARE.CYW_43438 : BT_FIRMWARE.CYW_43455));
+    leds.blueOn();
+
+    try {
+      bt = BTLEBlinkUp(initUUIDs(), (iType == "imp004m" ? BT_FIRMWARE.CYW_43438 : BT_FIRMWARE.CYW_43455));
+      leds.greenOn();
+    } catch (err) {
+      leds.redOn();
+      server.error(err);
+      return;
+    }
 
     // Set security level for demo
     bt.setSecurity(1);
@@ -118,6 +131,8 @@ function doBluetooth(agentURL = null) {
         agentTimer = null;
     }
 
+    leds.allOff();
+
     // Store the agent URL if present
     if (agentURL != null) bt.agentURL = agentURL;
 
@@ -136,6 +151,7 @@ function doBluetooth(agentURL = null) {
     }.bindenv(this));
 
     server.log("Bluetooth LE listening for BlinkUp...");
+    leds.breatheBlue();
 }
 
 // RUNTIME START
@@ -145,6 +161,11 @@ function doBluetooth(agentURL = null) {
 // jumps to the application flow; otherwise we run the activation
 // flow, ie. set up and run Bluetooth LE
 iType <- imp.info().type;
+server.log("Test running on an " + iType);
+
+
+
+
 if ("spiflash" in hardware && (iType == "imp004m" || iType == "imp006" || iType == "impC001")) {
     // Read the first four bytes of the SPI flash
     hardware.spiflash.enable();
